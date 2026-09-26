@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 80" fill="none" role="img" aria-label="VÍA">
+  <!-- V — open chevron -->
+  <path d="M42 68 L68 16 L94 68" stroke="#7C3AED" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Í — vertical bar + accent dot -->
+  <path d="M120 68 L120 16" stroke="#7C3AED" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="120" cy="6" r="5.5" fill="#A78BFA"/>
+  <!-- A — triangle with center crossbar -->
+  <path d="M138 68 L166 16 L194 68" stroke="#7C3AED" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M149 50 L183 50" stroke="#7C3AED" stroke-width="8" stroke-linecap="round"/>
+</svg>

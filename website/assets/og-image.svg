@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#7C3AED"/>
+  <g stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- V — open chevron -->
+    <path d="M522 480 L550 360 L578 480"/>
+    <!-- Í — vertical bar + accent dot -->
+    <path d="M600 480 L600 360"/>
+    <!-- A — triangle with center crossbar -->
+    <path d="M622 480 L650 360 L678 480"/>
+    <path d="M637 420 L663 420"/>
+  </g>
+  <circle cx="600" cy="334" r="9" fill="#FFFFFF"/>
+  <text x="600" y="562" text-anchor="middle" font-size="56" font-weight="700"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif" fill="#FFFFFF">
+    Every web lead, answered in seconds.
+  </text>
+  <text x="600" y="606" text-anchor="middle" font-size="28"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif" fill="#FFFFFF" fill-opacity="0.7">
+    V.I.A Automations · Lead Recovery for Home Services
+  </text>
+  <text x="1130" y="600" text-anchor="end" font-size="22"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif" fill="#FFFFFF" fill-opacity="0.5">
+    viaaiautomation.work.gd
+  </text>
+</svg>
