@@ -9,15 +9,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --navy: #0B1B2B;
-      --amber: #F59E0B;
-      --amber-hover: #D97706;
-      --surface: #FAF8F5;
+      --purple: #7C3AED;
+      --purple-dark: #6D28D9;
+      --accent: #A78BFA;
+      --accent-hover: #C4B5FD;
+      --surface: #FAFAFB;
       --card: #FFFFFF;
       --text: #1A1A1A;
+      --accent-text: #1A1A1A;
       --muted: #64748B;
       --success: #059669;
-      --border: #E5E7EB;
+      --border: #E9E5F5;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -28,7 +30,7 @@
       font-weight: 400;
       line-height: 1.65;
     }
-    h1, h2, h3 { color: var(--navy); }
+    h1, h2, h3 { color: var(--purple); }
     h1 { font-size: 3rem; font-weight: 700; line-height: 1.15; }
     h2 { font-size: 1.75rem; font-weight: 600; line-height: 1.25; margin-bottom: 1.25rem; }
     h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.25rem; }
@@ -40,8 +42,8 @@
       display: inline-block;
       padding: 0.3rem 0.9rem;
       border-radius: 9999px;
-      background: #FEF3C7;
-      color: var(--navy);
+      background: #EDE9FE;
+      color: var(--purple);
       font-size: 0.875rem;
       font-weight: 500;
       margin-bottom: 1rem;
@@ -55,18 +57,18 @@
     .btn-primary {
       display: inline-flex;
       align-items: center;
-      background: var(--amber);
-      color: #fff;
+      background: var(--accent);
+      color: var(--accent-text);
       font-weight: 600;
       padding: 0.8rem 1.5rem;
       border-radius: 8px;
       text-decoration: none;
     }
-    .btn-primary:hover { background: var(--amber-hover); }
+    .btn-primary:hover { background: var(--accent-hover); }
     .btn-secondary {
       display: inline-flex;
       align-items: center;
-      color: var(--navy);
+      color: var(--purple);
       font-weight: 600;
       text-decoration: underline;
       text-underline-offset: 3px;
@@ -89,7 +91,7 @@
       padding: 0.9rem 1.25rem;
       font-weight: 600;
       font-size: 0.9rem;
-      color: var(--navy);
+      color: var(--purple);
       border-bottom: 1px solid var(--border);
     }
     .mockup-body { padding: 1rem 1.25rem 0.25rem; }
@@ -115,11 +117,11 @@
       padding: 0.75rem 1.25rem;
       font-size: 0.875rem;
       font-weight: 500;
-      color: var(--navy);
+      color: var(--purple);
     }
 
     .trustbar {
-      background: var(--navy);
+      background: var(--purple);
       color: #fff;
       min-height: 48px;
       display: flex;
@@ -148,7 +150,7 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: var(--amber);
+      background: var(--purple);
       color: #fff;
       font-weight: 700;
       display: flex;
@@ -159,8 +161,8 @@
     .steps p { color: var(--muted); }
 
     .pilot {
-      background: #FEF3C7;
-      border: 1px solid #FDE68A;
+      background: #EDE9FE;
+      border: 1px solid #DDD6FE;
       border-radius: 12px;
       padding: 2.5rem;
     }
@@ -177,12 +179,12 @@
       cursor: pointer;
       padding: 1rem 1.25rem;
       font-weight: 600;
-      color: var(--navy);
+      color: var(--purple);
     }
     details p { padding: 0 1.25rem 1.25rem; color: var(--muted); }
 
     .finalcta {
-      background: var(--navy);
+      background: var(--purple);
       color: #fff;
       text-align: center;
       padding: 4rem 1.25rem;
@@ -198,7 +200,7 @@
       text-align: center;
       padding: 2rem 1.25rem;
     }
-    footer a { color: var(--navy); }
+    footer a { color: var(--purple); }
 
     @media (max-width: 768px) {
       body { font-size: 0.85rem; }
