@@ -1,0 +1,401 @@
+{
+  "_meta": {
+    "namespace": "TEST-ENRICH",
+    "regex": "^TEST-ENRICH-\\d+$",
+    "note": "AgentData contact-engine fixtures (Prompt H.4-rev). Fixtures 020–026 exercise the AgentData provider as the default contact provider (expected.contact; provider 'agentdata', enrichment keys ::agentdata). Email items use the provider-contract shape (email/confidence/verification_status). Fixture 026 exercises a pre-cached ::agentdata log row; failure entries mirror the client's post-retry contract: {fatal:true} halts, {error:true} defers."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-ENRICH-020",
+      "name": "AgentData picks the best accepted email and fills only empty columns",
+      "note": "Generic local parts (info@ 99) are rejected; best accepted (jane.doe@ 98) wins. A pre-existing contact_name on the lead is preserved (fill-only-empty); empty contact_title is filled; the log row records the provider result name (Jane Doe), not the preserved lead name.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-020",
+      "provider": "agentdata",
+      "leads": [
+        {
+          "lead_id": "RWL-0020-A",
+          "business_name": "Best Ad Co",
+          "website": "bestad.example.com",
+          "country": "USA",
+          "email": "",
+          "contact_name": "Jane Roe",
+          "contact_title": ""
+        }
+      ],
+      "index": [],
+      "cacheRows": [],
+      "domainResults": {
+        "bestad.example.com": {
+          "emails": [
+            { "email": "info@bestad.example.com", "confidence": 99, "verification_status": "valid", "first_name": "", "last_name": "", "position": "" },
+            { "email": "pat.reyes@bestad.example.com", "confidence": 91, "verification_status": "unknown", "first_name": "Pat", "last_name": "Reyes", "position": "CEO" },
+            { "email": "jane.doe@bestad.example.com", "confidence": 98, "verification_status": "valid", "first_name": "Jane", "last_name": "Doe", "position": "Operations Manager" }
+          ],
+          "creditsUsed": 1
+        }
+      },
+      "ossResults": {},
+      "expected": {
+        "contact": {
+          "stats": { "total": 1, "enriched": 1, "skipped": 0, "failed": 0, "credits_consumed": 1, "cache_hits": 0 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0020-A",
+              "email": "jane.doe@bestad.example.com",
+              "contact_name": "Jane Roe",
+              "contact_title": "Operations Manager",
+              "email_verified": "Y",
+              "email_source": "agentdata",
+              "contact_source_provider": "agentdata"
+            }
+          ],
+          "skipped": [],
+          "failed": [],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-e8e80855",
+              "enrichment_key": "bestad.example.com::agentdata",
+              "lead_id": "RWL-0020-A",
+              "provider": "agentdata",
+              "query_input": "bestad.example.com",
+              "result_email": "jane.doe@bestad.example.com",
+              "result_contact_name": "Jane Doe",
+              "result_contact_title": "Operations Manager",
+              "result_verified": "TRUE",
+              "credits_consumed": "1",
+              "enriched_at": "2026-09-16T12:00:00.000Z",
+              "ttl_expires_at": "2026-11-15T12:00:00.000Z",
+              "cache_hit_count": "0",
+              "notes": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "TEST-ENRICH-021",
+      "name": "AgentData name edges: single-token first name and absent name",
+      "note": "Lead A's accepted email carries first_name only (contact_name 'Ted'); lead B's accepted email carries no name parts (contact_name stays empty). Contact title and verification normalize across both.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-021",
+      "provider": "agentdata",
+      "leads": [
+        {
+          "lead_id": "RWL-0021-A",
+          "business_name": "Edge One Co",
+          "website": "edge1.example.com",
+          "country": "USA",
+          "email": ""
+        },
+        {
+          "lead_id": "RWL-0021-B",
+          "business_name": "Edge Two Co",
+          "website": "edge2.example.com",
+          "country": "USA",
+          "email": ""
+        }
+      ],
+      "index": [],
+      "cacheRows": [],
+      "domainResults": {
+        "edge1.example.com": {
+          "emails": [
+            { "email": "ted@edge1.example.com", "confidence": 93, "verification_status": "valid", "first_name": "Ted", "last_name": "", "position": "Founder" }
+          ],
+          "creditsUsed": 1
+        },
+        "edge2.example.com": {
+          "emails": [
+            { "email": "solo@edge2.example.com", "confidence": 97, "verification_status": "valid", "first_name": "", "last_name": "", "position": "" }
+          ],
+          "creditsUsed": 1
+        }
+      },
+      "ossResults": {},
+      "expected": {
+        "contact": {
+          "stats": { "total": 2, "enriched": 2, "skipped": 0, "failed": 0, "credits_consumed": 2, "cache_hits": 0 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0021-A",
+              "email": "ted@edge1.example.com",
+              "contact_name": "Ted",
+              "contact_title": "Founder",
+              "email_verified": "Y",
+              "email_source": "agentdata",
+              "contact_source_provider": "agentdata"
+            },
+            {
+              "lead_id": "RWL-0021-B",
+              "email": "solo@edge2.example.com",
+              "contact_name": "",
+              "contact_title": "",
+              "email_verified": "Y",
+              "email_source": "agentdata",
+              "contact_source_provider": "agentdata"
+            }
+          ],
+          "skipped": [],
+          "failed": [],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-623c5a4e",
+              "enrichment_key": "edge1.example.com::agentdata",
+              "lead_id": "RWL-0021-A",
+              "provider": "agentdata",
+              "query_input": "edge1.example.com",
+              "result_email": "ted@edge1.example.com",
+              "result_contact_name": "Ted",
+              "result_contact_title": "Founder",
+              "result_verified": "TRUE",
+              "credits_consumed": "1",
+              "enriched_at": "2026-09-16T12:00:00.000Z",
+              "ttl_expires_at": "2026-11-15T12:00:00.000Z",
+              "cache_hit_count": "0",
+              "notes": ""
+            },
+            {
+              "enrichment_id": "ENRICH-02e468bd",
+              "enrichment_key": "edge2.example.com::agentdata",
+              "lead_id": "RWL-0021-B",
+              "provider": "agentdata",
+              "query_input": "edge2.example.com",
+              "result_email": "solo@edge2.example.com",
+              "result_contact_name": "",
+              "result_contact_title": "",
+              "result_verified": "TRUE",
+              "credits_consumed": "1",
+              "enriched_at": "2026-09-16T12:00:00.000Z",
+              "ttl_expires_at": "2026-11-15T12:00:00.000Z",
+              "cache_hit_count": "0",
+              "notes": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "TEST-ENRICH-022",
+      "name": "AgentData-empty domain is logged and never re-billed",
+      "note": "The provider returns an empty emails array at 200: the lead keeps no email (NOT_READY-call), a no_emails_found log row (::agentdata) prevents re-billing, and the credit is still charged (1).",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-022",
+      "provider": "agentdata",
+      "leads": [
+        {
+          "lead_id": "RWL-0022-A",
+          "business_name": "Empty Ad Co",
+          "website": "emptyad.example.com",
+          "country": "USA",
+          "email": ""
+        }
+      ],
+      "index": [],
+      "cacheRows": [],
+      "domainResults": {
+        "emptyad.example.com": { "emails": [], "creditsUsed": 1 }
+      },
+      "ossResults": {},
+      "expected": {
+        "contact": {
+          "stats": { "total": 1, "enriched": 1, "skipped": 0, "failed": 0, "credits_consumed": 1, "cache_hits": 0 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0022-A",
+              "email": "",
+              "contact_source_provider": "agentdata"
+            }
+          ],
+          "skipped": [],
+          "failed": [],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-a1a5d75a",
+              "enrichment_key": "emptyad.example.com::agentdata",
+              "lead_id": "RWL-0022-A",
+              "provider": "agentdata",
+              "query_input": "emptyad.example.com",
+              "result_email": "",
+              "result_contact_name": "",
+              "result_contact_title": "",
+              "result_verified": "FALSE",
+              "credits_consumed": "1",
+              "enriched_at": "2026-09-16T12:00:00.000Z",
+              "ttl_expires_at": "2026-11-15T12:00:00.000Z",
+              "cache_hit_count": "0",
+              "notes": "no_emails_found"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "TEST-ENRICH-024",
+      "name": "AgentData fatal auth failure halts the batch",
+      "note": "A 401 is FATAL: the throwing lead and every remaining lead fail with the fatal reason; no log rows and zero credits. This mirrors the client semantics after 401/403.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-024",
+      "provider": "agentdata",
+      "leads": [
+        { "lead_id": "RWL-0024-A", "business_name": "Fatal Auth Co", "website": "fatalauth.example.com", "country": "USA", "email": "" },
+        { "lead_id": "RWL-0024-B", "business_name": "After Fatal Co", "website": "afterfatalad.example.com", "country": "USA", "email": "" }
+      ],
+      "index": [],
+      "cacheRows": [],
+      "domainResults": {
+        "fatalauth.example.com": { "fatal": true, "reason": "AgentData: invalid API key", "status": 401 }
+      },
+      "ossResults": {},
+      "expected": {
+        "contact": {
+          "stats": { "total": 2, "enriched": 0, "skipped": 0, "failed": 2, "credits_consumed": 0, "cache_hits": 0 },
+          "enriched": [],
+          "skipped": [],
+          "failed": [
+            { "lead_id": "RWL-0024-A", "enrichment_failure_reason": "AgentData: invalid API key" },
+            { "lead_id": "RWL-0024-B", "enrichment_failure_reason": "AgentData: invalid API key" }
+          ],
+          "fatal": { "reason": "AgentData: invalid API key", "status": 401 },
+          "log": []
+        }
+      }
+    },
+    {
+      "id": "TEST-ENRICH-025",
+      "name": "AgentData exhausted server error defers the lead, the run continues",
+      "note": "After retries a 503 becomes a non-fatal failure: lead A is deferred (failed with the server-error reason, no log row, no credit) while lead B still enriches through the same client (credit 1).",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-025",
+      "provider": "agentdata",
+      "leads": [
+        { "lead_id": "RWL-0025-A", "business_name": "Server Error Co", "website": "servererror.example.com", "country": "USA", "email": "" },
+        { "lead_id": "RWL-0025-B", "business_name": "Okay Ad Co", "website": "okad.example.com", "country": "USA", "email": "" }
+      ],
+      "index": [],
+      "cacheRows": [],
+      "domainResults": {
+        "servererror.example.com": { "error": true, "reason": "AgentData: server error", "status": 503 },
+        "okad.example.com": {
+          "emails": [
+            { "email": "kim.lee@okad.example.com", "confidence": 95, "verification_status": "valid", "first_name": "Kim", "last_name": "Lee", "position": "VP Operations" }
+          ],
+          "creditsUsed": 1
+        }
+      },
+      "ossResults": {},
+      "expected": {
+        "contact": {
+          "stats": { "total": 2, "enriched": 1, "skipped": 0, "failed": 1, "credits_consumed": 1, "cache_hits": 0 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0025-B",
+              "email": "kim.lee@okad.example.com",
+              "contact_name": "Kim Lee",
+              "contact_title": "VP Operations",
+              "email_verified": "Y",
+              "email_source": "agentdata",
+              "contact_source_provider": "agentdata"
+            }
+          ],
+          "skipped": [],
+          "failed": [
+            { "lead_id": "RWL-0025-A", "enrichment_failure_reason": "AgentData: server error" }
+          ],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-0778409d",
+              "enrichment_key": "okad.example.com::agentdata",
+              "lead_id": "RWL-0025-B",
+              "provider": "agentdata",
+              "query_input": "okad.example.com",
+              "result_email": "kim.lee@okad.example.com",
+              "result_contact_name": "Kim Lee",
+              "result_contact_title": "VP Operations",
+              "result_verified": "TRUE",
+              "credits_consumed": "1",
+              "enriched_at": "2026-09-16T12:00:00.000Z",
+              "ttl_expires_at": "2026-11-15T12:00:00.000Z",
+              "cache_hit_count": "0",
+              "notes": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "TEST-ENRICH-026",
+      "name": "AgentData cache hit serves fields without a provider call",
+      "note": "Non-expired ::agentdata log row is served from cache; cache_hit_count increments 2 -> 3; no credit charged; pre-existing enrichment_id and email_source 'agentdata' are preserved.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-026",
+      "provider": "agentdata",
+      "leads": [
+        {
+          "lead_id": "RWL-0026-A",
+          "business_name": "Cached Ad Co",
+          "website": "cachedad.example.com",
+          "country": "USA",
+          "email": ""
+        }
+      ],
+      "index": [],
+      "cacheRows": [
+        {
+          "enrichment_id": "ENRICH-00000026",
+          "enrichment_key": "cachedad.example.com::agentdata",
+          "lead_id": "RWL-0026-A",
+          "provider": "agentdata",
+          "query_input": "cachedad.example.com",
+          "result_email": "maya.singh@cachedad.example.com",
+          "result_contact_name": "Maya Singh",
+          "result_contact_title": "COO",
+          "result_verified": "TRUE",
+          "credits_consumed": "1",
+          "enriched_at": "2026-08-01T10:00:00.000Z",
+          "ttl_expires_at": "2026-10-31T10:00:00.000Z",
+          "cache_hit_count": "2",
+          "notes": ""
+        }
+      ],
+      "domainResults": {},
+      "ossResults": {},
+      "expected": {
+        "contact": {
+          "stats": { "total": 1, "enriched": 1, "skipped": 0, "failed": 0, "credits_consumed": 0, "cache_hits": 1 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0026-A",
+              "email": "maya.singh@cachedad.example.com",
+              "contact_name": "Maya Singh",
+              "contact_title": "COO",
+              "email_verified": "Y",
+              "email_source": "agentdata",
+              "contact_source_provider": "agentdata"
+            }
+          ],
+          "skipped": [],
+          "failed": [],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-00000026",
+              "enrichment_key": "cachedad.example.com::agentdata",
+              "lead_id": "RWL-0026-A",
+              "provider": "agentdata",
+              "query_input": "cachedad.example.com",
+              "result_email": "maya.singh@cachedad.example.com",
+              "result_contact_name": "Maya Singh",
+              "result_contact_title": "COO",
+              "result_verified": "TRUE",
+              "credits_consumed": "1",
+              "enriched_at": "2026-08-01T10:00:00.000Z",
+              "ttl_expires_at": "2026-10-31T10:00:00.000Z",
+              "cache_hit_count": "3",
+              "notes": ""
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

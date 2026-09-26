@@ -1,0 +1,471 @@
+{
+  "_meta": {
+    "artifact": "Lead Recovery Engine — Prospect Finder & Validation V1 (Google Places live validation)",
+    "namespace": "TEST-GPL-LIVE",
+    "regex": "^TEST-GPL-LIVE-(001|ISO-00[1-4])$",
+    "note": "Live-validation fixtures for the Google Places (New) searchText branch of the Prospect Finder workflow. The Search Inputs tab row (status Pending) is derived by src/prospect-finder-gpl-live-fixtures.js (searchInputRowFor) using the 11-column schema pinned by the Set Status Running / Update Status nodes. gpl_full_response.envelope is exactly what the shipped 'Google Places API' HTTP Request node presents to the 'Process GPL' Code node (fullResponse envelope: statusCode + body); gpl_response is the body fragment consumed by src/google-places.js for the offline oracle. expected_raw_leads lead_id values are the canonical deterministic GP- hashes produced by generateLeadId(placeId, index) in src/google-places.js and are RECOMPUTED by the oracle during verification — a mismatch is a check failure. raw_captured_at is a runtime field and is excluded from equality checks."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-GPL-LIVE-001",
+      "name": "Healthy end-to-end GPL run",
+      "flow": {
+        "fsq_outcome": "success",
+        "osm_outcome": "success",
+        "gpl_outcome": "success"
+      },
+      "search_input": {
+        "input_id": "TEST-GPL-LIVE-001",
+        "niche": "HVAC",
+        "city": "Dallas",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "HVAC repair in Dallas, Texas",
+        "target_count": 2,
+        "status": "Pending",
+        "priority": "Live-Validation",
+        "created_at": "2026-09-14T00:00:00.000Z",
+        "notes": "Live validation fixture TEST-GPL-LIVE-001"
+      },
+      "gpl_full_response": {
+        "envelope": {
+          "statusCode": 200,
+          "body": {
+            "places": [
+              {
+                "id": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+                "displayName": { "text": "Acme HVAC Services", "languageCode": "en" },
+                "formattedAddress": "123 Main St, Dallas, TX 75201, USA",
+                "internationalPhoneNumber": "+1 214-555-0100",
+                "websiteUri": "https://www.acmehvac.example.com",
+                "rating": 4.5,
+                "userRatingCount": 127,
+                "googleMapsUri": "https://maps.google.com/?cid=123456789",
+                "types": ["hvac_contractor", "point_of_interest", "establishment"]
+              },
+              {
+                "id": "ChIJPrecisionAirDallasTX000001",
+                "displayName": { "text": "Precision Air Dallas", "languageCode": "en" },
+                "formattedAddress": "456 Commerce Blvd, Dallas, TX 75204, USA",
+                "internationalPhoneNumber": "+1 214-555-0200",
+                "websiteUri": "https://precisionair.example.com",
+                "rating": 4.7,
+                "userRatingCount": 89,
+                "googleMapsUri": "https://maps.google.com/?cid=987654321",
+                "types": ["air_conditioning_contractor", "establishment"]
+              },
+              {
+                "id": "ChIJComfortZoneDallasTX0000002",
+                "displayName": { "text": "Comfort Zone Heating & Air", "languageCode": "en" },
+                "formattedAddress": "789 Elm Row, Dallas, TX 75202, USA",
+                "internationalPhoneNumber": "+1 214-555-0300",
+                "websiteUri": "https://comfortzone.example.com",
+                "rating": 4.2,
+                "userRatingCount": 54,
+                "googleMapsUri": "https://maps.google.com/?cid=555111222",
+                "types": ["heating_contractor", "establishment"]
+              }
+            ]
+          }
+        },
+        "gpl_response": {
+          "places": [
+            {
+              "id": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+              "displayName": { "text": "Acme HVAC Services", "languageCode": "en" },
+              "formattedAddress": "123 Main St, Dallas, TX 75201, USA",
+              "internationalPhoneNumber": "+1 214-555-0100",
+              "websiteUri": "https://www.acmehvac.example.com",
+              "rating": 4.5,
+              "userRatingCount": 127,
+              "googleMapsUri": "https://maps.google.com/?cid=123456789",
+              "types": ["hvac_contractor", "point_of_interest", "establishment"]
+            },
+            {
+              "id": "ChIJPrecisionAirDallasTX000001",
+              "displayName": { "text": "Precision Air Dallas", "languageCode": "en" },
+              "formattedAddress": "456 Commerce Blvd, Dallas, TX 75204, USA",
+              "internationalPhoneNumber": "+1 214-555-0200",
+              "websiteUri": "https://precisionair.example.com",
+              "rating": 4.7,
+              "userRatingCount": 89,
+              "googleMapsUri": "https://maps.google.com/?cid=987654321",
+              "types": ["air_conditioning_contractor", "establishment"]
+            },
+            {
+              "id": "ChIJComfortZoneDallasTX0000002",
+              "displayName": { "text": "Comfort Zone Heating & Air", "languageCode": "en" },
+              "formattedAddress": "789 Elm Row, Dallas, TX 75202, USA",
+              "internationalPhoneNumber": "+1 214-555-0300",
+              "websiteUri": "https://comfortzone.example.com",
+              "rating": 4.2,
+              "userRatingCount": 54,
+              "googleMapsUri": "https://maps.google.com/?cid=555111222",
+              "types": ["heating_contractor", "establishment"]
+            }
+          ]
+        }
+      },
+      "expected_raw_leads": [
+        {
+          "lead_id": "GP-0c58ad3c",
+          "business_name": "Acme HVAC Services",
+          "niche": "HVAC",
+          "city": "Dallas",
+          "state": "Texas",
+          "country": "USA",
+          "address": "123 Main St, Dallas, TX 75201, USA",
+          "phone": "+12145550100",
+          "website": "acmehvac.example.com",
+          "rating": "4.5",
+          "review_count": "127",
+          "google_maps_url": "https://maps.google.com/?cid=123456789",
+          "business_type": "hvac_contractor",
+          "source": "google_places",
+          "search_input_id": "TEST-GPL-LIVE-001",
+          "dedupe_key": "website:acmehvac.example.com",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: HVAC repair in Dallas, Texas; gp_place_id:ChIJN1t_tDeuEmsRUsoyG83frY4"
+        },
+        {
+          "lead_id": "GP-0c29b7fd",
+          "business_name": "Precision Air Dallas",
+          "niche": "HVAC",
+          "city": "Dallas",
+          "state": "Texas",
+          "country": "USA",
+          "address": "456 Commerce Blvd, Dallas, TX 75204, USA",
+          "phone": "+12145550200",
+          "website": "precisionair.example.com",
+          "rating": "4.7",
+          "review_count": "89",
+          "google_maps_url": "https://maps.google.com/?cid=987654321",
+          "business_type": "air_conditioning_contractor",
+          "source": "google_places",
+          "search_input_id": "TEST-GPL-LIVE-001",
+          "dedupe_key": "website:precisionair.example.com",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: HVAC repair in Dallas, Texas; gp_place_id:ChIJPrecisionAirDallasTX000001"
+        },
+        {
+          "lead_id": "GP-10a6495b",
+          "business_name": "Comfort Zone Heating & Air",
+          "niche": "HVAC",
+          "city": "Dallas",
+          "state": "Texas",
+          "country": "USA",
+          "address": "789 Elm Row, Dallas, TX 75202, USA",
+          "phone": "+12145550300",
+          "website": "comfortzone.example.com",
+          "rating": "4.2",
+          "review_count": "54",
+          "google_maps_url": "https://maps.google.com/?cid=555111222",
+          "business_type": "heating_contractor",
+          "source": "google_places",
+          "search_input_id": "TEST-GPL-LIVE-001",
+          "dedupe_key": "website:comfortzone.example.com",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: HVAC repair in Dallas, Texas; gp_place_id:ChIJComfortZoneDallasTX0000002"
+        }
+      ],
+      "expected_terminal_status": "Completed",
+      "notes": "All three providers succeed. Expects 3 GPL leads in Raw Leads + Verified Leads (dedupe keys website: followed by phone: is deterministic)."
+    },
+    {
+      "id": "TEST-GPL-LIVE-ISO-001",
+      "name": "Isolation - all three providers succeed",
+      "flow": {
+        "fsq_outcome": "success",
+        "osm_outcome": "success",
+        "gpl_outcome": "success"
+      },
+      "search_input": {
+        "input_id": "TEST-GPL-LIVE-ISO-001",
+        "niche": "HVAC",
+        "city": "Dallas",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1,
+        "status": "Pending",
+        "priority": "Live-Validation",
+        "created_at": "2026-09-14T00:00:00.000Z",
+        "notes": "Live validation fixture TEST-GPL-LIVE-ISO-001"
+      },
+      "gpl_full_response": {
+        "envelope": {
+          "statusCode": 200,
+          "body": {
+            "places": [
+              {
+                "id": "ChIJAllSucceed0000000000001",
+                "displayName": { "text": "AirSmith Test HVAC", "languageCode": "en" },
+                "formattedAddress": "101 Airstrip Pkwy, Dallas, TX 75210, USA",
+                "internationalPhoneNumber": "+1 972-555-0101",
+                "websiteUri": "https://www.airsmith.test.io",
+                "rating": 4.1,
+                "userRatingCount": 31,
+                "googleMapsUri": "https://maps.google.com/?cid=111000111",
+                "types": ["air_conditioning_contractor", "establishment"]
+              },
+              {
+                "id": "ChIJAllSucceedSecTexas00000002",
+                "displayName": { "text": "Second Air Texas", "languageCode": "en" },
+                "formattedAddress": "202 Service Rd, Dallas, TX 75211, USA",
+                "internationalPhoneNumber": "+1 972-555-0102",
+                "websiteUri": "",
+                "rating": 3.9,
+                "userRatingCount": 12,
+                "googleMapsUri": "https://maps.google.com/?cid=222000222",
+                "types": ["hvac_contractor", "establishment"]
+              }
+            ]
+          }
+        },
+        "gpl_response": {
+          "places": [
+            {
+              "id": "ChIJAllSucceed0000000000001",
+              "displayName": { "text": "AirSmith Test HVAC", "languageCode": "en" },
+              "formattedAddress": "101 Airstrip Pkwy, Dallas, TX 75210, USA",
+              "internationalPhoneNumber": "+1 972-555-0101",
+              "websiteUri": "https://www.airsmith.test.io",
+              "rating": 4.1,
+              "userRatingCount": 31,
+              "googleMapsUri": "https://maps.google.com/?cid=111000111",
+              "types": ["air_conditioning_contractor", "establishment"]
+            },
+            {
+              "id": "ChIJAllSucceedSecTexas00000002",
+              "displayName": { "text": "Second Air Texas", "languageCode": "en" },
+              "formattedAddress": "202 Service Rd, Dallas, TX 75211, USA",
+              "internationalPhoneNumber": "+1 972-555-0102",
+              "websiteUri": "",
+              "rating": 3.9,
+              "userRatingCount": 12,
+              "googleMapsUri": "https://maps.google.com/?cid=222000222",
+              "types": ["hvac_contractor", "establishment"]
+            }
+          ]
+        }
+      },
+      "expected_raw_leads": [
+        {
+          "lead_id": "GP-490391e0",
+          "business_name": "AirSmith Test HVAC",
+          "niche": "HVAC",
+          "city": "Dallas",
+          "state": "Texas",
+          "country": "USA",
+          "address": "101 Airstrip Pkwy, Dallas, TX 75210, USA",
+          "phone": "+19725550101",
+          "website": "airsmith.test.io",
+          "rating": "4.1",
+          "review_count": "31",
+          "google_maps_url": "https://maps.google.com/?cid=111000111",
+          "business_type": "air_conditioning_contractor",
+          "source": "google_places",
+          "search_input_id": "TEST-GPL-LIVE-ISO-001",
+          "dedupe_key": "website:airsmith.test.io",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: HVAC in Dallas, Texas; gp_place_id:ChIJAllSucceed0000000000001"
+        },
+        {
+          "lead_id": "GP-22d2a848",
+          "business_name": "Second Air Texas",
+          "niche": "HVAC",
+          "city": "Dallas",
+          "state": "Texas",
+          "country": "USA",
+          "address": "202 Service Rd, Dallas, TX 75211, USA",
+          "phone": "+19725550102",
+          "website": "",
+          "rating": "3.9",
+          "review_count": "12",
+          "google_maps_url": "https://maps.google.com/?cid=222000222",
+          "business_type": "hvac_contractor",
+          "source": "google_places",
+          "search_input_id": "TEST-GPL-LIVE-ISO-001",
+          "dedupe_key": "phone:+19725550102",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: HVAC in Dallas, Texas; gp_place_id:ChIJAllSucceedSecTexas00000002"
+        }
+      ],
+      "expected_terminal_status": "Completed",
+      "notes": "Isolation scenario A: every provider healthy. Verifies GPL contributes rows alongside FSQ + OSM without cross-provider interference."
+    },
+    {
+      "id": "TEST-GPL-LIVE-ISO-002",
+      "name": "Isolation - GPL empty (zero results)",
+      "flow": {
+        "fsq_outcome": "success",
+        "osm_outcome": "success",
+        "gpl_outcome": "empty"
+      },
+      "search_input": {
+        "input_id": "TEST-GPL-LIVE-ISO-002",
+        "niche": "HVAC",
+        "city": "Dallas",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1,
+        "status": "Pending",
+        "priority": "Live-Validation",
+        "created_at": "2026-09-14T00:00:00.000Z",
+        "notes": "Live validation fixture TEST-GPL-LIVE-ISO-002"
+      },
+      "gpl_full_response": {
+        "envelope": {
+          "statusCode": 200,
+          "body": {
+            "places": []
+          }
+        },
+        "gpl_response": {
+          "places": []
+        }
+      },
+      "expected_raw_leads": [],
+      "expected_sentinel_output": {
+        "kind": "noResults",
+        "keys": ["_noResults", "_message", "_provider"],
+        "provider": "google_places"
+      },
+      "expected_terminal_status": "Completed",
+      "notes": "Isolation scenario B: GPL returns zero places. Shipped Process GPL emits a single { _noResults: true, _message, _provider } item into Merge (no raw rows)."
+    },
+    {
+      "id": "TEST-GPL-LIVE-ISO-003",
+      "name": "Isolation - GPL API error (403)",
+      "flow": {
+        "fsq_outcome": "success",
+        "osm_outcome": "success",
+        "gpl_outcome": "error"
+      },
+      "search_input": {
+        "input_id": "TEST-GPL-LIVE-ISO-003",
+        "niche": "HVAC",
+        "city": "Dallas",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1,
+        "status": "Pending",
+        "priority": "Live-Validation",
+        "created_at": "2026-09-14T00:00:00.000Z",
+        "notes": "Live validation fixture TEST-GPL-LIVE-ISO-003"
+      },
+      "gpl_full_response": {
+        "envelope": {
+          "statusCode": 403,
+          "body": {
+            "error": {
+              "code": 403,
+              "message": "The request is missing a valid API key.",
+              "status": "PERMISSION_DENIED"
+            }
+          }
+        },
+        "gpl_response": {
+          "error": {
+            "code": 403,
+            "message": "The request is missing a valid API key.",
+            "status": "PERMISSION_DENIED"
+          }
+        }
+      },
+      "expected_raw_leads": [],
+      "error_expected": true,
+      "expected_sentinel_output": {
+        "kind": "error",
+        "keys": ["input_id", "_errorMessage", "_rawStatus", "_provider"],
+        "provider": "google_places",
+        "_rawStatus_expects": "PERMISSION_DENIED"
+      },
+      "expected_terminal_status": "Completed",
+      "notes": "Isolation scenario C: GPL returns HTTP 403. Shipped Process GPL emits one error sentinel item (input_id + _errorMessage + _rawStatus + _provider) into Merge. The Google Places API node has onError=continueErrorOutput and retryOnFail=true so the error surfaces as data, not as an n8n failure."
+    },
+    {
+      "id": "TEST-GPL-LIVE-ISO-004",
+      "name": "Isolation - GPL succeeds while Foursquare fails",
+      "flow": {
+        "fsq_outcome": "error",
+        "osm_outcome": "success",
+        "gpl_outcome": "success"
+      },
+      "search_input": {
+        "input_id": "TEST-GPL-LIVE-ISO-004",
+        "niche": "HVAC",
+        "city": "Dallas",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1,
+        "status": "Pending",
+        "priority": "Live-Validation",
+        "created_at": "2026-09-14T00:00:00.000Z",
+        "notes": "Live validation fixture TEST-GPL-LIVE-ISO-004"
+      },
+      "gpl_full_response": {
+        "envelope": {
+          "statusCode": 200,
+          "body": {
+            "places": [
+              {
+                "id": "ChIJGplOnlySucceeds0000000003",
+                "displayName": { "text": "CoolAir GPL Test", "languageCode": "en" },
+                "formattedAddress": "303 Cool Lane, Dallas, TX 75212, USA",
+                "internationalPhoneNumber": "+1 214-555-0102",
+                "websiteUri": "https://coolairgpl.example.com",
+                "rating": 4.6,
+                "userRatingCount": 77,
+                "googleMapsUri": "https://maps.google.com/?cid=333000333",
+                "types": ["air_conditioning_contractor", "establishment"]
+              }
+            ]
+          }
+        },
+        "gpl_response": {
+          "places": [
+            {
+              "id": "ChIJGplOnlySucceeds0000000003",
+              "displayName": { "text": "CoolAir GPL Test", "languageCode": "en" },
+              "formattedAddress": "303 Cool Lane, Dallas, TX 75212, USA",
+              "internationalPhoneNumber": "+1 214-555-0102",
+              "websiteUri": "https://coolairgpl.example.com",
+              "rating": 4.6,
+              "userRatingCount": 77,
+              "googleMapsUri": "https://maps.google.com/?cid=333000333",
+              "types": ["air_conditioning_contractor", "establishment"]
+            }
+          ]
+        }
+      },
+      "expected_raw_leads": [
+        {
+          "lead_id": "GP-3867114d",
+          "business_name": "CoolAir GPL Test",
+          "niche": "HVAC",
+          "city": "Dallas",
+          "state": "Texas",
+          "country": "USA",
+          "address": "303 Cool Lane, Dallas, TX 75212, USA",
+          "phone": "+12145550102",
+          "website": "coolairgpl.example.com",
+          "rating": "4.6",
+          "review_count": "77",
+          "google_maps_url": "https://maps.google.com/?cid=333000333",
+          "business_type": "air_conditioning_contractor",
+          "source": "google_places",
+          "search_input_id": "TEST-GPL-LIVE-ISO-004",
+          "dedupe_key": "website:coolairgpl.example.com",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: HVAC in Dallas, Texas; gp_place_id:ChIJGplOnlySucceeds0000000003"
+        }
+      ],
+      "expected_terminal_status": "Completed",
+      "notes": "Isolation scenario D: GPL healthy, Foursquare fails. The shipped Foursquare Places API node has no onError/error-output handling, so an FSQ failure produces no items (Process FSQ gets empty input) and is silently swallowed; the search is still marked Completed. Verifies GPL still contributes its rows when FSQ degrades."
+    }
+  ]
+}

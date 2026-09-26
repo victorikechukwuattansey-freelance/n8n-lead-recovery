@@ -1,0 +1,698 @@
+{
+  "_meta": {
+    "namespace": "TEST-RESP",
+    "artifact": "Outreach Response Capture V1",
+    "description": "Captured inbound-response events validated against idempotency, identity resolution, and write-mode semantics. TEST-RESP-005/006 replace the unexercised whatsapp/sms slots from the spec because no such inbound contract exists in this repo."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-RESP-001",
+      "name": "VALID_MATCHED_EMAIL",
+      "note": "One email response captured via outreach_id EX-<lead_id>-<channel> resolution; REAL mode persists one durable row.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-001-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-001-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-001-email",
+          "sender": "lead1@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "This looks interesting - please send details.",
+          "raw_reference": "thread-1"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 1,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "staged": 1,
+        "persisted": 1,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-RESP-002",
+      "name": "SAME_EVENT_TWICE_DUPLICATE",
+      "note": "The same event idempotency key twice in one batch: exactly one durable row and one DUPLICATE_EVENT.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-002-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-002-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-002-email",
+          "sender": "lead2@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "Yes please.",
+          "raw_reference": "thread-2"
+        },
+        {
+          "event_id": "evt-002-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-002-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-002-email",
+          "sender": "lead2@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "Yes please.",
+          "raw_reference": "thread-2"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 1,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 1,
+        "staged": 1,
+        "persisted": 1,
+        "exception_count": 1,
+        "exception_categories": ["DUPLICATE_EVENT"]
+      }
+    },
+
+    {
+      "id": "TEST-RESP-003",
+      "name": "DIFFERENT_PROVIDER_MESSAGE_IDS",
+      "note": "Two distinct provider messages for the same lead are two distinct captures.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-003-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-003-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-003-email",
+          "sender": "lead3@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "What is the pricing?",
+          "raw_reference": "thread-3"
+        },
+        {
+          "event_id": "evt-003-b",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-003-2",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-003-email",
+          "sender": "lead3@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T10:15:00+01:00",
+          "response_text": "Also, does it cover calls?",
+          "raw_reference": "thread-3"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 2,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "staged": 2,
+        "persisted": 2,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-RESP-004",
+      "name": "VALID_MATCHED_CALL",
+      "note": "A call-channel response resolved through EX-<lead_id>-call.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-004-a",
+          "source": "mock-provider",
+          "channel": "call",
+          "provider_message_id": "mock:RESP-004-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-004-call",
+          "sender": "+1 (234) 567-8991",
+          "recipient": "+1 (999) 555-0100",
+          "received_at": "2026-09-11T14:30:00.000Z",
+          "response_text": "Call me back this afternoon.",
+          "raw_reference": "cdr-4"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 1,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "staged": 1,
+        "persisted": 1,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-RESP-005",
+      "name": "UNKNOWN_SENDER_UNMATCHED",
+      "note": "No identity resolvable: captured as a durable UNMATCHED row (staged=1, persisted=1) with UNMATCHED_IDENTITY and no fabricated lead.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-005-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-005-1",
+          "lead_id": "",
+          "outreach_id": "",
+          "sender": "nobody@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "Who is this?",
+          "raw_reference": "thread-5"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 0,
+        "unmatched": 1,
+        "invalid": 0,
+        "duplicate": 0,
+        "staged": 1,
+        "persisted": 1,
+        "exception_count": 1,
+        "exception_categories": ["UNMATCHED_IDENTITY"]
+      }
+    },
+
+    {
+      "id": "TEST-RESP-006",
+      "name": "EXPLICIT_LEAD_ID",
+      "note": "The event itself carries lead_id; identity is taken verbatim (never invented).",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-006-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-006-1",
+          "lead_id": "TEST-RESP-006-lead",
+          "outreach_id": "",
+          "sender": "lead6@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "Interested in the pilot.",
+          "raw_reference": "thread-6"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 1,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "staged": 1,
+        "persisted": 1,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-RESP-007",
+      "name": "EXPLICIT_OUTREACH_ID",
+      "note": "lead_id derived from outreach_id EX-<lead_id>-<channel>; parsed channel must equal the event channel.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-007-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-007-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-007-core-email",
+          "sender": "lead7@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "Happy to talk.",
+          "raw_reference": "thread-7"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 1,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "staged": 1,
+        "persisted": 1,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-RESP-008",
+      "name": "CONTACT_LOOKUP_EMAIL",
+      "note": "Sender matched through operator-supplied exact contact lookup.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-008-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-008-1",
+          "lead_id": "",
+          "outreach_id": "",
+          "sender": "grow@acme.example",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "Send me the details.",
+          "raw_reference": "thread-8"
+        }
+      ],
+      "identity_lookup": { "grow@acme.example": "TEST-RESP-008-lead" },
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 1,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "staged": 1,
+        "persisted": 1,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-RESP-009",
+      "name": "CONTACT_LOOKUP_PHONE_DIGITS",
+      "note": "Phone sender normalized to digits-only for lookup; identity_lookup keyed by digits.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-009-a",
+          "source": "mock-provider",
+          "channel": "call",
+          "provider_message_id": "mock:RESP-009-1",
+          "lead_id": "",
+          "outreach_id": "",
+          "sender": "+1 (234) 567-8900",
+          "recipient": "+1 (999) 555-0100",
+          "received_at": "2026-09-11T14:30:00.000Z",
+          "response_text": "Let us schedule a call.",
+          "raw_reference": "cdr-9"
+        }
+      ],
+      "identity_lookup": { "12345678900": "TEST-RESP-009-lead" },
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 1,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "staged": 1,
+        "persisted": 1,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-RESP-010",
+      "name": "MISSING_EVENT_ID",
+      "note": "Event without event_id is INVALID; nothing is persisted.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-010-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-010-email",
+          "sender": "lead10@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "Hi there.",
+          "raw_reference": "thread-10"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 0,
+        "unmatched": 0,
+        "invalid": 1,
+        "duplicate": 0,
+        "staged": 0,
+        "persisted": 0,
+        "exception_count": 1,
+        "exception_categories": ["MISSING_EVENT_ID"]
+      }
+    },
+
+    {
+      "id": "TEST-RESP-011",
+      "name": "MISSING_CHANNEL",
+      "note": "Event without channel is INVALID.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-011-a",
+          "source": "mock-provider",
+          "channel": "",
+          "provider_message_id": "mock:RESP-011-1",
+          "lead_id": "",
+          "outreach_id": "",
+          "sender": "lead11@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "Hi there.",
+          "raw_reference": "thread-11"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 0,
+        "unmatched": 0,
+        "invalid": 1,
+        "duplicate": 0,
+        "staged": 0,
+        "persisted": 0,
+        "exception_count": 1,
+        "exception_categories": ["MISSING_CHANNEL"]
+      }
+    },
+
+    {
+      "id": "TEST-RESP-012",
+      "name": "INVALID_CHANNEL",
+      "note": "sms is not a supported response channel in V1; the event is INVALID, not silently captured.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-012-a",
+          "source": "mock-provider",
+          "channel": "sms",
+          "provider_message_id": "mock:RESP-012-1",
+          "lead_id": "",
+          "outreach_id": "",
+          "sender": "+1 (234) 567-8900",
+          "recipient": "+1 (999) 555-0100",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "Text reply.",
+          "raw_reference": "sms-12"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 0,
+        "unmatched": 0,
+        "invalid": 1,
+        "duplicate": 0,
+        "staged": 0,
+        "persisted": 0,
+        "exception_count": 1,
+        "exception_categories": ["INVALID_CHANNEL"]
+      }
+    },
+
+    {
+      "id": "TEST-RESP-013",
+      "name": "INVALID_TIMESTAMP",
+      "note": "received_at that cannot be parsed is INVALID; nothing is persisted.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-013-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-013-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-013-email",
+          "sender": "lead13@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "not-a-date",
+          "response_text": "Hello.",
+          "raw_reference": "thread-13"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 0,
+        "unmatched": 0,
+        "invalid": 1,
+        "duplicate": 0,
+        "staged": 0,
+        "persisted": 0,
+        "exception_count": 1,
+        "exception_categories": ["INVALID_TIMESTAMP"]
+      }
+    },
+
+    {
+      "id": "TEST-RESP-014",
+      "name": "MISSING_RESPONSE",
+      "note": "A response with only whitespace carries no captureable message; INVALID.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-014-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-014-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-014-email",
+          "sender": "lead14@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "   ",
+          "raw_reference": "thread-14"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 0,
+        "unmatched": 0,
+        "invalid": 1,
+        "duplicate": 0,
+        "staged": 0,
+        "persisted": 0,
+        "exception_count": 1,
+        "exception_categories": ["MISSING_RESPONSE"]
+      }
+    },
+
+    {
+      "id": "TEST-RESP-015",
+      "name": "DRY_RUN_ZERO_WRITES",
+      "note": "DRY_RUN stages exactly one row but persists zero; response_rows must be empty.",
+      "mode": "DRY_RUN",
+      "events": [
+        {
+          "event_id": "evt-015-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-015-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-015-email",
+          "sender": "lead15@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "Tell me more.",
+          "raw_reference": "thread-15"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "DRY_RUN",
+        "captured": 1,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "staged": 1,
+        "persisted": 0,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-RESP-016",
+      "name": "REAL_ONE_WRITE",
+      "note": "REAL mode with a single valid event writes exactly one durable Response Log row.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-016-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-016-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-016-email",
+          "sender": "lead16@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "Book the demo.",
+          "raw_reference": "thread-16"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 1,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "staged": 1,
+        "persisted": 1,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-RESP-017",
+      "name": "REPEAT_INGESTION_IDEMPOTENT",
+      "note": "The Response Log already holds this idempotency key; re-ingesting the same provider message is a DUPLICATE, never a second row.",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-017-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-017-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-017-email",
+          "sender": "lead17@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "I already replied.",
+          "raw_reference": "thread-17"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [
+        {
+          "response_id": "RESP-pre-existing",
+          "idempotency_key": "mock:RESP-017-1::mock-provider",
+          "lead_id": "TEST-RESP-017",
+          "outreach_id": "EX-TEST-RESP-017-email",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-017-1",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "I already replied.",
+          "response_status": "CAPTURED",
+          "source": "mock-provider",
+          "matched": true,
+          "notes": "pre-seeded for idempotency fixture"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 0,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 1,
+        "staged": 0,
+        "persisted": 0,
+        "exception_count": 1,
+        "exception_categories": ["DUPLICATE_EVENT"]
+      }
+    },
+
+    {
+      "id": "TEST-RESP-018",
+      "name": "REORDERED_IDENTICAL",
+      "note": "reorder_of TEST-RESP-001: identical input produces an identical report (single-event form makes the reorder invariant explicit).",
+      "mode": "REAL",
+      "events": [
+        {
+          "event_id": "evt-001-a",
+          "source": "mock-provider",
+          "channel": "email",
+          "provider_message_id": "mock:RESP-001-1",
+          "lead_id": "",
+          "outreach_id": "EX-TEST-RESP-001-email",
+          "sender": "lead1@example.com",
+          "recipient": "ops@jarvis.example",
+          "received_at": "2026-09-11T09:05:00.000Z",
+          "response_text": "This looks interesting - please send details.",
+          "raw_reference": "thread-1"
+        }
+      ],
+      "identity_lookup": {},
+      "initialResponseRows": [],
+      "reorder_of": "TEST-RESP-001",
+      "expected": {
+        "status": "COMPLETED",
+        "mode": "REAL",
+        "captured": 1,
+        "unmatched": 0,
+        "invalid": 0,
+        "duplicate": 0,
+        "staged": 1,
+        "persisted": 1,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    }
+  ]
+}

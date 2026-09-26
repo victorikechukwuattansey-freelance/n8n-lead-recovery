@@ -1,0 +1,636 @@
+{
+  "_meta": {
+    "namespace": "TEST-RESP-RECON",
+    "artifact": "Outreach Response Reconciliation V1",
+    "description": "Pre-populated response-log and outreach-log row pairs exercising every reconciliation category, coverage metric, read-failure state, identity edge-case, and determinism property."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-RESP-RECON-001",
+      "name": "PERFECT_MATCH",
+      "note": "One durable response with a valid outreach_id that resolves to exactly one confirmed Outreach Log row.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-001",
+          "idempotency_key": "k001::email",
+          "lead_id": "TEST-RESP-RECON-001",
+          "outreach_id": "EX-TEST-RESP-RECON-001-email",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-001-email",
+          "lead_id": "TEST-RESP-RECON-001",
+          "channel": "email",
+          "sent_at": "2026-09-11T08:30:00.000Z"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 1,
+        "matched_records": 1,
+        "unmatched_records": 0,
+        "linked_records": 1,
+        "eligible": 1,
+        "not_verifiable": 0,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 0,
+        "coverage_rate": 1,
+        "exception_count": 0
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-002",
+      "name": "OUTREACH_ID_FORMAT_INVALID",
+      "note": "Response references an outreach_id that is not in the canonical EX-<lead_id>-<channel> format; identity cannot be attempted.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-002",
+          "idempotency_key": "k002::email",
+          "lead_id": "TEST-RESP-RECON-002",
+          "outreach_id": "CONTACT-REFERENCE-123",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 1,
+        "matched_records": 0,
+        "unmatched_records": 0,
+        "linked_records": 0,
+        "eligible": 1,
+        "not_verifiable": 1,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 0,
+        "coverage_rate": 0,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-003",
+      "name": "NONEXISTENT_OUTREACH_ID",
+      "note": "Response references a valid-format outreach_id whose identity does not exist in the Outreach Log; the lead has other outbound history.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-003",
+          "idempotency_key": "k003::email",
+          "lead_id": "TEST-RESP-RECON-003",
+          "outreach_id": "EX-TEST-RESP-RECON-003-email",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-003-call",
+          "lead_id": "TEST-RESP-RECON-003",
+          "channel": "call",
+          "sent_at": "2026-09-11T08:35:00.000Z"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 1,
+        "matched_records": 0,
+        "unmatched_records": 0,
+        "linked_records": 1,
+        "eligible": 1,
+        "not_verifiable": 0,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 1,
+        "coverage_rate": 1,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-004",
+      "name": "MATCHED_LEAD_NO_OUTREACH_ID",
+      "note": "Lead traces to a confirmed outbound attempt, but the response carries no outreach_id — only a lead-level relationship is provable.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-004",
+          "idempotency_key": "k004::call",
+          "lead_id": "TEST-RESP-RECON-004",
+          "outreach_id": "",
+          "channel": "call",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-004-call",
+          "lead_id": "TEST-RESP-RECON-004",
+          "channel": "call",
+          "sent_at": "2026-09-11T08:40:00.000Z"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 1,
+        "matched_records": 0,
+        "unmatched_records": 0,
+        "linked_records": 1,
+        "eligible": 1,
+        "not_verifiable": 1,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 0,
+        "coverage_rate": 1,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-005",
+      "name": "UNMATCHED",
+      "note": "Durable response was captured UNMATCHED at the inbound boundary; it carries no reconcilable identity.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-005",
+          "idempotency_key": "k005::email",
+          "lead_id": "",
+          "outreach_id": "",
+          "channel": "email",
+          "response_status": "UNMATCHED"
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-LEAD-UNKNOWN-email",
+          "lead_id": "LEAD-UNKNOWN",
+          "channel": "email",
+          "sent_at": "2026-09-11T08:41:00.000Z"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 1,
+        "matched_records": 0,
+        "unmatched_records": 1,
+        "linked_records": 0,
+        "eligible": 0,
+        "not_verifiable": 1,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 0,
+        "coverage_rate": null,
+        "exception_count": 0
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-006",
+      "name": "CHANNEL_MISMATCH",
+      "note": "Channel parsed from the canonical outreach_id identifier contradicts the durable response channel.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-006",
+          "idempotency_key": "k006::email",
+          "lead_id": "TEST-RESP-RECON-006",
+          "outreach_id": "EX-TEST-RESP-RECON-006-call",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-006-call",
+          "lead_id": "TEST-RESP-RECON-006",
+          "channel": "call",
+          "sent_at": "2026-09-11T08:45:00.000Z"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 1,
+        "matched_records": 0,
+        "unmatched_records": 0,
+        "linked_records": 1,
+        "eligible": 1,
+        "not_verifiable": 0,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 1,
+        "coverage_rate": 1,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-007",
+      "name": "INVALID_RESPONSE",
+      "note": "Response Log row is missing its required idempotency_key — a capture-integrity defect.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-007",
+          "idempotency_key": "",
+          "lead_id": "TEST-RESP-RECON-007",
+          "outreach_id": "",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 1,
+        "matched_records": 0,
+        "unmatched_records": 0,
+        "linked_records": 0,
+        "eligible": 0,
+        "not_verifiable": 0,
+        "invalid_records": 1,
+        "duplicate_records": 0,
+        "violations": 0,
+        "coverage_rate": null,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-008",
+      "name": "DUPLICATE_RESPONSE",
+      "note": "Two durable rows share the same canonical inbound idempotency_key; only the canonically-first is considered.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-008b",
+          "idempotency_key": "k008::email",
+          "lead_id": "TEST-RESP-RECON-008",
+          "outreach_id": "EX-TEST-RESP-RECON-008-email",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        },
+        {
+          "response_id": "RES-008a",
+          "idempotency_key": "k008::email",
+          "lead_id": "TEST-RESP-RECON-008",
+          "outreach_id": "EX-TEST-RESP-RECON-008-email",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-008-email",
+          "lead_id": "TEST-RESP-RECON-008",
+          "channel": "email",
+          "sent_at": "2026-09-11T08:46:00.000Z"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 2,
+        "matched_records": 1,
+        "unmatched_records": 0,
+        "linked_records": 1,
+        "eligible": 1,
+        "not_verifiable": 0,
+        "invalid_records": 0,
+        "duplicate_records": 1,
+        "violations": 1,
+        "coverage_rate": 1,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-009",
+      "name": "DUPLICATE_OUTREACH_ID",
+      "note": "Two confirmed Outreach Log rows share the same canonical outreach_id; the echoed attempt is ambiguous.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-009",
+          "idempotency_key": "k009::email",
+          "lead_id": "L-009-A",
+          "outreach_id": "EX-TEST-RESP-RECON-009-email",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-009-email",
+          "lead_id": "L-009-A",
+          "channel": "email",
+          "sent_at": "2026-09-11T08:50:00.000Z"
+        },
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-009-email",
+          "lead_id": "L-009-B",
+          "channel": "email",
+          "sent_at": "2026-09-11T08:51:00.000Z"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 1,
+        "matched_records": 0,
+        "unmatched_records": 0,
+        "linked_records": 1,
+        "eligible": 1,
+        "not_verifiable": 1,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 1,
+        "coverage_rate": 1,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-010",
+      "name": "EMPTY_RESPONSE_LOG",
+      "note": "Response Log is empty; Outreach Log is populated. Zero response records to classify.",
+      "initialResponseRows": [],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-LEAD-STALE-email",
+          "lead_id": "LEAD-STALE",
+          "channel": "email",
+          "sent_at": "2026-09-11T08:00:00.000Z"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 0,
+        "matched_records": 0,
+        "unmatched_records": 0,
+        "linked_records": 0,
+        "eligible": 0,
+        "not_verifiable": 0,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 0,
+        "coverage_rate": null,
+        "exception_count": 0
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-011",
+      "name": "EMPTY_OUTREACH_LOG",
+      "note": "Outreach Log is empty; the response's lead has no outbound history at all.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-011",
+          "idempotency_key": "k011::email",
+          "lead_id": "TEST-RESP-RECON-011",
+          "outreach_id": "EX-TEST-RESP-RECON-011-email",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 1,
+        "matched_records": 0,
+        "unmatched_records": 0,
+        "linked_records": 0,
+        "eligible": 1,
+        "not_verifiable": 0,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 1,
+        "coverage_rate": 0,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-012",
+      "name": "BOTH_EMPTY",
+      "note": "Both logs are empty and readable; zero records, null coverage.",
+      "initialResponseRows": [],
+      "initialOutreachRows": [],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 0,
+        "matched_records": 0,
+        "unmatched_records": 0,
+        "linked_records": 0,
+        "eligible": 0,
+        "not_verifiable": 0,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 0,
+        "coverage_rate": null,
+        "exception_count": 0
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-013",
+      "name": "RESPONSE_POPULATED_OUTREACH_READ_ERROR",
+      "note": "Outreach Log read fails; the entire report becomes INCOMPLETE with no classification attempted.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-013",
+          "idempotency_key": "k013::email",
+          "lead_id": "TEST-RESP-RECON-013",
+          "outreach_id": "EX-TEST-RESP-RECON-013-email",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [],
+      "outreach_read_error": "SheetNotFound",
+      "expected": {
+        "status": "INCOMPLETE",
+        "response_records": null,
+        "matched_records": null,
+        "unmatched_records": null,
+        "linked_records": null,
+        "eligible": null,
+        "not_verifiable": null,
+        "invalid_records": null,
+        "duplicate_records": null,
+        "violations": null,
+        "coverage_rate": null,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-014",
+      "name": "RESPONSE_READ_ERROR_OUTREACH_POPULATED",
+      "note": "Response Log read fails; the entire report becomes INCOMPLETE.",
+      "initialResponseRows": [],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-LEAD-READERR-email",
+          "lead_id": "LEAD-READERR",
+          "channel": "email",
+          "sent_at": "2026-09-11T08:05:00.000Z"
+        }
+      ],
+      "response_read_error": "NetworkTimeout",
+      "expected": {
+        "status": "INCOMPLETE",
+        "response_records": null,
+        "matched_records": null,
+        "unmatched_records": null,
+        "linked_records": null,
+        "eligible": null,
+        "not_verifiable": null,
+        "invalid_records": null,
+        "duplicate_records": null,
+        "violations": null,
+        "coverage_rate": null,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-015",
+      "name": "BOTH_READ_ERRORS",
+      "note": "Both source reads fail; exactly two SOURCE_READ_FAILURE exceptions, one per failed source.",
+      "initialResponseRows": [],
+      "initialOutreachRows": [],
+      "response_read_error": "NetworkError",
+      "outreach_read_error": "SheetNotFound",
+      "expected": {
+        "status": "INCOMPLETE",
+        "response_records": null,
+        "matched_records": null,
+        "unmatched_records": null,
+        "linked_records": null,
+        "eligible": null,
+        "not_verifiable": null,
+        "invalid_records": null,
+        "duplicate_records": null,
+        "violations": null,
+        "coverage_rate": null,
+        "exception_count": 2
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-016",
+      "name": "REORDERED_IDENTICAL",
+      "note": "Fixture 001 rows re-sorted to exercise input-order independence. Same expected outcome.",
+      "reorder_of": "TEST-RESP-RECON-001",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-001",
+          "idempotency_key": "k001::email",
+          "lead_id": "TEST-RESP-RECON-001",
+          "outreach_id": "EX-TEST-RESP-RECON-001-email",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-001-email",
+          "lead_id": "TEST-RESP-RECON-001",
+          "channel": "email",
+          "sent_at": "2026-09-11T08:30:00.000Z"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 1,
+        "matched_records": 1,
+        "unmatched_records": 0,
+        "linked_records": 1,
+        "eligible": 1,
+        "not_verifiable": 0,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 0,
+        "coverage_rate": 1,
+        "exception_count": 0
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-017",
+      "name": "MULTIPLE_RESPONSES_SAME_LEAD_DISTINCT_OUTREACH",
+      "note": "Two responses from the same lead, each referencing a distinct confirmed outbound attempt; both verified, coverage at 100%.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-017-email",
+          "idempotency_key": "k017-email::email",
+          "lead_id": "TEST-RESP-RECON-017",
+          "outreach_id": "EX-TEST-RESP-RECON-017-email",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        },
+        {
+          "response_id": "RES-017-call",
+          "idempotency_key": "k017-call::call",
+          "lead_id": "TEST-RESP-RECON-017",
+          "outreach_id": "EX-TEST-RESP-RECON-017-call",
+          "channel": "call",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-017-email",
+          "lead_id": "TEST-RESP-RECON-017",
+          "channel": "email",
+          "sent_at": "2026-09-11T08:55:00.000Z"
+        },
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-017-call",
+          "lead_id": "TEST-RESP-RECON-017",
+          "channel": "call",
+          "sent_at": "2026-09-11T09:00:00.000Z"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 2,
+        "matched_records": 2,
+        "unmatched_records": 0,
+        "linked_records": 2,
+        "eligible": 2,
+        "not_verifiable": 0,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 0,
+        "coverage_rate": 1,
+        "exception_count": 0
+      }
+    },
+    {
+      "id": "TEST-RESP-RECON-018",
+      "name": "VALID_LEAD_UNPROVABLE_RELATIONSHIP",
+      "note": "The referenced outreach row exists but lacks sent_at; the response is NOT_VERIFIABLE (send unconfirmed) while the same lead is still linked via a different confirmed attempt.",
+      "initialResponseRows": [
+        {
+          "response_id": "RES-018",
+          "idempotency_key": "k018::email",
+          "lead_id": "TEST-RESP-RECON-018",
+          "outreach_id": "EX-TEST-RESP-RECON-018-email",
+          "channel": "email",
+          "response_status": "CAPTURED"
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-018-call",
+          "lead_id": "TEST-RESP-RECON-018",
+          "channel": "call",
+          "sent_at": "2026-09-11T09:00:00.000Z"
+        },
+        {
+          "outreach_id": "EX-TEST-RESP-RECON-018-email",
+          "lead_id": "TEST-RESP-RECON-018",
+          "channel": "email",
+          "sent_at": ""
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "response_records": 1,
+        "matched_records": 0,
+        "unmatched_records": 0,
+        "linked_records": 1,
+        "eligible": 1,
+        "not_verifiable": 1,
+        "invalid_records": 0,
+        "duplicate_records": 0,
+        "violations": 0,
+        "coverage_rate": 1,
+        "exception_count": 1
+      }
+    }
+  ]
+}

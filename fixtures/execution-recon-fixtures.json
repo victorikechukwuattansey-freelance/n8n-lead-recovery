@@ -1,0 +1,825 @@
+{
+  "_meta": {
+    "namespace": "TEST-EXEC-RECON",
+    "artifact": "Outreach Execution Reconciliation V1",
+    "description": "Read-only consistency checks between Outreach Execution & Delivery evidence and the durable Outreach Log."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-EXEC-RECON-001",
+      "name": "PERFECT_MATCH",
+      "note": "One provider-confirmed REAL send with one matching Outreach Log row.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "REAL",
+          "provider": "SUCCESS",
+          "provider_configured": true,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-001",
+              "outreach_id": "EX-TEST-EXEC-RECON-001-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_SUCCEEDED",
+              "reason": "EXECUTION_SUCCESS",
+              "sent_at": "2026-09-11T08:30:00.000Z",
+              "provider_call": { "success": true, "provider_status": "accepted", "provider_message_id": "mock:EXECUTION-20260911083000" }
+            }
+          ]
+        }
+      ],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-001", "outreach_id": "EX-TEST-EXEC-RECON-001-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead1@example.com" }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 1,
+        "matched": 1,
+        "unmatched_execution": 0,
+        "unmatched_log": 0,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 0,
+        "coverage_rate": 1,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-002",
+      "name": "EXECUTION_WITHOUT_LOG",
+      "note": "Confirmed send with no matching durable log row (evidence present, no trace).",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "REAL",
+          "provider": "SUCCESS",
+          "provider_configured": true,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-002",
+              "outreach_id": "EX-TEST-EXEC-RECON-002-call",
+              "channel": "call",
+              "readiness_status": "READY",
+              "status": "EXECUTION_SUCCEEDED",
+              "reason": "EXECUTION_SUCCESS",
+              "sent_at": "2026-09-11T08:30:00.000Z",
+              "provider_call": { "success": true, "provider_status": "accepted", "provider_message_id": "mock:EXECUTION-20260911083000" }
+            }
+          ]
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 0,
+        "matched": 0,
+        "unmatched_execution": 1,
+        "unmatched_log": 0,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 0,
+        "coverage_rate": null,
+        "exception_count": 1,
+        "exception_categories": ["EXECUTION_WITHOUT_LOG"]
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-003",
+      "name": "LOG_WITHOUT_EXECUTION",
+      "note": "Log row exists but the execution evidence source was read successfully and contains no record — provenance cannot be established.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-003", "outreach_id": "EX-TEST-EXEC-RECON-003-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead3@example.com" }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 0,
+        "log_records": 1,
+        "matched": 0,
+        "unmatched_execution": 0,
+        "unmatched_log": 1,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 0,
+        "coverage_rate": 0,
+        "exception_count": 1,
+        "exception_categories": ["LOG_WITHOUT_EXECUTION"]
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-004",
+      "name": "DUPLICATE_EXECUTION",
+      "note": "Two confirmed executions for the same (lead_id, channel); idempotency key was not respected.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083001",
+          "run_at": "2026-09-11T08:30:01.000Z",
+          "mode": "REAL",
+          "provider": "SUCCESS",
+          "provider_configured": true,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-004",
+              "outreach_id": "EX-TEST-EXEC-RECON-004-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_SUCCEEDED",
+              "reason": "EXECUTION_SUCCESS",
+              "sent_at": "2026-09-11T08:30:01.000Z",
+              "provider_call": { "success": true, "provider_status": "accepted", "provider_message_id": "mock:EXECUTION-20260911083001" }
+            }
+          ]
+        },
+        {
+          "run_id": "EXECUTION-20260911083002",
+          "run_at": "2026-09-11T08:30:02.000Z",
+          "mode": "REAL",
+          "provider": "SUCCESS",
+          "provider_configured": true,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-004",
+              "outreach_id": "EX-TEST-EXEC-RECON-004-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_SUCCEEDED",
+              "reason": "EXECUTION_SUCCESS",
+              "sent_at": "2026-09-11T08:30:02.000Z",
+              "provider_call": { "success": true, "provider_status": "accepted", "provider_message_id": "mock:EXECUTION-20260911083002" }
+            }
+          ]
+        }
+      ],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-004", "outreach_id": "EX-TEST-EXEC-RECON-004-email", "channel": "email", "sent_at": "2026-09-11T08:30:02.000Z", "email": "lead4@example.com" }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 2,
+        "log_records": 1,
+        "matched": 1,
+        "unmatched_execution": 1,
+        "unmatched_log": 0,
+        "duplicate_execution": 1,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 1,
+        "coverage_rate": 1,
+        "exception_count": 2,
+        "exception_categories": ["DUPLICATE_EXECUTION", "EXECUTION_WITHOUT_LOG"]
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-005",
+      "name": "DUPLICATE_LOG",
+      "note": "Two identical Outreach Log rows for one confirmed send; the duplicate row cannot be explained by evidence.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "REAL",
+          "provider": "SUCCESS",
+          "provider_configured": true,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-005",
+              "outreach_id": "EX-TEST-EXEC-RECON-005-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_SUCCEEDED",
+              "reason": "EXECUTION_SUCCESS",
+              "sent_at": "2026-09-11T08:30:00.000Z",
+              "provider_call": { "success": true, "provider_status": "accepted", "provider_message_id": "mock:EXECUTION-20260911083000" }
+            }
+          ]
+        }
+      ],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-005", "outreach_id": "EX-TEST-EXEC-RECON-005-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead5@example.com" },
+        { "lead_id": "TEST-EXEC-RECON-005", "outreach_id": "EX-TEST-EXEC-RECON-005-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead5@example.com" }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 2,
+        "matched": 1,
+        "unmatched_execution": 0,
+        "unmatched_log": 1,
+        "duplicate_execution": 0,
+        "duplicate_log": 1,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 1,
+        "coverage_rate": 0.5,
+        "exception_count": 2,
+        "exception_categories": ["DUPLICATE_LOG", "LOG_WITHOUT_EXECUTION"]
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-006",
+      "name": "PROVIDER_FAILURE_REPRESENTED_CORRECTLY",
+      "note": "Provider failure leaves no log row and raises no false violation: attempted-but-failed is not a confirmed send.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "REAL",
+          "provider": "FAILURE",
+          "provider_configured": true,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-006",
+              "outreach_id": "EX-TEST-EXEC-RECON-006-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_FAILED",
+              "reason": "PROVIDER_FAILURE",
+              "sent_at": "2026-09-11T08:30:00.000Z",
+              "provider_call": { "success": false, "error_code": "MOCK_PROVIDER_FAILURE", "error_message": "mock provider returned failure mode; no message was sent" }
+            }
+          ]
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 0,
+        "matched": 0,
+        "unmatched_execution": 0,
+        "unmatched_log": 0,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 0,
+        "coverage_rate": null,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-007",
+      "name": "PROVIDER_FAILURE_REPRESENTED_AS_SUCCESS",
+      "note": "A failed provider attempt is recorded as a durable 'activity' row — must never be treated as a confirmed send.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "REAL",
+          "provider": "FAILURE",
+          "provider_configured": true,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-007",
+              "outreach_id": "EX-TEST-EXEC-RECON-007-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_FAILED",
+              "reason": "PROVIDER_FAILURE",
+              "sent_at": "2026-09-11T08:30:00.000Z",
+              "provider_call": { "success": false, "error_code": "MOCK_PROVIDER_FAILURE", "error_message": "mock provider returned failure mode; no message was sent" }
+            }
+          ]
+        }
+      ],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-007", "outreach_id": "EX-TEST-EXEC-RECON-007-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead7@example.com" }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 1,
+        "matched": 0,
+        "unmatched_execution": 0,
+        "unmatched_log": 1,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 1,
+        "coverage_rate": 0,
+        "exception_count": 1,
+        "exception_categories": ["FAILED_AS_SUCCESS"]
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-008",
+      "name": "DRY_RUN_NO_LOG",
+      "note": "Transient dry-run execution with no durable activity: healthy, verifyable from evidence, flagged as nothing.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "DRY_RUN",
+          "provider": "NOT_CONFIGURED",
+          "provider_configured": false,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-008",
+              "outreach_id": "EX-TEST-EXEC-RECON-008-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_SKIPPED",
+              "reason": "DRY_RUN",
+              "detail": "dry run: provider not called, no Outreach Log write",
+              "sent_at": "",
+              "provider_call": {}
+            }
+          ]
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 0,
+        "matched": 0,
+        "unmatched_execution": 0,
+        "unmatched_log": 0,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 0,
+        "coverage_rate": null,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-009",
+      "name": "DRY_RUN_UNEXPECTED_LOG",
+      "note": "Durable activity exists for an identity whose only producer evidence is DRY_RUN — activity can never be produced by a dry run.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "DRY_RUN",
+          "provider": "NOT_CONFIGURED",
+          "provider_configured": false,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-009",
+              "outreach_id": "EX-TEST-EXEC-RECON-009-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_SKIPPED",
+              "reason": "DRY_RUN",
+              "detail": "dry run: provider not called, no Outreach Log write",
+              "sent_at": "",
+              "provider_call": {}
+            }
+          ]
+        }
+      ],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-009", "outreach_id": "EX-TEST-EXEC-RECON-009-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead9@example.com" }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 1,
+        "matched": 0,
+        "unmatched_execution": 0,
+        "unmatched_log": 1,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 1,
+        "coverage_rate": 0,
+        "exception_count": 1,
+        "exception_categories": ["DRY_RUN_PERSISTENCE"]
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-010",
+      "name": "NOT_CONFIGURED_NO_LOG",
+      "note": "With no provider configured, execution refuses and writes nothing. This is the expected safety state, not a failure.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "REAL",
+          "provider": "NOT_CONFIGURED",
+          "provider_configured": false,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-010",
+              "outreach_id": "EX-TEST-EXEC-RECON-010-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_FAILED",
+              "reason": "PROVIDER_NOT_CONFIGURED",
+              "detail": "provider is not configured; execution refused, nothing was sent",
+              "sent_at": "",
+              "provider_call": { "success": false, "error_code": "PROVIDER_NOT_CONFIGURED", "error_message": "No real provider adapter is configured; execution is refused." }
+            }
+          ]
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 0,
+        "matched": 0,
+        "unmatched_execution": 0,
+        "unmatched_log": 0,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 0,
+        "coverage_rate": null,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-011",
+      "name": "NOT_CONFIGURED_UNEXPECTED_LOG",
+      "note": "Durable activity exists for an identity whose provider was NOT_CONFIGURED — nothing could have been sent.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "REAL",
+          "provider": "NOT_CONFIGURED",
+          "provider_configured": false,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-011",
+              "outreach_id": "EX-TEST-EXEC-RECON-011-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_FAILED",
+              "reason": "PROVIDER_NOT_CONFIGURED",
+              "detail": "provider is not configured; execution refused, nothing was sent",
+              "sent_at": "",
+              "provider_call": { "success": false, "error_code": "PROVIDER_NOT_CONFIGURED", "error_message": "No real provider adapter is configured; execution is refused." }
+            }
+          ]
+        }
+      ],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-011", "outreach_id": "EX-TEST-EXEC-RECON-011-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead11@example.com" }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 1,
+        "matched": 0,
+        "unmatched_execution": 0,
+        "unmatched_log": 1,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 1,
+        "coverage_rate": 0,
+        "exception_count": 1,
+        "exception_categories": ["NOT_CONFIGURED_PERSISTENCE"]
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-012",
+      "name": "MALFORMED_RECORD",
+      "note": "A malformed log row (missing lead_id) cannot be reconciled; matched rows still reconcile normally.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "REAL",
+          "provider": "SUCCESS",
+          "provider_configured": true,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-012",
+              "outreach_id": "EX-TEST-EXEC-RECON-012-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_SUCCEEDED",
+              "reason": "EXECUTION_SUCCESS",
+              "sent_at": "2026-09-11T08:30:00.000Z",
+              "provider_call": { "success": true, "provider_status": "accepted", "provider_message_id": "mock:EXECUTION-20260911083000" }
+            }
+          ]
+        }
+      ],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-012", "outreach_id": "EX-TEST-EXEC-RECON-012-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead12@example.com" },
+        { "lead_id": "", "outreach_id": "", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "" }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 2,
+        "matched": 1,
+        "unmatched_execution": 0,
+        "unmatched_log": 0,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 1,
+        "violations": 0,
+        "coverage_rate": 0.5,
+        "exception_count": 1,
+        "exception_categories": ["MALFORMED_RECORD"]
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-013",
+      "name": "NON_READY_EXECUTION_PROVABLE",
+      "note": "A confirmed execution whose captured readiness_status at decision time was NOT_READY. Only provable from persisted evidence, never reconstructed.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "REAL",
+          "provider": "SUCCESS",
+          "provider_configured": true,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-013",
+              "outreach_id": "EX-TEST-EXEC-RECON-013-email",
+              "channel": "email",
+              "readiness_status": "NOT_READY",
+              "status": "EXECUTION_SUCCEEDED",
+              "reason": "EXECUTION_SUCCESS",
+              "sent_at": "2026-09-11T08:30:00.000Z",
+              "provider_call": { "success": true, "provider_status": "accepted", "provider_message_id": "mock:EXECUTION-20260911083000" }
+            }
+          ]
+        }
+      ],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-013", "outreach_id": "EX-TEST-EXEC-RECON-013-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead13@example.com" }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 1,
+        "matched": 1,
+        "unmatched_execution": 0,
+        "unmatched_log": 0,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 1,
+        "coverage_rate": 1,
+        "exception_count": 1,
+        "exception_categories": ["NON_READY_EXECUTION"]
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-014",
+      "name": "HISTORICAL_EVIDENCE_UNAVAILABLE",
+      "note": "No independent execution evidence was persisted for these log rows; the run is INCOMPLETE with null execution-derived metrics, not a false zero.",
+      "evidence_available": false,
+      "read_errors": {},
+      "evidence": [],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-014", "outreach_id": "EX-TEST-EXEC-RECON-014-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead14@example.com" }
+      ],
+      "expected": {
+        "status": "INCOMPLETE",
+        "evidence_available": false,
+        "execution_records": null,
+        "log_records": 1,
+        "matched": null,
+        "unmatched_execution": null,
+        "unmatched_log": null,
+        "duplicate_execution": null,
+        "duplicate_log": 0,
+        "invalid_execution": null,
+        "invalid_log": 0,
+        "violations": 0,
+        "coverage_rate": null,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-015",
+      "name": "INVALID_CHANNEL",
+      "note": "Log rows and execution records on unsupported channels are flagged; they are never used as identity for matching.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "REAL",
+          "provider": "SUCCESS",
+          "provider_configured": true,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-015",
+              "outreach_id": "EX-TEST-EXEC-RECON-015-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_SUCCEEDED",
+              "reason": "EXECUTION_SUCCESS",
+              "sent_at": "2026-09-11T08:30:00.000Z",
+              "provider_call": { "success": true, "provider_status": "accepted", "provider_message_id": "mock:EXECUTION-20260911083000" }
+            }
+          ]
+        }
+      ],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-015", "outreach_id": "EX-TEST-EXEC-RECON-015-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead15@example.com" },
+        { "lead_id": "TEST-EXEC-RECON-015B", "outreach_id": "EX-TEST-EXEC-RECON-015B-sms", "channel": "sms", "sent_at": "2026-09-11T08:30:00.000Z", "email": "" }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 2,
+        "matched": 1,
+        "unmatched_execution": 0,
+        "unmatched_log": 0,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 0,
+        "coverage_rate": 0.5,
+        "exception_count": 1,
+        "exception_categories": ["INVALID_CHANNEL"]
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-016",
+      "name": "EMPTY_SUCCESSFUL_SOURCES",
+      "note": "Both sources read successfully and contain zero records: COMPLETED with valid zero metrics, never a read failure.",
+      "evidence_available": true,
+      "read_errors": {},
+      "evidence": [],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 0,
+        "log_records": 0,
+        "matched": 0,
+        "unmatched_execution": 0,
+        "unmatched_log": 0,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 0,
+        "coverage_rate": null,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-017",
+      "name": "SOURCE_READ_FAILURE",
+      "note": "A required source could not be read: FAILED with null metrics (never a false zero) and an exception naming the failed source.",
+      "evidence_available": true,
+      "read_errors": { "outreach": "Outreach Log sheet unavailable — read returned a transport error" },
+      "evidence": null,
+      "outreach": null,
+      "expected": {
+        "status": "FAILED",
+        "evidence_available": true,
+        "execution_records": null,
+        "log_records": null,
+        "matched": null,
+        "unmatched_execution": null,
+        "unmatched_log": null,
+        "duplicate_execution": null,
+        "duplicate_log": null,
+        "invalid_execution": null,
+        "invalid_log": null,
+        "violations": null,
+        "coverage_rate": null,
+        "exception_count": 1,
+        "exception_categories": ["SOURCE_READ_FAILURE"]
+      }
+    },
+
+    {
+      "id": "TEST-EXEC-RECON-018",
+      "name": "REORDERED_IDENTICAL",
+      "note": "The same records presented in a different order must produce an identical reconciliation (row position is never identity).",
+      "evidence_available": true,
+      "read_errors": {},
+      "reorder_of": "TEST-EXEC-RECON-001",
+      "evidence": [
+        {
+          "run_id": "EXECUTION-20260911083000",
+          "run_at": "2026-09-11T08:30:00.000Z",
+          "mode": "REAL",
+          "provider": "SUCCESS",
+          "provider_configured": true,
+          "results": [
+            {
+              "lead_id": "TEST-EXEC-RECON-018",
+              "outreach_id": "EX-TEST-EXEC-RECON-018-email",
+              "channel": "email",
+              "readiness_status": "READY",
+              "status": "EXECUTION_SUCCEEDED",
+              "reason": "EXECUTION_SUCCESS",
+              "sent_at": "2026-09-11T08:30:00.000Z",
+              "provider_call": { "success": true, "provider_status": "accepted", "provider_message_id": "mock:EXECUTION-20260911083000" }
+            }
+          ]
+        }
+      ],
+      "outreach": [
+        { "lead_id": "TEST-EXEC-RECON-018", "outreach_id": "EX-TEST-EXEC-RECON-018-email", "channel": "email", "sent_at": "2026-09-11T08:30:00.000Z", "email": "lead18@example.com" }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "evidence_available": true,
+        "execution_records": 1,
+        "log_records": 1,
+        "matched": 1,
+        "unmatched_execution": 0,
+        "unmatched_log": 0,
+        "duplicate_execution": 0,
+        "duplicate_log": 0,
+        "invalid_execution": 0,
+        "invalid_log": 0,
+        "violations": 0,
+        "coverage_rate": 1,
+        "exception_count": 0,
+        "exception_categories": []
+      }
+    }
+  ]
+}

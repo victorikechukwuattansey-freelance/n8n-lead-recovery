@@ -1,0 +1,597 @@
+{
+  "_meta": {
+    "artifact": "Lead Recovery Engine — Prospect Finder & Validation V1 (C-A offline engine harness)",
+    "namespace": "TEST-PF",
+    "regex": "^TEST-PF-[A-Z]+(?:-[A-Z]+)*-\\d+$",
+    "note": "Offline engine-harness fixtures for the Prospect Finder workflow. Each fixture carries the exact raw provider payloads the node bodies consume (Foursquare /results, Overpass /elements, Google Places fullResponse envelope with statusCode + body) plus a search_input matching the workflow's parked-run shape (input_id, niche, city, state, country, target_count, status). The `expected` block is a frozen golden block, deep-copied by the loader, that the engine tests assert against word-for-word. lead_id values are the deterministic hashes produced by the node bodies themselves (e.g. generateLeadId for GPL), NOT recomputed by an oracle — a mismatch is a check failure."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-PF-FSQ-001",
+      "name": "Foursquare success: 3 HVAC + rejected plumbing + intra-response phone duplicate",
+      "note": "Exercises Process FSQ: geography acceptance (Austin/TX), HVAC relevance (category id 63be6904847c3692a84b9b56 + positive name patterns), non-HVAC rejection (plumbing), and intra-response dedupe by phone.",
+      "search_input": {
+        "input_id": "TEST-PF-FSQ-001",
+        "niche": "HVAC",
+        "city": "Austin",
+        "state": "TX",
+        "country": "USA",
+        "target_count": 3,
+        "status": "Pending"
+      },
+      "foursquare_response": {
+        "results": [
+          {
+            "fsq_place_id": "fsq-test-cool-air-0001",
+            "name": "Cool Air HVAC",
+            "categories": [
+              { "id": "63be6904847c3692a84b9b56", "name": "HVAC Contractor" }
+            ],
+            "location": {
+              "formatted_address": "123 Main St, Austin, TX 78701, USA",
+              "locality": "Austin",
+              "region": "TX",
+              "postcode": "78701",
+              "country": "US"
+            },
+            "tel": "+1 512-555-0111",
+            "website": "https://coolair.example.com"
+          },
+          {
+            "fsq_place_id": "fsq-test-chill-bros-0002",
+            "name": "Chill Bros Air Conditioning",
+            "categories": [
+              { "id": "63be6904847c3692a84b9b56", "name": "HVAC Contractor" }
+            ],
+            "location": {
+              "formatted_address": "456 Oak Ave, Austin, TX 78702, USA",
+              "locality": "Austin",
+              "region": "TX",
+              "postcode": "78702",
+              "country": "US"
+            },
+            "tel": "+1 512-555-0112"
+          },
+          {
+            "fsq_place_id": "fsq-test-texas-comfort-0003",
+            "name": "Texas Comfort Heating & Air",
+            "categories": [
+              { "id": "63be6904847c3692a84b9b56", "name": "HVAC Contractor" }
+            ],
+            "location": {
+              "formatted_address": "789 Cedar Dr, Austin, TX 78704, USA",
+              "locality": "Austin",
+              "region": "TX",
+              "postcode": "78704",
+              "country": "US"
+            },
+            "tel": "+1 512-555-0113",
+            "website": "https://texascomfort.example.com"
+          },
+          {
+            "fsq_place_id": "fsq-test-speedy-plumbing-0004",
+            "name": "Speedy Plumbing LLC",
+            "categories": [
+              { "id": "4bf58dd8d48988d104941735", "name": "Plumbing Service" }
+            ],
+            "location": {
+              "formatted_address": "321 Pipe St, Austin, TX 78701, USA",
+              "locality": "Austin",
+              "region": "TX",
+              "postcode": "78701",
+              "country": "US"
+            },
+            "tel": "+1 512-555-0999"
+          },
+          {
+            "fsq_place_id": "fsq-test-cool-air-dupe-0005",
+            "name": "Cool Air HVAC",
+            "categories": [
+              { "id": "63be6904847c3692a84b9b56", "name": "HVAC Contractor" }
+            ],
+            "location": {
+              "formatted_address": "123 Main St, Austin, TX 78701, USA",
+              "locality": "Austin",
+              "region": "TX",
+              "postcode": "78701",
+              "country": "US"
+            },
+            "tel": "+1 512-555-0111",
+            "website": "https://coolair.example.com"
+          }
+        ]
+      },
+      "expected": {
+        "raw_lead_count": 3,
+        "raw_lead_ids": [
+          "FSQ-PHONE-5125550111",
+          "FSQ-PHONE-5125550112",
+          "FSQ-PHONE-5125550113"
+        ],
+        "raw_dedupe_keys": [
+          "phone:5125550111",
+          "phone:5125550112",
+          "phone:5125550113"
+        ],
+        "sources": ["FOURSQUARE", "FOURSQUARE", "FOURSQUARE"],
+        "search_input_id": "TEST-PF-FSQ-001",
+        "business_types": ["HVAC Contractor", "HVAC Contractor", "HVAC Contractor"],
+        "rejected_business_names": ["Speedy Plumbing LLC"],
+        "dropped_duplicate_phone": "5125550111",
+        "qualification_note_substring": "fsq_qualification=QUALIFIED; reason=hvac_category_and_name_match;"
+      }
+    },
+    {
+      "id": "TEST-PF-OSM-001",
+      "name": "OpenStreetMap success: 2 HVAC nodes + rejected chiller + unnamed element",
+      "note": "Exercises Process OSM: element tags normalization, non-prospect rejection (chiller), unnamed-element skip, and within-batch dedupe. IDs are the deterministic OSM-<TYPE>-<id> form.",
+      "search_input": {
+        "input_id": "TEST-PF-OSM-001",
+        "niche": "HVAC",
+        "city": "Austin",
+        "state": "TX",
+        "country": "USA",
+        "target_count": 2,
+        "status": "Pending"
+      },
+      "osm_response": {
+        "elements": [
+          {
+            "type": "node",
+            "id": 1111,
+            "lat": 30.2672,
+            "lon": -97.7431,
+            "tags": {
+              "name": "AirCare HVAC Service",
+              "craft": "hvac",
+              "phone": "+1-512-555-0201",
+              "website": "aircare.example.com",
+              "addr:housenumber": "500",
+              "addr:street": "Burnet Rd",
+              "addr:city": "Austin",
+              "addr:state": "TX",
+              "addr:country": "USA"
+            }
+          },
+          {
+            "type": "node",
+            "id": 1112,
+            "lat": 30.2741,
+            "lon": -97.7403,
+            "tags": {
+              "name": "Bluebonnet Heating & Cooling",
+              "craft": "hvac",
+              "website": "https://bluebonnet.example.com",
+              "addr:street": "Guadalupe St",
+              "addr:city": "Austin",
+              "addr:state": "TX",
+              "addr:country": "USA"
+            }
+          },
+          {
+            "type": "node",
+            "id": 1113,
+            "lat": 30.3,
+            "lon": -97.75,
+            "tags": {
+              "name": "Capital Chiller Systems",
+              "craft": "hvac"
+            }
+          },
+          {
+            "type": "node",
+            "id": 1114,
+            "lat": 30.31,
+            "lon": -97.76,
+            "tags": {
+              "craft": "hvac"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "raw_lead_count": 2,
+        "raw_lead_ids": ["OSM-NODE-1111", "OSM-NODE-1112"],
+        "raw_dedupe_keys": [
+          "phone:5125550201",
+          "website:https://bluebonnet.example.com"
+        ],
+        "sources": ["OSM", "OSM"],
+        "search_input_id": "TEST-PF-OSM-001",
+        "business_types": ["hvac", "hvac"],
+        "rejected_business_names": ["Capital Chiller Systems"],
+        "dropped_unnamed_count": 1,
+        "note_coordinates_first": { "lat": 30.2672, "lon": -97.7431 }
+      }
+    },
+    {
+      "id": "TEST-PF-GPL-001",
+      "name": "Google Places success: 2 HVAC places",
+      "note": "Exercises Process GPL: fullResponse envelope (statusCode + body), field normalization (phone digits, website stripping, rating/review as strings), max-results cap, and deterministic GP- lead hashes.",
+      "search_input": {
+        "input_id": "TEST-PF-GPL-001",
+        "niche": "HVAC",
+        "city": "Austin",
+        "state": "TX",
+        "country": "USA",
+        "target_count": 2,
+        "status": "Pending",
+        "search_query": "HVAC contractors in Austin, TX"
+      },
+      "gpl_envelope": {
+        "statusCode": 200,
+        "body": {
+          "places": [
+            {
+              "id": "ChIJTestGPOne0001",
+              "displayName": { "text": "Lone Star AC Repair" },
+              "formattedAddress": "100 Congress Ave, Austin, TX 78701, USA",
+              "internationalPhoneNumber": "+1 512-555-0301",
+              "websiteUri": "https://lonestar.example.com",
+              "rating": 4.8,
+              "userRatingCount": 210,
+              "googleMapsUri": "https://maps.google.com/?cid=31",
+              "types": ["hvac_contractor", "establishment"]
+            },
+            {
+              "id": "ChIJTestGPTwo0002",
+              "displayName": { "text": "Hill Country Heating & Air" },
+              "formattedAddress": "200 Guadalupe St, Austin, TX 78705, USA",
+              "internationalPhoneNumber": "+1 512-555-0302",
+              "websiteUri": "https://hillcountry.example.com",
+              "rating": 4.6,
+              "userRatingCount": 88,
+              "googleMapsUri": "https://maps.google.com/?cid=32",
+              "types": ["air_conditioning_contractor", "establishment"]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "raw_lead_count": 2,
+        "raw_lead_ids": ["GP-570994dc", "GP-0bb757fc"],
+        "raw_dedupe_keys": ["website:lonestar.example.com", "website:hillcountry.example.com"],
+        "sources": ["google_places", "google_places"],
+        "search_input_id": "TEST-PF-GPL-001",
+        "ratings": ["4.8", "4.6"],
+        "review_counts": ["210", "88"],
+        "business_types": ["hvac_contractor", "air_conditioning_contractor"],
+        "note_substring": "Google Places: HVAC contractors in Austin, TX; gp_place_id:ChIJTestGPOne0001"
+      }
+    },
+    {
+      "id": "TEST-PF-GPL-GATES-001",
+      "name": "Google Places business-logic gates: relevance, geo, no-contact",
+      "note": "Exercises the GPL quality gates: (A) business relevance reject (supply / wholesale / rental), (B) geographic gate fail-closed on missing address, Plano outside the Dallas target, and the Dallas-GA state-contradiction case (city matches but state does not), and (C) the no-contact override that neutralizes dedupe_key and marks notes for a record with neither phone nor website. Gates counters are accumulated on staticData under gplRelevanceRejected / gplGeoRejected / gplNoContact.",
+      "search_input": {
+        "input_id": "TEST-PF-GPL-GATES-001",
+        "niche": "HVAC",
+        "city": "Dallas",
+        "state": "Texas",
+        "country": "USA",
+        "target_count": 3,
+        "status": "Pending",
+        "search_query": "HVAC contractors in Dallas, TX"
+      },
+      "gpl_envelope": {
+        "statusCode": 200,
+        "body": {
+          "places": [
+            {
+              "id": "ChIJGPTest001",
+              "displayName": { "text": "North Dallas Air & Heating" },
+              "formattedAddress": "1200 Dallas Pkwy, Dallas, TX 75248, USA",
+              "internationalPhoneNumber": "+1 214-555-1000",
+              "websiteUri": "https://northdallashvac.example.com",
+              "rating": 4.8,
+              "userRatingCount": 95,
+              "googleMapsUri": "https://maps.google.com/?cid=1001",
+              "types": ["hvac_contractor", "establishment"]
+            },
+            {
+              "id": "ChIJGPTest002",
+              "displayName": { "text": "Dallas HVAC Supply Co" },
+              "formattedAddress": "500 Commerce St, Dallas, TX 75201, USA",
+              "types": ["store"]
+            },
+            {
+              "id": "ChIJGPTest003",
+              "displayName": { "text": "Texan Air & Heating Wholesale" },
+              "formattedAddress": "600 Main St, Dallas, TX 75202, USA",
+              "types": ["store"]
+            },
+            {
+              "id": "ChIJGPTest004",
+              "displayName": { "text": "Dallas HVAC Tool Rental" },
+              "formattedAddress": "700 Elm St, Dallas, TX 75202, USA",
+              "types": ["equipment_rental"]
+            },
+            {
+              "id": "ChIJGPTest005",
+              "displayName": { "text": "Plano Climate Masters" },
+              "formattedAddress": "800 Preston Rd, Plano, TX 75075, USA",
+              "types": ["hvac_contractor"]
+            },
+            {
+              "id": "ChIJGPTest006",
+              "displayName": { "text": "Dallas Comfort Experts" },
+              "formattedAddress": "",
+              "types": ["hvac_contractor"]
+            },
+            {
+              "id": "ChIJGPTest007",
+              "displayName": { "text": "Cowboy Air Co" },
+              "formattedAddress": "1717 Dallas Hwy, Dallas, GA 30132, USA",
+              "types": ["hvac_contractor"]
+            },
+            {
+              "id": "ChIJGPTest008",
+              "displayName": { "text": "Suburban Air Balance" },
+              "formattedAddress": "1100 Dallas St, Dallas, TX 75201, USA",
+              "types": ["hvac_contractor"]
+            },
+            {
+              "id": "ChIJGPTest009",
+              "displayName": { "text": "Bella Mesa Heating & Air" },
+              "formattedAddress": "2000 Live Oak St, Dallas, TX 75201, USA",
+              "internationalPhoneNumber": "+1 214-555-0200",
+              "rating": 4.5,
+              "userRatingCount": 32,
+              "googleMapsUri": "https://maps.google.com/?cid=1009",
+              "types": ["air_conditioning_contractor", "establishment"]
+            }
+          ]
+        }
+      },
+      "expected": {
+        "raw_lead_count": 3,
+        "raw_lead_ids": ["GP-54032cc6", "GP-54034714", "GP-54034ad6"],
+        "raw_dedupe_keys": ["website:northdallashvac.example.com", "", "phone:+12145550200"],
+        "ratings": ["4.8", "", "4.5"],
+        "review_counts": ["95", "", "32"],
+        "business_types": ["hvac_contractor", "hvac_contractor", "air_conditioning_contractor"],
+        "sources": ["google_places", "google_places", "google_places"],
+        "search_input_id": "TEST-PF-GPL-GATES-001",
+        "note_substring": "Google Places: HVAC contractors in Dallas, TX; gp_place_id:ChIJGPTest001",
+        "gates": { "gplRelevanceRejected": 3, "gplGeoRejected": 3, "gplNoContact": 1 },
+        "rejected_business_names": [
+          "Dallas HVAC Supply Co",
+          "Texan Air & Heating Wholesale",
+          "Dallas HVAC Tool Rental",
+          "Plano Climate Masters",
+          "Dallas Comfort Experts",
+          "Cowboy Air Co"
+        ],
+        "no_contact_lead": { "index": 1, "dedupe_key": "", "note_substring": "no_contact=true" }
+      }
+    },
+    {
+      "id": "TEST-PF-EMPTY-001",
+      "name": "Empty success per provider -> _noResults sentinel",
+      "note": "Covers the A.11/R7 empty-success sentinel for all three providers: a 200/empty payload must emit the exact _noResults envelope, never an empty array and never a fabricated lead.",
+      "search_input": {
+        "input_id": "TEST-PF-EMPTY-001",
+        "niche": "HVAC",
+        "city": "Austin",
+        "state": "TX",
+        "country": "USA",
+        "target_count": 3,
+        "status": "Pending"
+      },
+      "empty": {
+        "foursquare": { "results": [] },
+        "osm": { "body": { "elements": [] } },
+        "gpl": { "statusCode": 200, "body": { "places": [] } }
+      },
+      "expected": {
+        "sentinels": {
+          "foursquare": {
+            "_noResults": true,
+            "_message": "Foursquare returned zero results",
+            "_provider": "foursquare"
+          },
+          "osm": {
+            "_noResults": true,
+            "_message": "OpenStreetMap returned zero results",
+            "_provider": "openstreetmap"
+          },
+          "gpl": {
+            "_noResults": true,
+            "_message": "Google Places returned zero results",
+            "_provider": "google_places"
+          }
+        }
+      }
+    },
+    {
+      "id": "TEST-PF-ERROR-001",
+      "name": "HTTP failure per provider -> error envelope",
+      "note": "Covers FSQ/OSM/GPL Error Envelope behavior: a raw HTTP-error payload (error.message + httpCode) must become the explicit _status 'error' envelope with input_id/search_input_id from the build-query node and errorsEncountered increment.",
+      "search_input": {
+        "input_id": "TEST-PF-ERROR-001",
+        "niche": "HVAC",
+        "city": "Austin",
+        "state": "TX",
+        "country": "USA",
+        "target_count": 3,
+        "status": "Pending"
+      },
+      "errors": {
+        "foursquare": { "error": { "message": "Request failed with status code 500", "httpCode": 500 } },
+        "osm": { "error": { "message": "Upstream timeout", "httpCode": 504 } },
+        "gpl": { "error": { "message": "PERMISSION_DENIED", "httpCode": 403 } }
+      },
+      "expected": {
+        "envelopes": {
+          "foursquare": {
+            "_provider": "foursquare",
+            "_status": "error",
+            "_errorMessage": "Foursquare API error: Request failed with status code 500 (HTTP 500)",
+            "_rawStatus": "HTTP 500",
+            "source": "foursquare:error"
+          },
+          "osm": {
+            "_provider": "openstreetmap",
+            "_status": "error",
+            "_errorMessage": "OpenStreetMap API error: Upstream timeout (HTTP 504)",
+            "_rawStatus": "HTTP 504",
+            "source": "openstreetmap:error"
+          },
+          "gpl": {
+            "_provider": "google_places",
+            "_status": "error",
+            "_errorMessage": "Google Places API error: PERMISSION_DENIED (HTTP 403)",
+            "_rawStatus": "HTTP 403",
+            "source": "google_places:error"
+          }
+        }
+      }
+    },
+    {
+      "id": "TEST-PF-DEDUP-001",
+      "name": "Cross-provider duplicate (FSQ + GPL share one website)",
+      "note": "Cozy Climate LLC appears in BOTH the Foursquare and the Google Places payloads with website https://cozyclimateservice.com and no phone, so both providers build the identical dedupe_key website:cozyclimateservice.com. Dedup & Prepare Verified must keep exactly one. Companion leads (FSQ phone lead, GPL phone lead) exercise the intra-run unique-key path.",
+      "search_input": {
+        "input_id": "TEST-PF-DEDUP-001",
+        "niche": "HVAC",
+        "city": "Austin",
+        "state": "TX",
+        "country": "USA",
+        "target_count": 2,
+        "status": "Pending"
+      },
+      "foursquare_response": {
+        "results": [
+          {
+"fsq_place_id": "fsq-test-cozy-climate-0001",
+   "name": "Cozy Climate Heating & Air LLC",
+            "categories": [
+              { "id": "63be6904847c3692a84b9b56", "name": "HVAC Contractor" }
+            ],
+            "location": {
+              "formatted_address": "900 Rainey St, Austin, TX 78701, USA",
+              "locality": "Austin",
+              "region": "TX",
+              "postcode": "78701",
+              "country": "US"
+            },
+            "website": "https://cozyclimateservice.com"
+          },
+          {
+            "fsq_place_id": "fsq-test-desert-heat-0002",
+            "name": "Desert Heat Air Conditioning",
+            "categories": [
+              { "id": "63be6904847c3692a84b9b56", "name": "HVAC Contractor" }
+            ],
+            "location": {
+              "formatted_address": "910 Barton Springs Rd, Austin, TX 78704, USA",
+              "locality": "Austin",
+              "region": "TX",
+              "postcode": "78704",
+              "country": "US"
+            },
+            "tel": "+1 512-555-0402"
+          }
+        ]
+      },
+      "gpl_envelope": {
+        "statusCode": 200,
+        "body": {
+          "places": [
+            {
+              "id": "ChIJTestCozyClimate0001",
+              "displayName": { "text": "Cozy Climate LLC" },
+              "formattedAddress": "900 Rainey St, Austin, TX 78701, USA",
+              "websiteUri": "https://cozyclimateservice.com",
+              "rating": 4.9,
+              "userRatingCount": 77,
+              "googleMapsUri": "https://maps.google.com/?cid=41",
+              "types": ["general_contractor", "establishment"]
+            },
+            {
+              "id": "ChIJTestBrazosAir0002",
+              "displayName": { "text": "Brazos Air Conditioning" },
+              "formattedAddress": "920 Shoal Creek Blvd, Austin, TX 78757, USA",
+              "internationalPhoneNumber": "+1 512-555-0403",
+              "rating": 4.4,
+              "userRatingCount": 55,
+              "googleMapsUri": "https://maps.google.com/?cid=42",
+              "types": ["air_conditioning_contractor", "establishment"]
+            }
+          ]
+        }
+      },
+      "expected": {
+"cross_provider_dupe_key": "website:cozyclimateservice.com",
+   "cross_provider_dupe_business_name": "Cozy Climate Heating & Air LLC",
+        "fsq_dedupe_keys": ["website:cozyclimateservice.com", "phone:5125550402"],
+        "gpl_dedupe_keys": ["website:cozyclimateservice.com", "phone:+15125550403"],
+        "verified_count": 3,
+        "verified_dupe_occurrences": 1,
+        "dupe_source_pair": ["FOURSQUARE", "google_places"]
+      }
+    },
+    {
+      "id": "TEST-PF-CROSS-001",
+      "name": "Cross-provider phone duplicate: FSQ tel + OSM numeric phone -> one canonical key",
+      "note": "Prompt A.12 mirror of live rows 12/50 (Smart Air): the same business appears in Foursquare with tel \"(512) 600-4311\" and in OpenStreetMap with phone 15126004311 (number). Under the canonical normalizePhone both produce the identical dedupe_key phone:5126004311, so Dedup & Prepare Verified must keep exactly one verified lead. Without A.12 these keys were phone:5126004311 vs phone:+15126004311 (distinct).",
+      "search_input": {
+        "input_id": "TEST-PF-CROSS-001",
+        "niche": "HVAC",
+        "city": "Austin",
+        "state": "TX",
+        "country": "USA",
+        "target_count": 2,
+        "status": "Pending"
+      },
+      "foursquare_response": {
+        "results": [
+          {
+            "fsq_place_id": "fsq-test-smart-air-0001",
+            "name": "Smart Air Conditioning",
+            "categories": [
+              { "id": "63be6904847c3692a84b9b56", "name": "HVAC Contractor" }
+            ],
+            "location": {
+              "formatted_address": "505 W 38th St, Austin, TX 78731, USA",
+              "locality": "Austin",
+              "region": "TX",
+              "postcode": "78731",
+              "country": "US"
+            },
+            "tel": "(512) 600-4311"
+          }
+        ]
+      },
+      "osm_response": {
+        "elements": [
+          {
+            "type": "node",
+            "id": 9001,
+            "lat": 30.3082,
+            "lon": -97.7551,
+            "tags": {
+              "name": "Smart Air Conditioning",
+              "craft": "hvac",
+              "phone": 15126004311,
+              "addr:street": "W 38th St",
+              "addr:city": "Austin",
+              "addr:state": "TX",
+              "addr:country": "USA"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "fsq_dedupe_keys": ["phone:5126004311"],
+        "osm_dedupe_keys": ["phone:5126004311"],
+        "cross_provider_dupe_key": "phone:5126004311",
+        "cross_provider_dupe_business_name": "Smart Air Conditioning",
+        "verified_count": 1,
+        "verified_dupe_occurrences": 1,
+        "dupe_source_pair": ["FOURSQUARE", "OSM"],
+        "osm_phone_is_string": true
+      }
+    }
+  ]
+}

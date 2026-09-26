@@ -1,0 +1,380 @@
+{
+  "_meta": {
+    "namespace": "TEST-ENRICH",
+    "regex": "^TEST-ENRICH-\\d+$",
+    "purpose": "Offline fixtures for the Contact Enrichment V1 engines. Business fixtures (H.2) exercise the Overture matcher; cache fields (H.3) feed the cache primitives; later fixtures extend for the contact engine (H.4) and OSS fallback (H.5)."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-ENRICH-001",
+      "name": "phone match — high confidence, fills empty website",
+      "note": "Lead has provider phone; Overture row has SAME normalized phone. Website empty so it gets filled; operating_status open stamps enrichment_business_status open.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-ENRICH-0001",
+      "leads": [
+        {
+          "lead_id": "RWL-0001",
+          "business_name": "Great Texas HVAC",
+          "city": "San Antonio",
+          "state": "TX",
+          "country": "USA",
+          "website": "",
+          "phone": "(210) 555-0131"
+        }
+      ],
+      "index": [
+        {
+          "gers_id": "GERS/ENRICH/TX/0001",
+          "primary_name": "Great Texas HVAC",
+          "website": "greattexashvac.example.com",
+          "phone": "+1 210 555 0131",
+          "city": "San Antonio",
+          "state_code": "TX",
+          "country": "United States",
+          "operating_status": "operating",
+          "confidence": 0.98
+        }
+      ],
+      "expected": {
+        "stats": {
+          "total": 1,
+          "matched": 1,
+          "unmatched": 0,
+          "filled_website": 1,
+          "filled_phone": 0,
+          "filled_operating_status": 1,
+          "closed_businesses_flagged": 0
+        },
+        "unmatched": [],
+        "enriched": [
+          {
+            "lead_id": "RWL-0001",
+            "enrichment_gers_id": "GERS/ENRICH/TX/0001",
+            "enrichment_confidence": 1,
+            "enrichment_business_status": "open",
+            "enrichment_last_run": "2026-09-16T12:00:00.000Z",
+            "website": "greattexashvac.example.com"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-ENRICH-002",
+      "name": "website match — high confidence, fills phone",
+      "note": "Provider website equals index website (different formatting: www + scheme stripped). Phone empty → filled.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-ENRICH-0002",
+      "leads": [
+        {
+          "lead_id": "RWL-0002",
+          "business_name": "Alamo Air Conditioning Repair",
+          "city": "San Antonio",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://AlamoAir.example.com/contact",
+          "phone": ""
+        }
+      ],
+      "index": [
+        {
+          "gers_id": "GERS/ENRICH/TX/0002",
+          "primary_name": "Alamo Air Conditioning Repair",
+          "website": "alamoair.example.com",
+          "phone": "+1 210 555 0144",
+          "city": "San Antonio",
+          "state_code": "TX",
+          "country": "United States",
+          "operating_status": "operating",
+          "confidence": 0.93
+        }
+      ],
+      "expected": {
+        "stats": {
+          "total": 1,
+          "matched": 1,
+          "unmatched": 0,
+          "filled_website": 0,
+          "filled_phone": 1,
+          "filled_operating_status": 1,
+          "closed_businesses_flagged": 0
+        },
+        "unmatched": [],
+        "enriched": [
+          {
+            "lead_id": "RWL-0002",
+            "enrichment_gers_id": "GERS/ENRICH/TX/0002",
+            "enrichment_confidence": 1,
+            "enrichment_business_status": "open",
+            "website": "https://AlamoAir.example.com/contact",
+            "phone": "2105550144"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-ENRICH-003",
+      "name": "name+city+state exact — medium confidence fills both gaps",
+      "note": "No phone/website overlap. Exact normalized name, same city + state → confidence 0.7. Website AND phone empty → both filled.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-ENRICH-0003",
+      "leads": [
+        {
+          "lead_id": "RWL-0003",
+          "business_name": "Hill Country Heating Co",
+          "city": "New Braunfels",
+          "state": "TX",
+          "country": "USA",
+          "website": "",
+          "phone": ""
+        }
+      ],
+      "index": [
+        {
+          "gers_id": "GERS/ENRICH/TX/0003",
+          "primary_name": "Hill Country Heating Co",
+          "website": "hillcountryheating.example.com",
+          "phone": "+1 830 555 0155",
+          "city": "New Braunfels",
+          "state_code": "TX",
+          "country": "United States",
+          "operating_status": "operating",
+          "confidence": 0.89
+        }
+      ],
+      "expected": {
+        "stats": {
+          "total": 1,
+          "matched": 1,
+          "unmatched": 0,
+          "filled_website": 1,
+          "filled_phone": 1,
+          "filled_operating_status": 1,
+          "closed_businesses_flagged": 0
+        },
+        "unmatched": [],
+        "enriched": [
+          {
+            "lead_id": "RWL-0003",
+            "enrichment_gers_id": "GERS/ENRICH/TX/0003",
+            "enrichment_confidence": 0.7,
+            "enrichment_business_status": "open",
+            "website": "hillcountryheating.example.com",
+            "phone": "8305550155"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-ENRICH-004",
+      "name": "name fuzzy + city+state — low confidence, closed flagged",
+      "note": "Typo in lead name (Coolng vs Cooling) → Levenshtein 1 → 0.4. Overture row operating_status closed → enrichment_business_status closed + flagged.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-ENRICH-0004",
+      "leads": [
+        {
+          "lead_id": "RWL-0004",
+          "business_name": "Old Town Coolng",
+          "city": "San Antonio",
+          "state": "TX",
+          "country": "USA",
+          "website": "",
+          "phone": ""
+        }
+      ],
+      "index": [
+        {
+          "gers_id": "GERS/ENRICH/TX/0004",
+          "primary_name": "Old Town Cooling",
+          "website": "oldtowncooling.example.com",
+          "phone": "+1 210 555 0166",
+          "city": "San Antonio",
+          "state_code": "TX",
+          "country": "United States",
+          "operating_status": "closed",
+          "confidence": 0.81
+        }
+      ],
+      "expected": {
+        "stats": {
+          "total": 1,
+          "matched": 1,
+          "unmatched": 0,
+          "filled_website": 1,
+          "filled_phone": 1,
+          "filled_operating_status": 1,
+          "closed_businesses_flagged": 1
+        },
+        "unmatched": [],
+        "enriched": [
+          {
+            "lead_id": "RWL-0004",
+            "enrichment_gers_id": "GERS/ENRICH/TX/0004",
+            "enrichment_confidence": 0.4,
+            "enrichment_business_status": "closed",
+            "website": "oldtowncooling.example.com",
+            "phone": "2105550166"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-ENRICH-005",
+      "name": "unmatched city mismatch + no index overlap",
+      "note": "Lead is in Dallas but index has no Dallas place; no phone/website overlap → unmatch, confidence 0, gers_id empty.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-ENRICH-0005",
+      "leads": [
+        {
+          "lead_id": "RWL-0005",
+          "business_name": "Dallas Climate Pros",
+          "city": "Dallas",
+          "state": "TX",
+          "country": "USA",
+          "website": "",
+          "phone": "(214) 555-0199"
+        }
+      ],
+      "index": [
+        {
+          "gers_id": "GERS/ENRICH/TX/0001",
+          "primary_name": "Great Texas HVAC",
+          "website": "greattexashvac.example.com",
+          "phone": "+1 210 555 0131",
+          "city": "San Antonio",
+          "state_code": "TX",
+          "country": "United States",
+          "operating_status": "operating",
+          "confidence": 0.98
+        }
+      ],
+      "expected": {
+        "stats": {
+          "total": 1,
+          "matched": 0,
+          "unmatched": 1,
+          "filled_website": 0,
+          "filled_phone": 0,
+          "filled_operating_status": 0,
+          "closed_businesses_flagged": 0
+        },
+        "unmatched": [
+          {
+            "lead_id": "RWL-0005",
+            "enrichment_gers_id": "",
+            "enrichment_confidence": 0,
+            "enrichment_business_status": ""
+          }
+        ],
+        "enriched": []
+      }
+    },
+    {
+      "id": "TEST-ENRICH-006",
+      "name": "mixed batch — no-clobber, deterministic ordering",
+      "note": "A phone-match + a name-exact-match + one genuinely unmatched lead; provider values never overwritten; enriched/unmatched each sorted by lead_id asc.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-ENRICH-0006",
+      "leads": [
+        {
+          "lead_id": "RWL-0006-B",
+          "business_name": "Precision Climate Systems LLC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "old-provider-value.example.com",
+          "phone": ""
+        },
+        {
+          "lead_id": "RWL-0006-C",
+          "business_name": "Travis County Climate Co",
+          "city": "Round Rock",
+          "state": "TX",
+          "country": "USA",
+          "website": "",
+          "phone": "(512) 555-0200"
+        },
+        {
+          "lead_id": "RWL-0006-A",
+          "business_name": "Desert Sky Heating & Air",
+          "city": "Phoenix",
+          "state": "AZ",
+          "country": "USA",
+          "website": "",
+          "phone": "(505) 555-0188"
+        }
+      ],
+      "index": [
+        {
+          "gers_id": "GERS/ENRICH/NM/0001",
+          "primary_name": "Desert Sky Heating & Air",
+          "website": "desertsky.example.com",
+          "phone": "+1 505 555 0188",
+          "city": "Albuquerque",
+          "state_code": "NM",
+          "country": "United States",
+          "operating_status": "operating",
+          "confidence": 0.92
+        },
+        {
+          "gers_id": "GERS/ENRICH/TX/0005",
+          "primary_name": "Precision Climate Systems LLC",
+          "website": "precisionclimate.example.com",
+          "phone": "+1 512 555 0177",
+          "city": "Austin",
+          "state_code": "TX",
+          "country": "United States",
+          "operating_status": "operating",
+          "confidence": 0.87
+        },
+        {
+          "gers_id": "GERS/ENRICH/TX/0006",
+          "primary_name": "Sixth Street Ventilation Experts",
+          "website": "",
+          "phone": "",
+          "city": "Austin",
+          "state_code": "TX",
+          "country": "United States",
+          "operating_status": "operating",
+          "confidence": 0.61
+        }
+      ],
+      "expected": {
+        "stats": {
+          "total": 3,
+          "matched": 2,
+          "unmatched": 1,
+          "filled_website": 1,
+          "filled_phone": 1,
+          "filled_operating_status": 2,
+          "closed_businesses_flagged": 0
+        },
+        "unmatched": [
+          {
+            "lead_id": "RWL-0006-C",
+            "enrichment_gers_id": "",
+            "enrichment_confidence": 0,
+            "enrichment_business_status": ""
+          }
+        ],
+        "enriched": [
+          {
+            "lead_id": "RWL-0006-A",
+            "enrichment_gers_id": "GERS/ENRICH/NM/0001",
+            "enrichment_confidence": 1,
+            "enrichment_business_status": "open",
+            "website": "desertsky.example.com",
+            "phone": "(505) 555-0188"
+          },
+          {
+            "lead_id": "RWL-0006-B",
+            "enrichment_gers_id": "GERS/ENRICH/TX/0005",
+            "enrichment_confidence": 0.7,
+            "enrichment_business_status": "open",
+            "website": "old-provider-value.example.com",
+            "phone": "5125550177"
+          }
+        ]
+      }
+    }
+  ]
+}

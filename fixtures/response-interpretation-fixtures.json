@@ -1,0 +1,4450 @@
+{
+  "_meta": {
+    "namespace": "TEST-RESP-INT",
+    "artifact": "Outreach Response Interpretation V1 Fixture Corpus",
+    "description": "Golden corpus for the Response Interpretation V1 engine: pre-populated response rows, outreach rows, and reconciliation overrides exercising every intent label, precedence rule, actionability branch, confidence band (incl. the 0.40/0.70 boundaries), reconciliation state, skip edge, read-failure state, duplicate semantics, and determinism property."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-RESP-INT-001",
+      "name": "VERIFIED_RESPOND_HIGH",
+      "note": "Unambiguous positive intent, fully verified, HIGH confidence AUTO_REPLY baseline.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-001",
+          "idempotency_key": "respi-001::email",
+          "lead_id": "TEST-RESP-INT-001",
+          "outreach_id": "EX-TEST-RESP-INT-001-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-001",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send me the full details",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-001-email",
+          "lead_id": "TEST-RESP-INT-001",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 1,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 1,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-6e329130",
+            "response_id": "RESPI-001",
+            "lead_id": "TEST-RESP-INT-001",
+            "outreach_id": "EX-TEST-RESP-INT-001-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "RESPOND",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 3,
+            "clause_hits": {
+              "RESPOND": 3
+            },
+            "deciding_clause": "RESPOND",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "INST-01",
+                "phrase": "please send",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "send me",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "RESPOND with HIGH confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-002",
+      "name": "VERIFIED_QUESTION_HIGH",
+      "note": "Unambiguous question, HIGH confidence AUTO_REPLY.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-002",
+          "idempotency_key": "respi-002::email",
+          "lead_id": "TEST-RESP-INT-002",
+          "outreach_id": "EX-TEST-RESP-INT-002-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-002",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "can you tell me what the pricing is for 2026?",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-002-email",
+          "lead_id": "TEST-RESP-INT-002",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 1,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 1,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-84a54aab",
+            "response_id": "RESPI-002",
+            "lead_id": "TEST-RESP-INT-002",
+            "outreach_id": "EX-TEST-RESP-INT-002-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "QUESTION",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 3,
+            "clause_hits": {
+              "QUESTION": 3
+            },
+            "deciding_clause": "QUESTION",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "can you",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "what",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-02",
+                "phrase": "?",
+                "weight": 1,
+                "polarity": "question",
+                "clause": "QUESTION"
+              }
+            ],
+            "text_preview": "",
+            "reason": "QUESTION with HIGH confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-003",
+      "name": "VERIFIED_OBJECTION_HIGH",
+      "note": "Unambiguous objection, HIGH confidence AUTO_REPLY (reply permitted, a later stage owns the reply).",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-003",
+          "idempotency_key": "respi-003::email",
+          "lead_id": "TEST-RESP-INT-003",
+          "outreach_id": "EX-TEST-RESP-INT-003-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-003",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "too expensive for us right now, no budget this quarter",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-003-email",
+          "lead_id": "TEST-RESP-INT-003",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 1,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 1,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-4300507a",
+            "response_id": "RESPI-003",
+            "lead_id": "TEST-RESP-INT-003",
+            "outreach_id": "EX-TEST-RESP-INT-003-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "OBJECTION",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 4,
+            "clause_hits": {
+              "OBJECTION": 4
+            },
+            "deciding_clause": "OBJECTION",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "budget",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "expensive",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "no budget",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "too expensive",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              }
+            ],
+            "text_preview": "",
+            "reason": "OBJECTION with HIGH confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-004",
+      "name": "VERIFIED_NOT_INTERESTED_HIGH",
+      "note": "Unambiguous decline, HIGH confidence NO_ACTION; exercises the call channel end-to-end.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-004",
+          "idempotency_key": "respi-004::call",
+          "lead_id": "TEST-RESP-INT-004",
+          "outreach_id": "EX-TEST-RESP-INT-004-call",
+          "channel": "call",
+          "provider_message_id": "pmsg-RESPI-004",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "not interested, no thanks",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-004-call",
+          "lead_id": "TEST-RESP-INT-004",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "call",
+          "email": "",
+          "phone": "+15550000111",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 1,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 1
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-b35baf4d",
+            "response_id": "RESPI-004",
+            "lead_id": "TEST-RESP-INT-004",
+            "outreach_id": "EX-TEST-RESP-INT-004-call",
+            "channel": "call",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "NOT_INTERESTED",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "NO_ACTION",
+            "recommended_action": "no action: close/archive",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 2,
+            "clause_hits": {
+              "NOT_INTERESTED": 2
+            },
+            "deciding_clause": "NOT_INTERESTED",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "NINT-01",
+                "phrase": "no thanks",
+                "weight": 3,
+                "polarity": "negative",
+                "clause": "NOT_INTERESTED"
+              },
+              {
+                "rule_id": "NINT-01",
+                "phrase": "not interested",
+                "weight": 3,
+                "polarity": "negative",
+                "clause": "NOT_INTERESTED"
+              }
+            ],
+            "text_preview": "",
+            "reason": "NOT_INTERESTED with HIGH confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-005",
+      "name": "VERIFIED_OPT_OUT_HARD_STOP",
+      "note": "Opt-out, HARD_STOP with stop_contact, HIGH priority regardless of band.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-005",
+          "idempotency_key": "respi-005::email",
+          "lead_id": "TEST-RESP-INT-005",
+          "outreach_id": "EX-TEST-RESP-INT-005-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-005",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "please unsubscribe me from all mailing lists",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-005-email",
+          "lead_id": "TEST-RESP-INT-005",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 1,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 1,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 1,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-2a854d64",
+            "response_id": "RESPI-005",
+            "lead_id": "TEST-RESP-INT-005",
+            "outreach_id": "EX-TEST-RESP-INT-005-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "OPT_OUT",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "HARD_STOP",
+            "recommended_action": "stop-contact: suppress future outreach",
+            "stop_contact": true,
+            "priority": "HIGH",
+            "actionable": true,
+            "matched_terms_total": 1,
+            "clause_hits": {
+              "OPT_OUT": 1
+            },
+            "deciding_clause": "OPT_OUT",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "OPT-OUT-01",
+                "phrase": "unsubscribe",
+                "weight": 10,
+                "polarity": "opt_out",
+                "clause": "OPT_OUT"
+              }
+            ],
+            "text_preview": "",
+            "reason": "OPT_OUT with HIGH confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-006",
+      "name": "VERIFIED_UNDELIVERABLE",
+      "note": "Mechanical undeliverable, HIGH confidence NO_ACTION.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-006",
+          "idempotency_key": "respi-006::email",
+          "lead_id": "TEST-RESP-INT-006",
+          "outreach_id": "EX-TEST-RESP-INT-006-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-006",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "delivery status notification: message could not be delivered",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-006-email",
+          "lead_id": "TEST-RESP-INT-006",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 1,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 1
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-3736a63f",
+            "response_id": "RESPI-006",
+            "lead_id": "TEST-RESP-INT-006",
+            "outreach_id": "EX-TEST-RESP-INT-006-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "UNDELIVERABLE",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "NO_ACTION",
+            "recommended_action": "no action: close/archive",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 2,
+            "clause_hits": {
+              "UNDELIVERABLE": 2
+            },
+            "deciding_clause": "UNDELIVERABLE",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "UNDELIVERABLE-01",
+                "phrase": "delivery status notification",
+                "weight": 4,
+                "polarity": "mechanical",
+                "clause": "UNDELIVERABLE"
+              },
+              {
+                "rule_id": "UNDELIVERABLE-01",
+                "phrase": "message could not be delivered",
+                "weight": 4,
+                "polarity": "mechanical",
+                "clause": "UNDELIVERABLE"
+              }
+            ],
+            "text_preview": "",
+            "reason": "UNDELIVERABLE with HIGH confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-007",
+      "name": "VERIFIED_SPAM",
+      "note": "Automated/spam marker, HIGH confidence NO_ACTION.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-007",
+          "idempotency_key": "respi-007::email",
+          "lead_id": "TEST-RESP-INT-007",
+          "outreach_id": "EX-TEST-RESP-INT-007-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-007",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "you are receiving this email because you subscribed to our newsletter",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-007-email",
+          "lead_id": "TEST-RESP-INT-007",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 1,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 1
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-b7f5dd8e",
+            "response_id": "RESPI-007",
+            "lead_id": "TEST-RESP-INT-007",
+            "outreach_id": "EX-TEST-RESP-INT-007-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "SPAM_OR_AUTOMATED",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "NO_ACTION",
+            "recommended_action": "no action: close/archive",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 2,
+            "clause_hits": {
+              "SPAM_OR_AUTOMATED": 2
+            },
+            "deciding_clause": "SPAM_OR_AUTOMATED",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "SPAM-01",
+                "phrase": "newsletter",
+                "weight": 4,
+                "polarity": "mechanical",
+                "clause": "SPAM_OR_AUTOMATED"
+              },
+              {
+                "rule_id": "SPAM-01",
+                "phrase": "you are receiving this email",
+                "weight": 4,
+                "polarity": "mechanical",
+                "clause": "SPAM_OR_AUTOMATED"
+              }
+            ],
+            "text_preview": "",
+            "reason": "SPAM_OR_AUTOMATED with HIGH confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-008",
+      "name": "NO_INTENT_LOW",
+      "note": "No matched rules — NO_INTENT is a classification (confidence 0, LOW, MANUAL_REVIEW), not an error.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-008",
+          "idempotency_key": "respi-008::email",
+          "lead_id": "TEST-RESP-INT-008",
+          "outreach_id": "EX-TEST-RESP-INT-008-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-008",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "lorem ipsum dolor sit amet consectetur",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-008-email",
+          "lead_id": "TEST-RESP-INT-008",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 1
+          },
+          "by_confidence_band": {
+            "HIGH": 0,
+            "MEDIUM": 0,
+            "LOW": 1
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 1,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 1,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-3641b0a1",
+            "response_id": "RESPI-008",
+            "lead_id": "TEST-RESP-INT-008",
+            "outreach_id": "EX-TEST-RESP-INT-008-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "NO_INTENT",
+            "intent_confidence": 0,
+            "confidence_band": "LOW",
+            "actionability": "MANUAL_REVIEW",
+            "recommended_action": "manual review required",
+            "stop_contact": false,
+            "priority": "MEDIUM",
+            "actionable": true,
+            "matched_terms_total": 0,
+            "clause_hits": {},
+            "deciding_clause": "NO_INTENT",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [],
+            "text_preview": "",
+            "reason": "NO_INTENT with LOW confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-009",
+      "name": "OPT_OUT_SUPREMACY",
+      "note": "Precedence proof: OPT_OUT beats positive conversational evidence even when outscored.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-009",
+          "idempotency_key": "respi-009::email",
+          "lead_id": "TEST-RESP-INT-009",
+          "outreach_id": "EX-TEST-RESP-INT-009-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-009",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send details but do not contact me again",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-009-email",
+          "lead_id": "TEST-RESP-INT-009",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 1,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 0,
+            "MEDIUM": 1,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 1,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 1,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-8ef1a908",
+            "response_id": "RESPI-009",
+            "lead_id": "TEST-RESP-INT-009",
+            "outreach_id": "EX-TEST-RESP-INT-009-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "OPT_OUT",
+            "intent_confidence": 0.5263157894736842,
+            "confidence_band": "MEDIUM",
+            "actionability": "HARD_STOP",
+            "recommended_action": "stop-contact: suppress future outreach",
+            "stop_contact": true,
+            "priority": "HIGH",
+            "actionable": true,
+            "matched_terms_total": 4,
+            "clause_hits": {
+              "OPT_OUT": 1,
+              "RESPOND": 3
+            },
+            "deciding_clause": "OPT_OUT",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "OPT-OUT-01",
+                "phrase": "do not contact",
+                "weight": 10,
+                "polarity": "opt_out",
+                "clause": "OPT_OUT"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "please send",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "send details",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "OPT_OUT with MEDIUM confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-010",
+      "name": "MECHANICAL_UNDELIVERABLE",
+      "note": "Precedence proof: mechanical UNDELIVERABLE beats conversational, lands on the 0.40 MEDIUM boundary.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-010",
+          "idempotency_key": "respi-010::email",
+          "lead_id": "TEST-RESP-INT-010",
+          "outreach_id": "EX-TEST-RESP-INT-010-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-010",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "automatic reply: yes sounds good, please send details. out of office until monday.",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-010-email",
+          "lead_id": "TEST-RESP-INT-010",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 1,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 0,
+            "MEDIUM": 1,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 1
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-2338ee76",
+            "response_id": "RESPI-010",
+            "lead_id": "TEST-RESP-INT-010",
+            "outreach_id": "EX-TEST-RESP-INT-010-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "UNDELIVERABLE",
+            "intent_confidence": 0.4,
+            "confidence_band": "MEDIUM",
+            "actionability": "NO_ACTION",
+            "recommended_action": "no action: close/archive",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 6,
+            "clause_hits": {
+              "UNDELIVERABLE": 2,
+              "RESPOND": 4
+            },
+            "deciding_clause": "UNDELIVERABLE",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "UNDELIVERABLE-01",
+                "phrase": "automatic reply",
+                "weight": 4,
+                "polarity": "mechanical",
+                "clause": "UNDELIVERABLE"
+              },
+              {
+                "rule_id": "UNDELIVERABLE-01",
+                "phrase": "out of office",
+                "weight": 4,
+                "polarity": "mechanical",
+                "clause": "UNDELIVERABLE"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "please send",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "send details",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "sounds good",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "UNDELIVERABLE with MEDIUM confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-011",
+      "name": "MECHANICAL_SPAM_LOW",
+      "note": "Precedence proof: mechanical SPAM beats conversational and, at LOW band, forces MANUAL_REVIEW (band outranks label actionability).",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-011",
+          "idempotency_key": "respi-011::email",
+          "lead_id": "TEST-RESP-INT-011",
+          "outreach_id": "EX-TEST-RESP-INT-011-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-011",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "this is a sponsored message. yes, sounds good, please send details",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-011-email",
+          "lead_id": "TEST-RESP-INT-011",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 1,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 0,
+            "MEDIUM": 0,
+            "LOW": 1
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 1,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 1,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-6db37c07",
+            "response_id": "RESPI-011",
+            "lead_id": "TEST-RESP-INT-011",
+            "outreach_id": "EX-TEST-RESP-INT-011-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "SPAM_OR_AUTOMATED",
+            "intent_confidence": 0.25,
+            "confidence_band": "LOW",
+            "actionability": "MANUAL_REVIEW",
+            "recommended_action": "manual review required",
+            "stop_contact": false,
+            "priority": "MEDIUM",
+            "actionable": true,
+            "matched_terms_total": 5,
+            "clause_hits": {
+              "SPAM_OR_AUTOMATED": 1,
+              "RESPOND": 4
+            },
+            "deciding_clause": "SPAM_OR_AUTOMATED",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "SPAM-01",
+                "phrase": "this is a sponsored message",
+                "weight": 4,
+                "polarity": "mechanical",
+                "clause": "SPAM_OR_AUTOMATED"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "please send",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "send details",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "sounds good",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "SPAM_OR_AUTOMATED with LOW confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-012",
+      "name": "CONFLICT",
+      "note": "Conflicting positive and negative conversational evidence resolves to NO_INTENT with conflict_detected.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-012",
+          "idempotency_key": "respi-012::email",
+          "lead_id": "TEST-RESP-INT-012",
+          "outreach_id": "EX-TEST-RESP-INT-012-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-012",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "sounds good but not interested",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-012-email",
+          "lead_id": "TEST-RESP-INT-012",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 1
+          },
+          "by_confidence_band": {
+            "HIGH": 0,
+            "MEDIUM": 1,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 1,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 1,
+          "conflict_count": 1,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-123aa7ac",
+            "response_id": "RESPI-012",
+            "lead_id": "TEST-RESP-INT-012",
+            "outreach_id": "EX-TEST-RESP-INT-012-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "NO_INTENT",
+            "intent_confidence": 0.5,
+            "confidence_band": "MEDIUM",
+            "actionability": "MANUAL_REVIEW",
+            "recommended_action": "manual review required",
+            "stop_contact": false,
+            "priority": "MEDIUM",
+            "actionable": true,
+            "matched_terms_total": 2,
+            "clause_hits": {
+              "NOT_INTERESTED": 1,
+              "RESPOND": 1
+            },
+            "deciding_clause": "CONFLICT",
+            "conflict_detected": true,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "NINT-01",
+                "phrase": "not interested",
+                "weight": 3,
+                "polarity": "negative",
+                "clause": "NOT_INTERESTED"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "sounds good",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "NO_INTENT with MEDIUM confidence",
+            "notes": "conflicting conversational clauses resolved to NO_INTENT"
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-013",
+      "name": "WEAK_TIE_LOW",
+      "note": "Deterministic weak-signal tie (RESPOND vs OBJECTION) resolves by locked tie-break order to OBJECTION at LOW confidence.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-013",
+          "idempotency_key": "respi-013::email",
+          "lead_id": "TEST-RESP-INT-013",
+          "outreach_id": "EX-TEST-RESP-INT-013-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-013",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "what and when? yes go ahead, budget, no time, maybe later",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-013-email",
+          "lead_id": "TEST-RESP-INT-013",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 1,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 0,
+            "MEDIUM": 0,
+            "LOW": 1
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 1,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 1,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-244bad15",
+            "response_id": "RESPI-013",
+            "lead_id": "TEST-RESP-INT-013",
+            "outreach_id": "EX-TEST-RESP-INT-013-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "OBJECTION",
+            "intent_confidence": 0.35294117647058826,
+            "confidence_band": "LOW",
+            "actionability": "MANUAL_REVIEW",
+            "recommended_action": "manual review required",
+            "stop_contact": false,
+            "priority": "MEDIUM",
+            "actionable": true,
+            "matched_terms_total": 8,
+            "clause_hits": {
+              "RESPOND": 2,
+              "OBJECTION": 3,
+              "QUESTION": 3
+            },
+            "deciding_clause": "OBJECTION",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "INST-01",
+                "phrase": "go ahead",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "budget",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "maybe later",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "no time",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "what",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "when",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-02",
+                "phrase": "?",
+                "weight": 1,
+                "polarity": "question",
+                "clause": "QUESTION"
+              }
+            ],
+            "text_preview": "",
+            "reason": "OBJECTION with LOW confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-014",
+      "name": "EXACT_040_MEDIUM",
+      "note": "Engineer-measured natural conversational confidence of exactly 0.40 (8/20) — MEDIUM boundary lock (strict QUESTION winner; sub-phrase collisions tuned out).",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-014",
+          "idempotency_key": "respi-014::email",
+          "lead_id": "TEST-RESP-INT-014",
+          "outreach_id": "EX-TEST-RESP-INT-014-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-014",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "what, when, which?? yes sounds good, price, budget, maybe later",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-014-email",
+          "lead_id": "TEST-RESP-INT-014",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 1,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 0,
+            "MEDIUM": 1,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 1,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-8a3bffc2",
+            "response_id": "RESPI-014",
+            "lead_id": "TEST-RESP-INT-014",
+            "outreach_id": "EX-TEST-RESP-INT-014-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "QUESTION",
+            "intent_confidence": 0.4,
+            "confidence_band": "MEDIUM",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 9,
+            "clause_hits": {
+              "RESPOND": 2,
+              "OBJECTION": 3,
+              "QUESTION": 4
+            },
+            "deciding_clause": "QUESTION",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "INST-01",
+                "phrase": "sounds good",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "budget",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "maybe later",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "price",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "what",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "when",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "which",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-02",
+                "phrase": "?",
+                "weight": 1,
+                "polarity": "question",
+                "clause": "QUESTION"
+              }
+            ],
+            "text_preview": "",
+            "reason": "QUESTION with MEDIUM confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-015",
+      "name": "EXACT_070_HIGH",
+      "note": "Engineer-measured natural conversational confidence of exactly 0.70 (7/10) — HIGH boundary lock (strict QUESTION winner).",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-015",
+          "idempotency_key": "respi-015::email",
+          "lead_id": "TEST-RESP-INT-015",
+          "outreach_id": "EX-TEST-RESP-INT-015-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-015",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "what, when, which? yes",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-015-email",
+          "lead_id": "TEST-RESP-INT-015",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 1,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 1,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-ed9fea73",
+            "response_id": "RESPI-015",
+            "lead_id": "TEST-RESP-INT-015",
+            "outreach_id": "EX-TEST-RESP-INT-015-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "QUESTION",
+            "intent_confidence": 0.7,
+            "confidence_band": "HIGH",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 5,
+            "clause_hits": {
+              "RESPOND": 1,
+              "QUESTION": 4
+            },
+            "deciding_clause": "QUESTION",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "what",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "when",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "which",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-02",
+                "phrase": "?",
+                "weight": 1,
+                "polarity": "question",
+                "clause": "QUESTION"
+              }
+            ],
+            "text_preview": "",
+            "reason": "QUESTION with HIGH confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-016",
+      "name": "MIXED_BATCH_SUMMARY",
+      "note": "Seven-card batch covering every actionability and most labels; exercises aggregate summary metrics incl. a SKIPPED row.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-016a",
+          "idempotency_key": "respi-016a::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016a",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send me the full details",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016b",
+          "idempotency_key": "respi-016b::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016b",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "what are the next steps?",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016c",
+          "idempotency_key": "respi-016c::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016c",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "too expensive for us right now, no budget this quarter",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016d",
+          "idempotency_key": "respi-016d::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016d",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "not interested, no thanks",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016e",
+          "idempotency_key": "respi-016e::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016e",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "please unsubscribe me from all mailing lists",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016f",
+          "idempotency_key": "respi-016f::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016f",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "lorem ipsum dolor sit amet consectetur",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016g",
+          "idempotency_key": "respi-016g::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016g",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "   ",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "lead_id": "TEST-RESP-INT-016",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 7,
+          "interpreted_records": 6,
+          "skipped_records": 1,
+          "by_intent": {
+            "RESPOND": 1,
+            "QUESTION": 1,
+            "OBJECTION": 1,
+            "NOT_INTERESTED": 1,
+            "OPT_OUT": 1,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 1
+          },
+          "by_confidence_band": {
+            "HIGH": 5,
+            "MEDIUM": 0,
+            "LOW": 1
+          },
+          "by_actionability": {
+            "HARD_STOP": 1,
+            "AUTO_REPLY": 3,
+            "MANUAL_REVIEW": 1,
+            "NO_ACTION": 1
+          },
+          "stop_contact_count": 1,
+          "manual_review_count": 1,
+          "conflict_count": 0,
+          "coverage_rate": 0.8571,
+          "exception_count": 1
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-4b728a71",
+            "response_id": "RESPI-016a",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "RESPOND",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 3,
+            "clause_hits": {
+              "RESPOND": 3
+            },
+            "deciding_clause": "RESPOND",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "INST-01",
+                "phrase": "please send",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "send me",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "RESPOND with HIGH confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "INTERP-d165d902",
+            "response_id": "RESPI-016b",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "QUESTION",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 2,
+            "clause_hits": {
+              "QUESTION": 2
+            },
+            "deciding_clause": "QUESTION",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "what",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-02",
+                "phrase": "?",
+                "weight": 1,
+                "polarity": "question",
+                "clause": "QUESTION"
+              }
+            ],
+            "text_preview": "",
+            "reason": "QUESTION with HIGH confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "INTERP-75d409b3",
+            "response_id": "RESPI-016c",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "OBJECTION",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 4,
+            "clause_hits": {
+              "OBJECTION": 4
+            },
+            "deciding_clause": "OBJECTION",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "budget",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "expensive",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "no budget",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "too expensive",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              }
+            ],
+            "text_preview": "",
+            "reason": "OBJECTION with HIGH confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "INTERP-a49fdcec",
+            "response_id": "RESPI-016d",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "NOT_INTERESTED",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "NO_ACTION",
+            "recommended_action": "no action: close/archive",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 2,
+            "clause_hits": {
+              "NOT_INTERESTED": 2
+            },
+            "deciding_clause": "NOT_INTERESTED",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "NINT-01",
+                "phrase": "no thanks",
+                "weight": 3,
+                "polarity": "negative",
+                "clause": "NOT_INTERESTED"
+              },
+              {
+                "rule_id": "NINT-01",
+                "phrase": "not interested",
+                "weight": 3,
+                "polarity": "negative",
+                "clause": "NOT_INTERESTED"
+              }
+            ],
+            "text_preview": "",
+            "reason": "NOT_INTERESTED with HIGH confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "INTERP-8e943a55",
+            "response_id": "RESPI-016e",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "OPT_OUT",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "HARD_STOP",
+            "recommended_action": "stop-contact: suppress future outreach",
+            "stop_contact": true,
+            "priority": "HIGH",
+            "actionable": true,
+            "matched_terms_total": 1,
+            "clause_hits": {
+              "OPT_OUT": 1
+            },
+            "deciding_clause": "OPT_OUT",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "OPT-OUT-01",
+                "phrase": "unsubscribe",
+                "weight": 10,
+                "polarity": "opt_out",
+                "clause": "OPT_OUT"
+              }
+            ],
+            "text_preview": "",
+            "reason": "OPT_OUT with HIGH confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "INTERP-eee09cb6",
+            "response_id": "RESPI-016f",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "NO_INTENT",
+            "intent_confidence": 0,
+            "confidence_band": "LOW",
+            "actionability": "MANUAL_REVIEW",
+            "recommended_action": "manual review required",
+            "stop_contact": false,
+            "priority": "MEDIUM",
+            "actionable": true,
+            "matched_terms_total": 0,
+            "clause_hits": {},
+            "deciding_clause": "NO_INTENT",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [],
+            "text_preview": "",
+            "reason": "NO_INTENT with LOW confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "",
+            "response_id": "RESPI-016g",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "SKIPPED",
+            "intent_label": "",
+            "intent_confidence": null,
+            "confidence_band": "",
+            "actionability": "",
+            "recommended_action": "",
+            "stop_contact": false,
+            "priority": "",
+            "actionable": false,
+            "matched_terms_total": 0,
+            "clause_hits": {},
+            "deciding_clause": "",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [],
+            "text_preview": "",
+            "reason": "skipped: empty response_text",
+            "notes": ""
+          }
+        ],
+        "exceptions": [
+          {
+            "category": "INVALID_RESPONSE_RECORD",
+            "severity": "WARNING",
+            "response_id": "RESPI-016g",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "reason": "Response Log row is missing required identity fields, carries a non-canonical response_status, or has no response text.",
+            "evidence": {
+              "reason": "empty response_text"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-017",
+      "name": "UNMATCHED",
+      "note": "Capture-level UNMATCHED response flows through real reconcile to NOT_VERIFIABLE and interpretation marks it not actionable.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-017",
+          "idempotency_key": "respi-017::email",
+          "lead_id": "",
+          "outreach_id": "",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-017",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes sounds good!",
+          "response_status": "UNMATCHED",
+          "source": "gmail",
+          "matched": false,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 1,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 1,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 1,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-8fda3331",
+            "response_id": "RESPI-017",
+            "lead_id": "",
+            "outreach_id": "",
+            "channel": "email",
+            "response_status": "UNMATCHED",
+            "reconciliation_status": "NOT_VERIFIABLE",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "RESPOND",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "MANUAL_REVIEW",
+            "recommended_action": "manual review required",
+            "stop_contact": false,
+            "priority": "MEDIUM",
+            "actionable": false,
+            "matched_terms_total": 2,
+            "clause_hits": {
+              "RESPOND": 2
+            },
+            "deciding_clause": "RESPOND",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "INST-01",
+                "phrase": "sounds good",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "RESPOND with HIGH confidence",
+            "notes": "unmatched response; not actionable"
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-018",
+      "name": "VIOLATION",
+      "note": "Real reconcile VIOLATION (referenced outreach id absent while the lead has other outbound history) drives HIGH-priority MANUAL_REVIEW.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-018",
+          "idempotency_key": "respi-018::email",
+          "lead_id": "TEST-RESP-INT-018",
+          "outreach_id": "EX-TEST-RESP-INT-018-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-018",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send me the full details",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-018-call",
+          "lead_id": "TEST-RESP-INT-018",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "call",
+          "email": "",
+          "phone": "+15550000111",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 1,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 1,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 1,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-1892415e",
+            "response_id": "RESPI-018",
+            "lead_id": "TEST-RESP-INT-018",
+            "outreach_id": "EX-TEST-RESP-INT-018-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VIOLATION",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "RESPOND",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "MANUAL_REVIEW",
+            "recommended_action": "manual review required",
+            "stop_contact": false,
+            "priority": "HIGH",
+            "actionable": true,
+            "matched_terms_total": 3,
+            "clause_hits": {
+              "RESPOND": 3
+            },
+            "deciding_clause": "RESPOND",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "INST-01",
+                "phrase": "please send",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "send me",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "RESPOND with HIGH confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-019",
+      "name": "NOT_VERIFIABLE",
+      "note": "Real reconcile NOT_VERIFIABLE (non-canonical outreach reference) drives MEDIUM-priority MANUAL_REVIEW.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-019",
+          "idempotency_key": "respi-019::email",
+          "lead_id": "TEST-RESP-INT-019",
+          "outreach_id": "CONTACT-REFERENCE-123",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-019",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send me the full details",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 1,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 1,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 1,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-b6812acf",
+            "response_id": "RESPI-019",
+            "lead_id": "TEST-RESP-INT-019",
+            "outreach_id": "CONTACT-REFERENCE-123",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "NOT_VERIFIABLE",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "RESPOND",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "MANUAL_REVIEW",
+            "recommended_action": "manual review required",
+            "stop_contact": false,
+            "priority": "MEDIUM",
+            "actionable": true,
+            "matched_terms_total": 3,
+            "clause_hits": {
+              "RESPOND": 3
+            },
+            "deciding_clause": "RESPOND",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "INST-01",
+                "phrase": "please send",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "send me",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "RESPOND with HIGH confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-020",
+      "name": "MISSING_RECONCILIATION_EVIDENCE",
+      "note": "Reconciliation report delivers no evidence for this response_id (snapshot drift) — NOT_VERIFIABLE interpretation with a WARNING.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-020",
+          "idempotency_key": "respi-020::email",
+          "lead_id": "TEST-RESP-INT-020",
+          "outreach_id": "EX-TEST-RESP-INT-020-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-020",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send me the full details",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-020-email",
+          "lead_id": "TEST-RESP-INT-020",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "reconcileResponseRows": [],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 1,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 1,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 1,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 1,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 1,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 1
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-b869d6c3",
+            "response_id": "RESPI-020",
+            "lead_id": "TEST-RESP-INT-020",
+            "outreach_id": "EX-TEST-RESP-INT-020-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "NOT_VERIFIABLE",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "RESPOND",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "MANUAL_REVIEW",
+            "recommended_action": "manual review required",
+            "stop_contact": false,
+            "priority": "MEDIUM",
+            "actionable": true,
+            "matched_terms_total": 3,
+            "clause_hits": {
+              "RESPOND": 3
+            },
+            "deciding_clause": "RESPOND",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "INST-01",
+                "phrase": "please send",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "send me",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "RESPOND with HIGH confidence",
+            "notes": "no reconciliation evidence for response_id; treated as NOT_VERIFIABLE"
+          }
+        ],
+        "exceptions": [
+          {
+            "category": "MISSING_RECONCILIATION_EVIDENCE",
+            "severity": "WARNING",
+            "response_id": "RESPI-020",
+            "lead_id": "TEST-RESP-INT-020",
+            "outreach_id": "EX-TEST-RESP-INT-020-email",
+            "channel": "email",
+            "reason": "No reconciliation evidence for response_id; treated as NOT_VERIFIABLE.",
+            "evidence": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-021",
+      "name": "DUPLICATE_KEYS_NO_DEDUP",
+      "note": "Duplicate idempotency keys must each be interpreted from their own evidence; the interpretation engine never dedupes.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-021a",
+          "idempotency_key": "respi-021a::email",
+          "lead_id": "TEST-RESP-INT-021",
+          "outreach_id": "EX-TEST-RESP-INT-021-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-021a",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send me the full details",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-021b",
+          "idempotency_key": "respi-021b::email",
+          "lead_id": "TEST-RESP-INT-021",
+          "outreach_id": "EX-TEST-RESP-INT-021-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-021b",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "not interested, no thanks",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-021-email",
+          "lead_id": "TEST-RESP-INT-021",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 2,
+          "interpreted_records": 2,
+          "skipped_records": 0,
+          "by_intent": {
+            "RESPOND": 1,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 1,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 2,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 1,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 1
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 1,
+          "exception_count": 0
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-219a6517",
+            "response_id": "RESPI-021a",
+            "lead_id": "TEST-RESP-INT-021",
+            "outreach_id": "EX-TEST-RESP-INT-021-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "RESPOND",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 3,
+            "clause_hits": {
+              "RESPOND": 3
+            },
+            "deciding_clause": "RESPOND",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "INST-01",
+                "phrase": "please send",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "send me",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "RESPOND with HIGH confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "INTERP-5748e2bc",
+            "response_id": "RESPI-021b",
+            "lead_id": "TEST-RESP-INT-021",
+            "outreach_id": "EX-TEST-RESP-INT-021-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "NOT_INTERESTED",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "NO_ACTION",
+            "recommended_action": "no action: close/archive",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 2,
+            "clause_hits": {
+              "NOT_INTERESTED": 2
+            },
+            "deciding_clause": "NOT_INTERESTED",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "NINT-01",
+                "phrase": "no thanks",
+                "weight": 3,
+                "polarity": "negative",
+                "clause": "NOT_INTERESTED"
+              },
+              {
+                "rule_id": "NINT-01",
+                "phrase": "not interested",
+                "weight": 3,
+                "polarity": "negative",
+                "clause": "NOT_INTERESTED"
+              }
+            ],
+            "text_preview": "",
+            "reason": "NOT_INTERESTED with HIGH confidence",
+            "notes": ""
+          }
+        ],
+        "exceptions": []
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-022",
+      "name": "EMPTY_TEXT_SKIPPED",
+      "note": "Whitespace-only response is SKIPPED with INVALID_RESPONSE_RECORD; never classified.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-022",
+          "idempotency_key": "respi-022::email",
+          "lead_id": "TEST-RESP-INT-022",
+          "outreach_id": "EX-TEST-RESP-INT-022-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-022",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "   ",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-022-email",
+          "lead_id": "TEST-RESP-INT-022",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "reconcileResponseRows": [],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 0,
+          "skipped_records": 1,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 0,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 0,
+          "exception_count": 1
+        },
+        "results": [
+          {
+            "interpretation_id": "",
+            "response_id": "RESPI-022",
+            "lead_id": "TEST-RESP-INT-022",
+            "outreach_id": "EX-TEST-RESP-INT-022-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "NOT_VERIFIABLE",
+            "interpretation_status": "SKIPPED",
+            "intent_label": "",
+            "intent_confidence": null,
+            "confidence_band": "",
+            "actionability": "",
+            "recommended_action": "",
+            "stop_contact": false,
+            "priority": "",
+            "actionable": false,
+            "matched_terms_total": 0,
+            "clause_hits": {},
+            "deciding_clause": "",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [],
+            "text_preview": "",
+            "reason": "skipped: empty response_text",
+            "notes": ""
+          }
+        ],
+        "exceptions": [
+          {
+            "category": "INVALID_RESPONSE_RECORD",
+            "severity": "WARNING",
+            "response_id": "RESPI-022",
+            "lead_id": "TEST-RESP-INT-022",
+            "outreach_id": "EX-TEST-RESP-INT-022-email",
+            "channel": "email",
+            "reason": "Response Log row is missing required identity fields, carries a non-canonical response_status, or has no response text.",
+            "evidence": {
+              "reason": "empty response_text"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-023",
+      "name": "INVALID_STATUS_SKIPPED",
+      "note": "Non-canonical response_status is SKIPPED with INVALID_RESPONSE_RECORD; the classifier is never force-run.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-023",
+          "idempotency_key": "respi-023::email",
+          "lead_id": "TEST-RESP-INT-023",
+          "outreach_id": "EX-TEST-RESP-INT-023-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-023",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send me the full details",
+          "response_status": "PENDING",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-023-email",
+          "lead_id": "TEST-RESP-INT-023",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "reconcileResponseRows": [],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 1,
+          "interpreted_records": 0,
+          "skipped_records": 1,
+          "by_intent": {
+            "RESPOND": 0,
+            "QUESTION": 0,
+            "OBJECTION": 0,
+            "NOT_INTERESTED": 0,
+            "OPT_OUT": 0,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 0
+          },
+          "by_confidence_band": {
+            "HIGH": 0,
+            "MEDIUM": 0,
+            "LOW": 0
+          },
+          "by_actionability": {
+            "HARD_STOP": 0,
+            "AUTO_REPLY": 0,
+            "MANUAL_REVIEW": 0,
+            "NO_ACTION": 0
+          },
+          "stop_contact_count": 0,
+          "manual_review_count": 0,
+          "conflict_count": 0,
+          "coverage_rate": 0,
+          "exception_count": 1
+        },
+        "results": [
+          {
+            "interpretation_id": "",
+            "response_id": "RESPI-023",
+            "lead_id": "TEST-RESP-INT-023",
+            "outreach_id": "EX-TEST-RESP-INT-023-email",
+            "channel": "email",
+            "response_status": "PENDING",
+            "reconciliation_status": "NOT_VERIFIABLE",
+            "interpretation_status": "SKIPPED",
+            "intent_label": "",
+            "intent_confidence": null,
+            "confidence_band": "",
+            "actionability": "",
+            "recommended_action": "",
+            "stop_contact": false,
+            "priority": "",
+            "actionable": false,
+            "matched_terms_total": 0,
+            "clause_hits": {},
+            "deciding_clause": "",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [],
+            "text_preview": "",
+            "reason": "skipped: invalid response_status",
+            "notes": ""
+          }
+        ],
+        "exceptions": [
+          {
+            "category": "INVALID_RESPONSE_RECORD",
+            "severity": "WARNING",
+            "response_id": "RESPI-023",
+            "lead_id": "TEST-RESP-INT-023",
+            "outreach_id": "EX-TEST-RESP-INT-023-email",
+            "channel": "email",
+            "reason": "Response Log row is missing required identity fields, carries a non-canonical response_status, or has no response text.",
+            "evidence": {
+              "reason": "invalid response_status"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-024",
+      "name": "UPSTREAM_INCOMPLETE",
+      "note": "An upstream INCOMPLETE reconciliation report is read-failure-equivalent: INCOMPLETE with null metrics.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-024",
+          "idempotency_key": "respi-024::email",
+          "lead_id": "TEST-RESP-INT-024",
+          "outreach_id": "EX-TEST-RESP-INT-024-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-024",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send me the full details",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-024-email",
+          "lead_id": "TEST-RESP-INT-024",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": true,
+      "expected": {
+        "status": "INCOMPLETE",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": false,
+          "reconciliation_read_error": "reconciliation upstream state INCOMPLETE"
+        },
+        "summary": {
+          "response_records": null,
+          "interpreted_records": null,
+          "skipped_records": null,
+          "by_intent": null,
+          "by_confidence_band": null,
+          "by_actionability": null,
+          "stop_contact_count": null,
+          "manual_review_count": null,
+          "conflict_count": null,
+          "coverage_rate": null,
+          "exception_count": 1
+        },
+        "results": [],
+        "exceptions": [
+          {
+            "category": "READ_FAILURE",
+            "severity": "ERROR",
+            "response_id": "",
+            "lead_id": "",
+            "outreach_id": "",
+            "channel": "",
+            "reason": "A required interpretation source could not be read.",
+            "evidence": {
+              "source": "reconciliation report",
+              "error": "reconciliation upstream state INCOMPLETE"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-025",
+      "name": "RESPONSE_LOG_READ_ERROR",
+      "note": "A Response Log source read failure yields INCOMPLETE with null summary and a READ_FAILURE exception.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-025",
+          "idempotency_key": "respi-025::email",
+          "lead_id": "TEST-RESP-INT-025",
+          "outreach_id": "EX-TEST-RESP-INT-025-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-025",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send me the full details",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-025-email",
+          "lead_id": "TEST-RESP-INT-025",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "SheetNotFound",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "INCOMPLETE",
+        "sources": {
+          "response_log_ok": false,
+          "response_log_read_error": "SheetNotFound",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": null,
+          "interpreted_records": null,
+          "skipped_records": null,
+          "by_intent": null,
+          "by_confidence_band": null,
+          "by_actionability": null,
+          "stop_contact_count": null,
+          "manual_review_count": null,
+          "conflict_count": null,
+          "coverage_rate": null,
+          "exception_count": 1
+        },
+        "results": [],
+        "exceptions": [
+          {
+            "category": "READ_FAILURE",
+            "severity": "ERROR",
+            "response_id": "",
+            "lead_id": "",
+            "outreach_id": "",
+            "channel": "",
+            "reason": "A required interpretation source could not be read.",
+            "evidence": {
+              "source": "response log",
+              "error": "SheetNotFound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-026",
+      "name": "RECONCILIATION_READ_ERROR",
+      "note": "A reconciliation report read failure yields INCOMPLETE with null summary and a READ_FAILURE exception.",
+      "reorder_of": "",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-026",
+          "idempotency_key": "respi-026::email",
+          "lead_id": "TEST-RESP-INT-026",
+          "outreach_id": "EX-TEST-RESP-INT-026-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-026",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send me the full details",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-026-email",
+          "lead_id": "TEST-RESP-INT-026",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "SheetNotFound",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "INCOMPLETE",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": false,
+          "reconciliation_read_error": "SheetNotFound"
+        },
+        "summary": {
+          "response_records": null,
+          "interpreted_records": null,
+          "skipped_records": null,
+          "by_intent": null,
+          "by_confidence_band": null,
+          "by_actionability": null,
+          "stop_contact_count": null,
+          "manual_review_count": null,
+          "conflict_count": null,
+          "coverage_rate": null,
+          "exception_count": 1
+        },
+        "results": [],
+        "exceptions": [
+          {
+            "category": "READ_FAILURE",
+            "severity": "ERROR",
+            "response_id": "",
+            "lead_id": "",
+            "outreach_id": "",
+            "channel": "",
+            "reason": "A required interpretation source could not be read.",
+            "evidence": {
+              "source": "reconciliation report",
+              "error": "SheetNotFound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-RESP-INT-027",
+      "name": "REORDERED_IDENTICAL",
+      "note": "Same inputs as TEST-RESP-INT-016 with reversed row order — interpretation results must be byte-identical.",
+      "reorder_of": "TEST-RESP-INT-016",
+      "initialResponseRows": [
+        {
+          "response_id": "RESPI-016g",
+          "idempotency_key": "respi-016g::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016g",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "   ",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016f",
+          "idempotency_key": "respi-016f::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016f",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "lorem ipsum dolor sit amet consectetur",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016e",
+          "idempotency_key": "respi-016e::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016e",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "please unsubscribe me from all mailing lists",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016d",
+          "idempotency_key": "respi-016d::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016d",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "not interested, no thanks",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016c",
+          "idempotency_key": "respi-016c::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016c",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "too expensive for us right now, no budget this quarter",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016b",
+          "idempotency_key": "respi-016b::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016b",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "what are the next steps?",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        },
+        {
+          "response_id": "RESPI-016a",
+          "idempotency_key": "respi-016a::email",
+          "lead_id": "TEST-RESP-INT-016",
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "channel": "email",
+          "provider_message_id": "pmsg-RESPI-016a",
+          "received_at": "2026-09-12T08:45:00.000Z",
+          "response_text": "yes please send me the full details",
+          "response_status": "CAPTURED",
+          "source": "gmail",
+          "matched": true,
+          "notes": ""
+        }
+      ],
+      "initialOutreachRows": [
+        {
+          "outreach_id": "EX-TEST-RESP-INT-016-email",
+          "lead_id": "TEST-RESP-INT-016",
+          "business_name": "Acme Corp",
+          "contact_name": "Ada Test",
+          "channel": "email",
+          "email": "ada@example.com",
+          "phone": "",
+          "message_variant": "v1",
+          "sent_at": "2026-09-11T14:00:00.000Z",
+          "follow_up_date": "",
+          "follow_up_number": "",
+          "reply_status": "",
+          "reply_date": "",
+          "pain_admitted": "",
+          "call_booked": "",
+          "call_date": "",
+          "paid_pilot_interest": "",
+          "objection": "",
+          "outcome": "",
+          "notes": ""
+        }
+      ],
+      "responseReadError": "",
+      "reconciliationReadError": "",
+      "upstreamIncomplete": false,
+      "expected": {
+        "status": "COMPLETED",
+        "sources": {
+          "response_log_ok": true,
+          "response_log_read_error": "",
+          "reconciliation_ok": true,
+          "reconciliation_read_error": ""
+        },
+        "summary": {
+          "response_records": 7,
+          "interpreted_records": 6,
+          "skipped_records": 1,
+          "by_intent": {
+            "RESPOND": 1,
+            "QUESTION": 1,
+            "OBJECTION": 1,
+            "NOT_INTERESTED": 1,
+            "OPT_OUT": 1,
+            "UNDELIVERABLE": 0,
+            "SPAM_OR_AUTOMATED": 0,
+            "NO_INTENT": 1
+          },
+          "by_confidence_band": {
+            "HIGH": 5,
+            "MEDIUM": 0,
+            "LOW": 1
+          },
+          "by_actionability": {
+            "HARD_STOP": 1,
+            "AUTO_REPLY": 3,
+            "MANUAL_REVIEW": 1,
+            "NO_ACTION": 1
+          },
+          "stop_contact_count": 1,
+          "manual_review_count": 1,
+          "conflict_count": 0,
+          "coverage_rate": 0.8571,
+          "exception_count": 1
+        },
+        "results": [
+          {
+            "interpretation_id": "INTERP-4b728a71",
+            "response_id": "RESPI-016a",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "RESPOND",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 3,
+            "clause_hits": {
+              "RESPOND": 3
+            },
+            "deciding_clause": "RESPOND",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "INST-01",
+                "phrase": "please send",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "send me",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              },
+              {
+                "rule_id": "INST-01",
+                "phrase": "yes",
+                "weight": 3,
+                "polarity": "positive",
+                "clause": "RESPOND"
+              }
+            ],
+            "text_preview": "",
+            "reason": "RESPOND with HIGH confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "INTERP-d165d902",
+            "response_id": "RESPI-016b",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "QUESTION",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 2,
+            "clause_hits": {
+              "QUESTION": 2
+            },
+            "deciding_clause": "QUESTION",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "CSQ-01",
+                "phrase": "what",
+                "weight": 2,
+                "polarity": "question",
+                "clause": "QUESTION"
+              },
+              {
+                "rule_id": "CSQ-02",
+                "phrase": "?",
+                "weight": 1,
+                "polarity": "question",
+                "clause": "QUESTION"
+              }
+            ],
+            "text_preview": "",
+            "reason": "QUESTION with HIGH confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "INTERP-75d409b3",
+            "response_id": "RESPI-016c",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "OBJECTION",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "AUTO_REPLY",
+            "recommended_action": "auto-draft reply permitted; send owned by a later stage",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 4,
+            "clause_hits": {
+              "OBJECTION": 4
+            },
+            "deciding_clause": "OBJECTION",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "budget",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "expensive",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "no budget",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              },
+              {
+                "rule_id": "OBJ-01",
+                "phrase": "too expensive",
+                "weight": 2,
+                "polarity": "negative",
+                "clause": "OBJECTION"
+              }
+            ],
+            "text_preview": "",
+            "reason": "OBJECTION with HIGH confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "INTERP-a49fdcec",
+            "response_id": "RESPI-016d",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "NOT_INTERESTED",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "NO_ACTION",
+            "recommended_action": "no action: close/archive",
+            "stop_contact": false,
+            "priority": "LOW",
+            "actionable": true,
+            "matched_terms_total": 2,
+            "clause_hits": {
+              "NOT_INTERESTED": 2
+            },
+            "deciding_clause": "NOT_INTERESTED",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "NINT-01",
+                "phrase": "no thanks",
+                "weight": 3,
+                "polarity": "negative",
+                "clause": "NOT_INTERESTED"
+              },
+              {
+                "rule_id": "NINT-01",
+                "phrase": "not interested",
+                "weight": 3,
+                "polarity": "negative",
+                "clause": "NOT_INTERESTED"
+              }
+            ],
+            "text_preview": "",
+            "reason": "NOT_INTERESTED with HIGH confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "INTERP-8e943a55",
+            "response_id": "RESPI-016e",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "OPT_OUT",
+            "intent_confidence": 1,
+            "confidence_band": "HIGH",
+            "actionability": "HARD_STOP",
+            "recommended_action": "stop-contact: suppress future outreach",
+            "stop_contact": true,
+            "priority": "HIGH",
+            "actionable": true,
+            "matched_terms_total": 1,
+            "clause_hits": {
+              "OPT_OUT": 1
+            },
+            "deciding_clause": "OPT_OUT",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [
+              {
+                "rule_id": "OPT-OUT-01",
+                "phrase": "unsubscribe",
+                "weight": 10,
+                "polarity": "opt_out",
+                "clause": "OPT_OUT"
+              }
+            ],
+            "text_preview": "",
+            "reason": "OPT_OUT with HIGH confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "INTERP-eee09cb6",
+            "response_id": "RESPI-016f",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "INTERPRETED",
+            "intent_label": "NO_INTENT",
+            "intent_confidence": 0,
+            "confidence_band": "LOW",
+            "actionability": "MANUAL_REVIEW",
+            "recommended_action": "manual review required",
+            "stop_contact": false,
+            "priority": "MEDIUM",
+            "actionable": true,
+            "matched_terms_total": 0,
+            "clause_hits": {},
+            "deciding_clause": "NO_INTENT",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [],
+            "text_preview": "",
+            "reason": "NO_INTENT with LOW confidence",
+            "notes": ""
+          },
+          {
+            "interpretation_id": "",
+            "response_id": "RESPI-016g",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "response_status": "CAPTURED",
+            "reconciliation_status": "VERIFIED",
+            "interpretation_status": "SKIPPED",
+            "intent_label": "",
+            "intent_confidence": null,
+            "confidence_band": "",
+            "actionability": "",
+            "recommended_action": "",
+            "stop_contact": false,
+            "priority": "",
+            "actionable": false,
+            "matched_terms_total": 0,
+            "clause_hits": {},
+            "deciding_clause": "",
+            "conflict_detected": false,
+            "interpretation_version": "RESP-INT-V1",
+            "evidence": [],
+            "text_preview": "",
+            "reason": "skipped: empty response_text",
+            "notes": ""
+          }
+        ],
+        "exceptions": [
+          {
+            "category": "INVALID_RESPONSE_RECORD",
+            "severity": "WARNING",
+            "response_id": "RESPI-016g",
+            "lead_id": "TEST-RESP-INT-016",
+            "outreach_id": "EX-TEST-RESP-INT-016-email",
+            "channel": "email",
+            "reason": "Response Log row is missing required identity fields, carries a non-canonical response_status, or has no response text.",
+            "evidence": {
+              "reason": "empty response_text"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

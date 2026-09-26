@@ -1,0 +1,79 @@
+{
+  "_meta": {
+    "artifact": "GOOGLE-SHEETS-VERIFICATION-HARNESS-v0.1",
+    "namespace": "TEST-AOH",
+    "regex": "^TEST-AOH-\\d+$",
+    "note": "All fixture lead IDs use the deterministic TEST-AOH-* namespace. Intent fields only — full 24-column rows are built by src/fixtures.js. qualification_status is a plain value for the OFFLINE/mock harness and for dedicated fixture sheets; when seeding the production spreadsheet the runner never writes formula-owned Q:U columns (see mode formula-grown)."
+  },
+  "verified_leads_seed": [
+    {
+      "lead_id": "TEST-AOH-001",
+      "qualification_status": "QUALIFIED",
+      "website": "https://fixture.example.com/001",
+      "phone": ""
+    },
+    {
+      "lead_id": "TEST-AOH-002",
+      "qualification_status": "QUALIFIED",
+      "website": "",
+      "phone": "+15550000002"
+    },
+    {
+      "lead_id": "TEST-AOH-003",
+      "qualification_status": "REVIEW",
+      "website": "https://fixture.example.com/003",
+      "phone": ""
+    },
+    {
+      "lead_id": "TEST-AOH-004",
+      "qualification_status": "DISQUALIFIED",
+      "website": "https://fixture.example.com/004",
+      "phone": ""
+    },
+    {
+      "lead_id": "TEST-AOH-005",
+      "qualification_status": "QUALIFIED",
+      "website": "",
+      "phone": ""
+    },
+    {
+      "lead_id": "TEST-AOH-006",
+      "qualification_status": "QUALIFIED",
+      "website": "https://fixture.example.com/006",
+      "phone": ""
+    },
+    {
+      "lead_id": "TEST-AOH-007",
+      "qualification_status": "QUALIFIED",
+      "website": "https://fixture.example.com/007",
+      "phone": ""
+    },
+    {
+      "lead_id": "TEST-AOH-008",
+      "qualification_status": "QUALIFIED",
+      "website": "",
+      "phone": "+15550000008"
+    }
+  ],
+  "approved_outreach_preseed": [
+    {
+      "lead_id": "TEST-AOH-006",
+      "business_name": "Fixture Business TEST-AOH-006",
+      "niche": "HVAC",
+      "city": "Austin",
+      "state": "Texas",
+      "country": "USA",
+      "website": "https://fixture.example.com/006",
+      "phone": "",
+      "lead_score": "80",
+      "qualification_status": "QUALIFIED",
+      "outreach_status": "not_ready",
+      "approved_at": "2026-09-10T00:00:00.000Z",
+      "notes": "FIXTURE pre-seeded approval"
+    }
+  ],
+  "expected": {
+    "insert": ["TEST-AOH-001", "TEST-AOH-002", "TEST-AOH-007", "TEST-AOH-008"],
+    "skip": ["TEST-AOH-003", "TEST-AOH-004", "TEST-AOH-005", "TEST-AOH-006"]
+  }
+}

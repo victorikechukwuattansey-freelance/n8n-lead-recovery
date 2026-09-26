@@ -1,0 +1,634 @@
+{
+  "_meta": {
+    "namespace": "TEST-QUEUE",
+    "artifact": "Outreach Queue & Planning V1",
+    "note": "Read-only queue planning fixtures. Every fixture id matches /^TEST-QUEUE-\\d+$/. Fixtures carry intent (partial rows); the loader expands them to the full Approved Outreach (21) and Outreach Log (20) column contracts. The queue projection is a planning layer only; READY never implies outreach was sent."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-QUEUE-001",
+      "name": "EMAIL_READY",
+      "note": "Fixture 1: approved lead with verified email -> READY / EMAIL.",
+      "approved": [
+        {
+          "lead_id": "TEST-QUEUE-001",
+          "business_name": "Bluebird Bakery",
+          "niche": "Bakery",
+          "city": "Austin",
+          "state": "Texas",
+          "country": "USA",
+          "email": "owner@bluebird.example",
+          "email_verified": "true",
+          "approved_at": "2026-09-01T09:00:00.000Z",
+          "score": "85",
+          "status": "not_ready",
+          "channel": "email"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_count": 1,
+        "not_ready_count": 0,
+        "blocked_count": 0,
+        "email_ready_count": 1,
+        "call_ready_count": 0,
+        "outreach_total": 0,
+        "duplicate_approval_ids": 0,
+        "malformed_approvals": 0,
+        "orphan_outreach": 0,
+        "malformed_outreach": 0,
+        "history_attached": 0,
+        "exception_count": 0,
+        "exception_types": [],
+        "queue": [
+          {
+            "lead_id": "TEST-QUEUE-001",
+            "available_channel": "email",
+            "readiness_status": "READY",
+            "priority": 1,
+            "outreach_count": 0,
+            "enrichment_required": false,
+            "reason": "channel email with address"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-QUEUE-002",
+      "name": "CALL_READY",
+      "note": "Fixture 2: approved lead with usable phone only. The repository channel vocabulary is email | call, so PHONE maps to CALL.",
+      "approved": [
+        {
+          "lead_id": "TEST-QUEUE-002",
+          "business_name": "Cedar Lane Landscaping",
+          "niche": "Landscaping",
+          "city": "Austin",
+          "state": "Texas",
+          "country": "USA",
+          "phone": "5125550100",
+          "approved_at": "2026-09-02T09:00:00.000Z",
+          "score": "80",
+          "status": "not_ready",
+          "channel": "call"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_count": 1,
+        "not_ready_count": 0,
+        "blocked_count": 0,
+        "email_ready_count": 0,
+        "call_ready_count": 1,
+        "outreach_total": 0,
+        "exception_count": 0,
+        "exception_types": [],
+        "queue": [
+          {
+            "lead_id": "TEST-QUEUE-002",
+            "available_channel": "call",
+            "readiness_status": "READY",
+            "priority": 1,
+            "outreach_count": 0,
+            "enrichment_required": false,
+            "reason": "channel call with usable phone"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-QUEUE-003",
+      "name": "NO_CHANNEL",
+      "note": "Fixture 3: approved lead with no usable channel. A website is not a channel.",
+      "approved": [
+        {
+          "lead_id": "TEST-QUEUE-003",
+          "business_name": "Delta Plumbing",
+          "niche": "Plumbing",
+          "city": "Dallas",
+          "state": "Texas",
+          "country": "USA",
+          "website": "https://delta-plumbing.example",
+          "approved_at": "2026-09-04T09:00:00.000Z",
+          "score": "70",
+          "status": "not_ready"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_count": 0,
+        "not_ready_count": 1,
+        "blocked_count": 0,
+        "email_ready_count": 0,
+        "call_ready_count": 0,
+        "outreach_total": 0,
+        "exception_count": 0,
+        "exception_types": [],
+        "queue": [
+          {
+            "lead_id": "TEST-QUEUE-003",
+            "available_channel": "none",
+            "readiness_status": "NOT_READY",
+            "priority": 1,
+            "outreach_count": 0,
+            "enrichment_required": true,
+            "reason": "no available channel"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-QUEUE-004",
+      "name": "CONTACT_FORM_ONLY",
+      "note": "Fixture 4: contact form only. contact_form is NOT an established outreach channel in the repository model, so the lead is NOT_READY / NONE.",
+      "approved": [
+        {
+          "lead_id": "TEST-QUEUE-004",
+          "business_name": "Echo Glass Works",
+          "niche": "Glass",
+          "city": "Houston",
+          "state": "Texas",
+          "country": "USA",
+          "contact_form": "https://echo-glass.example/contact",
+          "approved_at": "2026-09-05T09:00:00.000Z",
+          "score": "75",
+          "status": "not_ready"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_count": 0,
+        "not_ready_count": 1,
+        "blocked_count": 0,
+        "email_ready_count": 0,
+        "call_ready_count": 0,
+        "outreach_total": 0,
+        "exception_count": 0,
+        "exception_types": [],
+        "queue": [
+          {
+            "lead_id": "TEST-QUEUE-004",
+            "available_channel": "none",
+            "readiness_status": "NOT_READY",
+            "priority": 1,
+            "outreach_count": 0,
+            "enrichment_required": true,
+            "reason": "no available channel"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-QUEUE-005",
+      "name": "HISTORY",
+      "note": "Fixture 5: approved lead with an existing Outreach Log record. History populated; READY still reflects channel only.",
+      "approved": [
+        {
+          "lead_id": "TEST-QUEUE-005",
+          "business_name": "Fern Gallery",
+          "niche": "Art",
+          "city": "Fort Worth",
+          "state": "Texas",
+          "country": "USA",
+          "email": "gallery@fern-gallery.example",
+          "email_verified": "true",
+          "approved_at": "2026-06-01T09:00:00.000Z",
+          "score": "78",
+          "status": "contacted",
+          "channel": "email"
+        }
+      ],
+      "outreach": [
+        {
+          "outreach_id": "OR-QUEUE-005-1",
+          "lead_id": "TEST-QUEUE-005",
+          "business_name": "Fern Gallery",
+          "channel": "email",
+          "email": "gallery@fern-gallery.example",
+          "sent_at": "2026-09-10T10:00:00.000Z",
+          "outcome": "no_reply"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_count": 1,
+        "not_ready_count": 0,
+        "blocked_count": 0,
+        "email_ready_count": 1,
+        "call_ready_count": 0,
+        "outreach_total": 1,
+        "exception_count": 0,
+        "history_attached": 1,
+        "exception_types": [],
+        "queue": [
+          {
+            "lead_id": "TEST-QUEUE-005",
+            "available_channel": "email",
+            "readiness_status": "READY",
+            "priority": 1,
+            "outreach_count": 1,
+            "last_outreach_at": "2026-09-10T10:00:00.000Z",
+            "enrichment_required": false,
+            "reason": "channel email with address"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-QUEUE-006",
+      "name": "MULTIPLE_HISTORY",
+      "note": "Fixture 6: approved lead with multiple outreach events. Correct count; latest sent_at by timestamp.",
+      "approved": [
+        {
+          "lead_id": "TEST-QUEUE-006",
+          "business_name": "Green Harvest Organics",
+          "niche": "Organic food",
+          "city": "San Antonio",
+          "state": "Texas",
+          "country": "USA",
+          "email": "hello@greenharvest.example",
+          "email_verified": "true",
+          "approved_at": "2026-07-01T09:00:00.000Z",
+          "score": "82",
+          "status": "follow_up_due",
+          "channel": "email"
+        }
+      ],
+      "outreach": [
+        {
+          "outreach_id": "OR-QUEUE-006-1",
+          "lead_id": "TEST-QUEUE-006",
+          "business_name": "Green Harvest Organics",
+          "channel": "email",
+          "email": "hello@greenharvest.example",
+          "sent_at": "2026-09-05T10:00:00.000Z",
+          "outcome": "no_reply"
+        },
+        {
+          "outreach_id": "OR-QUEUE-006-2",
+          "lead_id": "TEST-QUEUE-006",
+          "business_name": "Green Harvest Organics",
+          "channel": "call",
+          "phone": "5125550123",
+          "sent_at": "2026-09-12T14:30:00.000Z",
+          "outcome": "call_booked"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_count": 1,
+        "not_ready_count": 0,
+        "blocked_count": 0,
+        "email_ready_count": 1,
+        "call_ready_count": 0,
+        "outreach_total": 2,
+        "history_attached": 1,
+        "exception_count": 0,
+        "exception_types": [],
+        "queue": [
+          {
+            "lead_id": "TEST-QUEUE-006",
+            "available_channel": "email",
+            "readiness_status": "READY",
+            "priority": 1,
+            "outreach_count": 2,
+            "last_outreach_at": "2026-09-12T14:30:00.000Z",
+            "enrichment_required": false,
+            "reason": "channel email with address"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-QUEUE-007",
+      "name": "ORPHAN_OUTREACH",
+      "note": "Fixture 7: orphan Outreach Log record (no Approved Outreach row). Reported as an exception; never silently treated as approved.",
+      "approved": [],
+      "outreach": [
+        {
+          "outreach_id": "OR-QUEUE-007-1",
+          "lead_id": "TEST-QUEUE-007",
+          "business_name": "Mystery Vendor",
+          "channel": "email",
+          "email": "vendor@mystery.example",
+          "sent_at": "2026-09-10T10:00:00.000Z",
+          "outcome": ""
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 0,
+        "queue_total": 0,
+        "ready_count": 0,
+        "not_ready_count": 0,
+        "blocked_count": 0,
+        "email_ready_count": 0,
+        "call_ready_count": 0,
+        "outreach_total": 1,
+        "orphan_outreach": 1,
+        "exception_count": 1,
+        "exception_types": [
+          "OUTREACH_WITHOUT_APPROVAL"
+        ],
+        "queue": []
+      }
+    },
+    {
+      "id": "TEST-QUEUE-008",
+      "name": "TIE_PRIORITY",
+      "note": "Fixture 8: two approved leads with equal lead_score. Earlier approved_at ranks first; ties resolve by lead_id.",
+      "approved": [
+        {
+          "lead_id": "TEST-QUEUE-008",
+          "business_name": "Iron Forge Roofing",
+          "niche": "Roofing",
+          "city": "Plano",
+          "state": "Texas",
+          "country": "USA",
+          "email": "estimates@ironforge.example",
+          "email_verified": "true",
+          "approved_at": "2026-08-01T09:00:00.000Z",
+          "score": "80",
+          "status": "not_ready",
+          "channel": "email"
+        },
+        {
+          "lead_id": "TEST-QUEUE-009",
+          "business_name": "Juniper Interiors",
+          "niche": "Interiors",
+          "city": "Frisco",
+          "state": "Texas",
+          "country": "USA",
+          "email": "studio@juniper.example",
+          "email_verified": "true",
+          "approved_at": "2026-08-15T09:00:00.000Z",
+          "score": "80",
+          "status": "not_ready",
+          "channel": "email"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 2,
+        "queue_total": 2,
+        "ready_count": 2,
+        "not_ready_count": 0,
+        "blocked_count": 0,
+        "email_ready_count": 2,
+        "call_ready_count": 0,
+        "outreach_total": 0,
+        "exception_count": 0,
+        "exception_types": [],
+        "queue": [
+          {
+            "lead_id": "TEST-QUEUE-008",
+            "available_channel": "email",
+            "readiness_status": "READY",
+            "priority": 1,
+            "outreach_count": 0,
+            "enrichment_required": false,
+            "reason": "channel email with address"
+          },
+          {
+            "lead_id": "TEST-QUEUE-009",
+            "available_channel": "email",
+            "readiness_status": "READY",
+            "priority": 2,
+            "outreach_count": 0,
+            "enrichment_required": false,
+            "reason": "channel email with address"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-QUEUE-009",
+      "name": "DUPLICATE_APPROVAL",
+      "note": "Fixture 9: the same lead approved twice. One queue identity (first row canonical); duplicate counted, not an exception.",
+      "approved": [
+        {
+          "lead_id": "TEST-QUEUE-010",
+          "business_name": "Kindle Coffee Roasters",
+          "niche": "Coffee",
+          "city": "Round Rock",
+          "state": "Texas",
+          "country": "USA",
+          "email": "cafe@kindlecoffee.example",
+          "email_verified": "true",
+          "approved_at": "2026-07-20T09:00:00.000Z",
+          "score": "88",
+          "status": "not_ready",
+          "channel": "email"
+        },
+        {
+          "lead_id": "TEST-QUEUE-010",
+          "business_name": "Kindle Coffee Roasters",
+          "niche": "Coffee",
+          "city": "Round Rock",
+          "state": "Texas",
+          "country": "USA",
+          "email": "cafe@kindlecoffee.example",
+          "email_verified": "true",
+          "approved_at": "2026-07-25T09:00:00.000Z",
+          "score": "88",
+          "status": "not_ready",
+          "channel": "email"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 2,
+        "queue_total": 1,
+        "ready_count": 1,
+        "not_ready_count": 0,
+        "blocked_count": 0,
+        "email_ready_count": 1,
+        "call_ready_count": 0,
+        "outreach_total": 0,
+        "duplicate_approval_ids": 1,
+        "exception_count": 0,
+        "exception_types": [],
+        "queue": [
+          {
+            "lead_id": "TEST-QUEUE-010",
+            "available_channel": "email",
+            "readiness_status": "READY",
+            "priority": 1,
+            "outreach_count": 0,
+            "enrichment_required": false,
+            "reason": "channel email with address"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-QUEUE-010",
+      "name": "TRANSITION",
+      "note": "Fixture 10: a lead with no channel transitions to verified email. The projection must reflect the CURRENT source state (NOT_READY -> READY / EMAIL) with no stale readiness.",
+      "approved": [
+        {
+          "lead_id": "TEST-QUEUE-011",
+          "business_name": "Orchard & Oak Design",
+          "niche": "Design studio",
+          "city": "Garland",
+          "state": "Texas",
+          "country": "USA",
+          "approved_at": "2026-09-01T09:00:00.000Z",
+          "score": "86",
+          "status": "not_ready"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_count": 0,
+        "not_ready_count": 1,
+        "blocked_count": 0,
+        "email_ready_count": 0,
+        "call_ready_count": 0,
+        "exception_count": 0,
+        "exception_types": [],
+        "queue": [
+          {
+            "lead_id": "TEST-QUEUE-011",
+            "available_channel": "none",
+            "readiness_status": "NOT_READY",
+            "priority": 1,
+            "outreach_count": 0,
+            "enrichment_required": true,
+            "reason": "no available channel"
+          }
+        ]
+      },
+      "transition": {
+        "note": "After enrichment adds a verified email to Approved Outreach.",
+        "approved": [
+          {
+            "lead_id": "TEST-QUEUE-011",
+            "business_name": "Orchard & Oak Design",
+            "niche": "Design studio",
+            "city": "Garland",
+            "state": "Texas",
+            "country": "USA",
+            "email": "hello@orchardandoak.example",
+            "email_verified": "true",
+            "approved_at": "2026-09-01T09:00:00.000Z",
+            "score": "86",
+            "status": "not_ready",
+            "channel": "email"
+          }
+        ],
+        "outreach": [],
+        "expected": {
+          "status": "COMPLETED",
+          "approved_total": 1,
+          "queue_total": 1,
+          "ready_count": 1,
+          "not_ready_count": 0,
+          "blocked_count": 0,
+          "email_ready_count": 1,
+          "call_ready_count": 0,
+          "exception_count": 0,
+          "exception_types": [],
+          "queue": [
+            {
+              "lead_id": "TEST-QUEUE-011",
+              "available_channel": "email",
+              "readiness_status": "READY",
+              "priority": 1,
+              "outreach_count": 0,
+              "enrichment_required": false,
+              "reason": "channel email with address"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "TEST-QUEUE-011",
+      "name": "SUPPRESSED_BLOCKED",
+      "note": "Extra: approved lead with the canonical 'suppressed' status. BLOCKED is only used for this real blocking condition; channel is none because the lead is not actionable.",
+      "approved": [
+        {
+          "lead_id": "TEST-QUEUE-012",
+          "business_name": "Southern Comfort HVAC",
+          "niche": "HVAC",
+          "city": "Waco",
+          "state": "Texas",
+          "country": "USA",
+          "email": "service@southerncomfort.example",
+          "email_verified": "true",
+          "approved_at": "2026-09-06T09:00:00.000Z",
+          "score": "90",
+          "status": "suppressed",
+          "channel": "email"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_count": 0,
+        "not_ready_count": 0,
+        "blocked_count": 1,
+        "email_ready_count": 0,
+        "call_ready_count": 0,
+        "outreach_total": 0,
+        "exception_count": 0,
+        "exception_types": [],
+        "queue": [
+          {
+            "lead_id": "TEST-QUEUE-012",
+            "available_channel": "none",
+            "readiness_status": "BLOCKED",
+            "priority": 1,
+            "outreach_count": 0,
+            "enrichment_required": false,
+            "reason": "suppressed"
+          }
+        ]
+      }
+    },
+    {
+      "id": "TEST-QUEUE-012",
+      "name": "EMPTY_SOURCES",
+      "note": "Extra: empty successful reads. A completed run with a successful empty queue, not an error.",
+      "approved": [],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 0,
+        "queue_total": 0,
+        "ready_count": 0,
+        "not_ready_count": 0,
+        "blocked_count": 0,
+        "email_ready_count": 0,
+        "call_ready_count": 0,
+        "outreach_total": 0,
+        "exception_count": 0,
+        "exception_types": [],
+        "queue": []
+      }
+    }
+  ]
+}

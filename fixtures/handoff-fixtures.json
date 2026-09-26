@@ -1,0 +1,394 @@
+{
+  "_meta": {
+    "namespace": "TEST-HANDOFF",
+    "regex": "^TEST-HANDOFF-[A-Z]+-\\d+$",
+    "note": "Approved Outreach Handoff engine-harness fixtures (Prompt C-B, Part B). verified_leads = rows as Read Verified Leads emits them; approved_rows = rows already present in the Approved Outreach sheet. expected = frozen golden block for the Filter -> Dedup -> Prepare pipeline."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-HANDOFF-FILTER-001",
+      "name": "Filter: mixed batch exercises every ineligibility reason plus one eligible",
+      "note": "Seven verified leads covering all six rejection counters (not_qualified, missing name/city/state/country, no contact path) plus one fully eligible lead. Verifies qualification passthrough and exact counter accounting.",
+      "verified_leads": [
+        {
+          "lead_id": "q-ok",
+          "business_name": "Acme Heating & Air",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "",
+          "phone": "",
+          "qualification_status": "QUALIFIED",
+          "score": 88
+        },
+        {
+          "lead_id": "q-review",
+          "business_name": "Acme Heating & Air",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://acmehvac.example.com",
+          "phone": "+1 512 555 0100",
+          "qualification_status": "REVIEW",
+          "score": 60
+        },
+        {
+          "lead_id": "q-no-name",
+          "business_name": "",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://name.example.com",
+          "qualification_status": "QUALIFIED",
+          "score": 70
+        },
+        {
+          "lead_id": "q-no-city",
+          "business_name": "Cityless Acme",
+          "niche": "HVAC",
+          "city": "",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://city.example.com",
+          "qualification_status": "QUALIFIED",
+          "score": 70
+        },
+        {
+          "lead_id": "q-no-state",
+          "business_name": "Stateless Acme",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "",
+          "country": "USA",
+          "website": "https://state.example.com",
+          "qualification_status": "QUALIFIED",
+          "score": 70
+        },
+        {
+          "lead_id": "q-no-country",
+          "business_name": "Countryless Acme",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "",
+          "website": "https://country.example.com",
+          "qualification_status": "QUALIFIED",
+          "score": 70
+        },
+        {
+          "lead_id": "lead-good",
+          "business_name": "Good Acme Heating & Air",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://goodacme.example.com",
+          "phone": "+1 512 555 0199",
+          "qualification_status": "QUALIFIED",
+          "score": 91
+        }
+      ],
+      "approved_rows": [],
+      "expected": {
+        "verified_examined": 7,
+        "filter": {
+          "eligible": 1,
+          "ineligible_not_qualified": 1,
+          "ineligible_missing_business_name": 1,
+          "ineligible_missing_city": 1,
+          "ineligible_missing_state": 1,
+          "ineligible_missing_country": 1,
+          "ineligible_no_contact_path": 1
+        },
+        "eligible_ids": ["lead-good"],
+        "dedup": {
+          "eligible_incoming": 1,
+          "already_approved": 0,
+          "duplicate_in_batch": 0,
+          "newly_approved": 1
+        },
+        "prepared_ids": ["lead-good"]
+      }
+    },
+    {
+      "id": "TEST-HANDOFF-FILTER-002",
+      "name": "Filter: all ineligible -> no-op sentinel propagates through the pipeline",
+      "note": "A REVIEW lead plus a QUALIFIED lead with no contact path. Neither is eligible; Filter emits the _noNewApproved sentinel, Dedup and Prepare pass it through unchanged.",
+      "verified_leads": [
+        {
+          "lead_id": "rev",
+          "business_name": "Needs Review Co",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://review.example.com",
+          "phone": "+1 512 555 0200",
+          "qualification_status": "REVIEW",
+          "score": 55
+        },
+        {
+          "lead_id": "cold",
+          "business_name": "No Contact Co",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "",
+          "phone": "",
+          "qualification_status": "QUALIFIED",
+          "score": 72
+        }
+      ],
+      "approved_rows": [],
+      "expected": {
+        "verified_examined": 2,
+        "filter": {
+          "eligible": 0,
+          "ineligible_not_qualified": 1,
+          "ineligible_missing_business_name": 0,
+          "ineligible_missing_city": 0,
+          "ineligible_missing_state": 0,
+          "ineligible_missing_country": 0,
+          "ineligible_no_contact_path": 1
+        },
+        "eligible_ids": [],
+        "dedup": {
+          "eligible_incoming": 0,
+          "already_approved": 0,
+          "duplicate_in_batch": 0,
+          "newly_approved": 0
+        },
+        "prepared_ids": [],
+        "sentinel": {
+          "dedup_noop": true,
+          "prepare_noop": true,
+          "message": "No new eligible leads for Approved Outreach"
+        }
+      }
+    },
+    {
+      "id": "TEST-HANDOFF-DEDUP-001",
+      "name": "Dedup: already-approved, within-batch duplicate, and genuinely new leads",
+      "note": "lead-001 appears once in the Approved sheet and twice in the batch. Sheet membership is checked BEFORE in-batch dedupe, so both copies of an already-approved id count as already_approved (2); the in-batch duplicate counter only fires for un-persisted duplicates. Filter passes 4 items; Dedup keeps exactly the two new ids.",
+      "verified_leads": [
+        {
+          "lead_id": "lead-001",
+          "business_name": "First Acme Co",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://first.example.com",
+          "phone": "+1 512 555 0301",
+          "qualification_status": "QUALIFIED",
+          "score": 80
+        },
+        {
+          "lead_id": "lead-001",
+          "business_name": "First Acme Co",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://first.example.com",
+          "phone": "+1 512 555 0301",
+          "qualification_status": "QUALIFIED",
+          "score": 80
+        },
+        {
+          "lead_id": "lead-002",
+          "business_name": "Second Acme Co",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://second.example.com",
+          "phone": "+1 512 555 0302",
+          "qualification_status": "QUALIFIED",
+          "score": 81
+        },
+        {
+          "lead_id": "lead-003",
+          "business_name": "Third Acme Co",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://third.example.com",
+          "phone": "+1 512 555 0303",
+          "qualification_status": "QUALIFIED",
+          "score": 82
+        }
+      ],
+      "approved_rows": [
+        { "lead_id": "lead-001" }
+      ],
+      "expected": {
+        "verified_examined": 4,
+        "filter": { "eligible": 4 },
+        "eligible_ids": ["lead-001", "lead-001", "lead-002", "lead-003"],
+        "dedup": {
+          "eligible_incoming": 4,
+          "already_approved": 2,
+          "duplicate_in_batch": 0,
+          "newly_approved": 2
+        },
+        "prepared_ids": ["lead-002", "lead-003"]
+      }
+    },
+    {
+      "id": "TEST-HANDOFF-DEDUP-002",
+      "name": "Dedup: every eligible lead already in the sheet -> same-run no-op sentinel",
+      "note": "Both verified leads are already approved. Filter passes 2; Dedup marks both already_approved and emits the 'All eligible leads are already in Approved Outreach' sentinel; Prepare passes it through.",
+      "verified_leads": [
+        {
+          "lead_id": "lead-001",
+          "business_name": "First Acme Co",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://first.example.com",
+          "phone": "+1 512 555 0301",
+          "qualification_status": "QUALIFIED",
+          "score": 80
+        },
+        {
+          "lead_id": "lead-002",
+          "business_name": "Second Acme Co",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://second.example.com",
+          "phone": "+1 512 555 0302",
+          "qualification_status": "QUALIFIED",
+          "score": 81
+        }
+      ],
+      "approved_rows": [
+        { "lead_id": "lead-001" },
+        { "lead_id": "lead-002" }
+      ],
+      "expected": {
+        "verified_examined": 2,
+        "filter": { "eligible": 2 },
+        "eligible_ids": ["lead-001", "lead-002"],
+        "dedup": {
+          "eligible_incoming": 2,
+          "already_approved": 2,
+          "duplicate_in_batch": 0,
+          "newly_approved": 0
+        },
+        "prepared_ids": [],
+        "sentinel": {
+          "dedup_noop": true,
+          "prepare_noop": true,
+          "message": "All eligible leads are already in Approved Outreach"
+        }
+      }
+    },
+    {
+      "id": "TEST-HANDOFF-PREPARE-001",
+      "name": "Prepare: single eligible lead maps to the exact 21-column schema with frozen approved_at",
+      "note": "Full end-to-end run with a frozen Date. Asserts the exact Approved Outreach column schema, outreach_status='not_ready', deterministic approved_at, preserved lead_score/qualification_status, blanked enrichment fields, and that no Verified-formula or pipeline-control field leaks into the row.",
+      "verified_leads": [
+        {
+          "lead_id": "lead-good",
+          "business_name": "Good Acme Heating & Air",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://goodacme.example.com",
+          "phone": "+1 512 555 0199",
+          "score": 91,
+          "qualification_status": "QUALIFIED",
+          "has_website": "TRUE",
+          "has_phone": "TRUE",
+          "target_niche": "HVAC",
+          "dedupe_key": "website:https://goodacme.example.com",
+          "verified_at": "2026-09-10T00:00:00.000Z",
+          "manual_review_notes": "do not leak"
+        }
+      ],
+      "approved_rows": [],
+      "expected": {
+        "verified_examined": 1,
+        "filter": { "eligible": 1 },
+        "eligible_ids": ["lead-good"],
+        "dedup": {
+          "eligible_incoming": 1,
+          "already_approved": 0,
+          "duplicate_in_batch": 0,
+          "newly_approved": 1
+        },
+        "prepared_ids": ["lead-good"],
+        "row": {
+          "lead_id": "lead-good",
+          "business_name": "Good Acme Heating & Air",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://goodacme.example.com",
+          "phone": "+1 512 555 0199",
+          "email": "",
+          "contact_name": "",
+          "contact_title": "",
+          "email_source": "",
+          "email_verified": "",
+          "contact_form": "",
+          "linkedin_url": "",
+          "lead_score": 91,
+          "qualification_status": "QUALIFIED",
+          "outreach_channel": "",
+          "outreach_status": "not_ready",
+          "approved_at": "2026-09-16T12:00:00.000Z",
+          "notes": ""
+        }
+      }
+    },
+    {
+      "id": "TEST-HANDOFF-PREPARE-002",
+      "name": "Prepare: no-op sentinel is passed through untouched",
+      "note": "A dedup-level no-op reaches Prepare as a single _noNewApproved item; Prepare returns it verbatim (no mapping).",
+      "verified_leads": [
+        {
+          "lead_id": "rev",
+          "business_name": "Needs Review Co",
+          "niche": "HVAC",
+          "city": "Austin",
+          "state": "TX",
+          "country": "USA",
+          "website": "https://review.example.com",
+          "phone": "+1 512 555 0200",
+          "qualification_status": "REVIEW",
+          "score": 55
+        }
+      ],
+      "approved_rows": [],
+      "expected": {
+        "verified_examined": 1,
+        "filter": { "eligible": 0 },
+        "eligible_ids": [],
+        "dedup": {
+          "eligible_incoming": 0,
+          "already_approved": 0,
+          "duplicate_in_batch": 0,
+          "newly_approved": 0
+        },
+        "prepared_ids": [],
+        "sentinel": {
+          "dedup_noop": true,
+          "prepare_noop": true,
+          "passes_through": true
+        }
+      }
+    }
+  ]
+}

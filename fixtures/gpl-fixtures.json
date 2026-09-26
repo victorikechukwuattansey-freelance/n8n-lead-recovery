@@ -1,0 +1,426 @@
+{
+  "_meta": {
+    "artifact": "Google Places Integration V1",
+    "namespace": "TEST-GPL",
+    "regex": "^TEST-GPL-\\d+$",
+    "note": "Google Places normalization test fixtures. All fixture lead IDs use the deterministic TEST-GPL-* namespace. Full 17-column Raw Leads rows are built by src/gpl-fixtures.js. The Google Places API response structure follows Places API (New) searchText response."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-GPL-001",
+      "name": "Full Google Places response",
+      "search_input": {
+        "input_id": "S-HVAC-001",
+        "niche": "HVAC",
+        "city": "Dallas",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "HVAC repair in Dallas, Texas",
+        "target_count": 1
+      },
+      "gpl_response": {
+        "places": [
+          {
+            "id": "ChIJN1t_tDeuEmsRUsoyG83frY4",
+            "displayName": { "text": "Acme HVAC Services", "languageCode": "en" },
+            "formattedAddress": "123 Main St, Dallas, TX 75201, USA",
+            "internationalPhoneNumber": "+1 214-555-0100",
+            "websiteUri": "https://www.acmehvac.example.com",
+            "rating": 4.5,
+            "userRatingCount": 127,
+            "googleMapsUri": "https://maps.google.com/?cid=123456789",
+            "types": ["hvac_contractor", "point_of_interest", "establishment"]
+          }
+        ]
+      },
+      "expected_raw_leads": [
+        {
+          "lead_id": "GP-001",
+          "business_name": "Acme HVAC Services",
+          "niche": "HVAC",
+          "city": "Dallas",
+          "state": "Texas",
+          "country": "USA",
+          "address": "123 Main St, Dallas, TX 75201, USA",
+          "phone": "+12145550100",
+          "website": "acmehvac.example.com",
+          "rating": "4.5",
+          "review_count": "127",
+          "google_maps_url": "https://maps.google.com/?cid=123456789",
+          "business_type": "hvac_contractor",
+          "source": "google_places",
+          "search_input_id": "S-HVAC-001",
+          "dedupe_key": "website:acmehvac.example.com",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: HVAC repair in Dallas, Texas; gp_place_id:ChIJN1t_tDeuEmsRUsoyG83frY4"
+        }
+      ]
+    },
+    {
+      "id": "TEST-GPL-002",
+      "name": "Minimal response - only required fields",
+      "search_input": {
+        "input_id": "S-PLUMB-002",
+        "niche": "plumbing",
+        "city": "Austin",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1
+      },
+      "gpl_response": {
+        "places": [
+          {
+            "id": "ChIJMinimal123",
+            "displayName": { "text": "Quick Plumb Co", "languageCode": "en" },
+            "formattedAddress": "",
+            "internationalPhoneNumber": "",
+            "websiteUri": "",
+            "rating": null,
+            "userRatingCount": null,
+            "googleMapsUri": "",
+            "types": ["plumber"]
+          }
+        ]
+      },
+      "expected_raw_leads": [
+        {
+          "lead_id": "GP-002",
+          "business_name": "Quick Plumb Co",
+          "niche": "plumbing",
+          "city": "Austin",
+          "state": "Texas",
+          "country": "USA",
+          "address": "",
+          "phone": "",
+          "website": "",
+          "rating": "",
+          "review_count": "",
+          "google_maps_url": "",
+          "business_type": "plumber",
+          "source": "google_places",
+          "search_input_id": "S-PLUMB-002",
+          "dedupe_key": "ncs:quick plumb co|austin|texas",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: plumbing in Austin, Texas; gp_place_id:ChIJMinimal123"
+        }
+      ]
+    },
+    {
+      "id": "TEST-GPL-003",
+      "name": "Empty places array",
+      "search_input": {
+        "input_id": "S-ROOF-003",
+        "niche": "roofing",
+        "city": "Houston",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "roofing in Houston, Texas",
+        "target_count": 1
+      },
+      "gpl_response": { "places": [] },
+      "expected_raw_leads": []
+    },
+    {
+      "id": "TEST-GPL-004",
+      "name": "Missing optional fields",
+      "search_input": {
+        "input_id": "S-ELEC-004",
+        "niche": "electrical",
+        "city": "San Antonio",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1
+      },
+      "gpl_response": {
+        "places": [
+          {
+            "id": "ChIJMissing456",
+            "displayName": { "text": "Spark Electric", "languageCode": "en" },
+            "formattedAddress": "456 Oak Ave, San Antonio, TX 78201",
+            "internationalPhoneNumber": null,
+            "websiteUri": null,
+            "rating": 4.0,
+            "userRatingCount": 0,
+            "googleMapsUri": null,
+            "types": ["electrician", "establishment"]
+          }
+        ]
+      },
+      "expected_raw_leads": [
+        {
+          "lead_id": "GP-004",
+          "business_name": "Spark Electric",
+          "niche": "electrical",
+          "city": "San Antonio",
+          "state": "Texas",
+          "country": "USA",
+          "address": "456 Oak Ave, San Antonio, TX 78201",
+          "phone": "",
+          "website": "",
+          "rating": "4",
+          "review_count": "0",
+          "google_maps_url": "",
+          "business_type": "electrician",
+          "source": "google_places",
+          "search_input_id": "S-ELEC-004",
+          "dedupe_key": "ncs:spark electric|san antonio|texas",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: electrical in San Antonio, Texas; gp_place_id:ChIJMissing456"
+        }
+      ]
+    },
+    {
+      "id": "TEST-GPL-005",
+      "name": "Phone only (no website)",
+      "search_input": {
+        "input_id": "S-PEST-005",
+        "niche": "pest",
+        "city": "Fort Worth",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1
+      },
+      "gpl_response": {
+        "places": [
+          {
+            "id": "ChIJPhone789",
+            "displayName": { "text": "Bug Busters Pest Control", "languageCode": "en" },
+            "formattedAddress": "789 Elm St, Fort Worth, TX 76101",
+            "internationalPhoneNumber": "+1 817-555-0200",
+            "websiteUri": "",
+            "rating": 4.2,
+            "userRatingCount": 43,
+            "googleMapsUri": "https://maps.google.com/?cid=987654321",
+            "types": ["pest_control_service", "establishment"]
+          }
+        ]
+      },
+      "expected_raw_leads": [
+        {
+          "lead_id": "GP-005",
+          "business_name": "Bug Busters Pest Control",
+          "niche": "pest",
+          "city": "Fort Worth",
+          "state": "Texas",
+          "country": "USA",
+          "address": "789 Elm St, Fort Worth, TX 76101",
+          "phone": "+18175550200",
+          "website": "",
+          "rating": "4.2",
+          "review_count": "43",
+          "google_maps_url": "https://maps.google.com/?cid=987654321",
+          "business_type": "pest_control_service",
+          "source": "google_places",
+          "search_input_id": "S-PEST-005",
+          "dedupe_key": "phone:+18175550200",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: pest in Fort Worth, Texas; gp_place_id:ChIJPhone789"
+        }
+      ]
+    },
+    {
+      "id": "TEST-GPL-006",
+      "name": "Website only (no phone)",
+      "search_input": {
+        "input_id": "S-HVAC-006",
+        "niche": "HVAC",
+        "city": "Dallas",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1
+      },
+      "gpl_response": {
+        "places": [
+          {
+            "id": "ChIJWebsite999",
+            "displayName": { "text": "Cool Air HVAC", "languageCode": "en" },
+            "formattedAddress": "321 Pine Rd, Dallas, TX 75202",
+            "internationalPhoneNumber": "",
+            "websiteUri": "https://coolair.example.com/",
+            "rating": 4.8,
+            "userRatingCount": 200,
+            "googleMapsUri": "https://maps.google.com/?cid=111222333",
+            "types": ["air_conditioning_contractor", "establishment"]
+          }
+        ]
+      },
+      "expected_raw_leads": [
+        {
+          "lead_id": "GP-006",
+          "business_name": "Cool Air HVAC",
+          "niche": "HVAC",
+          "city": "Dallas",
+          "state": "Texas",
+          "country": "USA",
+          "address": "321 Pine Rd, Dallas, TX 75202",
+          "phone": "",
+          "website": "coolair.example.com",
+          "rating": "4.8",
+          "review_count": "200",
+          "google_maps_url": "https://maps.google.com/?cid=111222333",
+          "business_type": "air_conditioning_contractor",
+          "source": "google_places",
+          "search_input_id": "S-HVAC-006",
+          "dedupe_key": "website:coolair.example.com",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: HVAC in Dallas, Texas; gp_place_id:ChIJWebsite999"
+        }
+      ]
+    },
+    {
+      "id": "TEST-GPL-007",
+      "name": "Duplicate of Foursquare record (same website)",
+      "search_input": {
+        "input_id": "S-HVAC-007",
+        "niche": "HVAC",
+        "city": "Dallas",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1
+      },
+      "gpl_response": {
+        "places": [
+          {
+            "id": "ChIJDup111",
+            "displayName": { "text": "Acme HVAC Services", "languageCode": "en" },
+            "formattedAddress": "123 Main St, Dallas, TX 75201",
+            "internationalPhoneNumber": "+1 214-555-0100",
+            "websiteUri": "https://www.acmehvac.example.com",
+            "rating": 4.6,
+            "userRatingCount": 130,
+            "googleMapsUri": "https://maps.google.com/?cid=123456789",
+            "types": ["hvac_contractor", "establishment"]
+          }
+        ]
+      },
+      "expected_raw_leads": [
+        {
+          "lead_id": "GP-007",
+          "business_name": "Acme HVAC Services",
+          "niche": "HVAC",
+          "city": "Dallas",
+          "state": "Texas",
+          "country": "USA",
+          "address": "123 Main St, Dallas, TX 75201",
+          "phone": "+12145550100",
+          "website": "acmehvac.example.com",
+          "rating": "4.6",
+          "review_count": "130",
+          "google_maps_url": "https://maps.google.com/?cid=123456789",
+          "business_type": "hvac_contractor",
+          "source": "google_places",
+          "search_input_id": "S-HVAC-007",
+          "dedupe_key": "website:acmehvac.example.com",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: HVAC in Dallas, Texas; gp_place_id:ChIJDup111"
+        }
+      ]
+    },
+    {
+      "id": "TEST-GPL-008",
+      "name": "Name variation without website/phone (ncs fallback)",
+      "search_input": {
+        "input_id": "S-HVAC-008",
+        "niche": "HVAC",
+        "city": "Dallas",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1
+      },
+      "gpl_response": {
+        "places": [
+          {
+            "id": "ChIJVar222",
+            "displayName": { "text": "Acme HVAC Svcs", "languageCode": "en" },
+            "formattedAddress": "123 Main St, Dallas, TX 75201",
+            "internationalPhoneNumber": "",
+            "websiteUri": "",
+            "rating": 4.4,
+            "userRatingCount": 95,
+            "googleMapsUri": "https://maps.google.com/?cid=444555666",
+            "types": ["hvac_contractor", "establishment"]
+          }
+        ]
+      },
+      "expected_raw_leads": [
+        {
+          "lead_id": "GP-008",
+          "business_name": "Acme HVAC Svcs",
+          "niche": "HVAC",
+          "city": "Dallas",
+          "state": "Texas",
+          "country": "USA",
+          "address": "123 Main St, Dallas, TX 75201",
+          "phone": "",
+          "website": "",
+          "rating": "4.4",
+          "review_count": "95",
+          "google_maps_url": "https://maps.google.com/?cid=444555666",
+          "business_type": "hvac_contractor",
+          "source": "google_places",
+          "search_input_id": "S-HVAC-008",
+          "dedupe_key": "ncs:acme hvac svcs|dallas|texas",
+          "raw_captured_at": "2026-09-12T00:00:00.000Z",
+          "notes": "Google Places: HVAC in Dallas, Texas; gp_place_id:ChIJVar222"
+        }
+      ]
+    },
+    {
+      "id": "TEST-GPL-009",
+      "name": "Malformed place - empty name",
+      "search_input": {
+        "input_id": "S-PLUMB-009",
+        "niche": "plumbing",
+        "city": "Austin",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1
+      },
+      "gpl_response": {
+        "places": [
+          {
+            "id": "ChIJBad333",
+            "displayName": { "text": "", "languageCode": "en" },
+            "formattedAddress": "100 Bad St, Austin, TX 78701",
+            "internationalPhoneNumber": "+1 512-555-0300",
+            "websiteUri": "https://bad.example.com",
+            "rating": 3.0,
+            "userRatingCount": 10,
+            "googleMapsUri": "https://maps.google.com/?cid=777888999",
+            "types": ["plumber"]
+          }
+        ]
+      },
+      "expected_raw_leads": []
+    },
+    {
+      "id": "TEST-GPL-010",
+      "name": "API error response",
+      "search_input": {
+        "input_id": "S-ROOF-010",
+        "niche": "roofing",
+        "city": "Houston",
+        "state": "Texas",
+        "country": "USA",
+        "search_query": "",
+        "target_count": 1
+      },
+      "gpl_response": {
+        "error": {
+          "code": 403,
+          "message": "PERMISSION_DENIED",
+          "status": "PERMISSION_DENIED"
+        }
+      },
+      "expected_raw_leads": [],
+      "error_expected": true
+    }
+  ]
+}

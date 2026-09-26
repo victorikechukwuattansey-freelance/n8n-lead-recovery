@@ -293,7 +293,7 @@ function writeSvg(out, vb, t, label) {
   <rect width="1200" height="630" fill="#7C3AED"/>
   ${wordmark}
   <text x="60" y="340" font-size="52" font-weight="700" fill="#FFFFFF"
-    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif">Every web lead, answered in seconds.</text>
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif">Stop letting web leads go cold.</text>
   <text x="60" y="396" font-size="30" fill="#FFFFFF" fill-opacity="0.72"
     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif">V.I.A Automations · Lead Recovery for Home Services</text>
   <text x="1140" y="600" text-anchor="end" font-size="22" fill="#FFFFFF" fill-opacity="0.5"

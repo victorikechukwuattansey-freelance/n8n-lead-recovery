@@ -1,0 +1,489 @@
+{
+  "_meta": {
+    "namespace": "TEST-ENRICH",
+    "regex": "^TEST-ENRICH-\\d+$",
+    "note": "Contact Enrichment V1 offline fixtures (Prompts H.4–H.5.1). Fixtures 007–011 exercise the Hunter contact engine (expected.contact); fixture 012 covers both Hunter and OSS fallback (expected.contact + expected.oss); fixture 013 covers the OSS manual-block path (expected.oss). `provider` on each fixture selects the seam/client provider; email items use the provider-contract shape (email/confidence/verification_status). AgentData contact-engine fixtures live in enrichment-contact-agentdata.json (fixtures 020–026)."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-ENRICH-007",
+      "name": "Hunter picks best accepted email and fills only empty fields",
+      "note": "Generic local parts (info@, sales@) are rejected regardless of score; among accepted emails the highest score wins, tie-broken by verified then value.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-007",
+      "provider": "hunter",
+      "leads": [
+        {
+          "lead_id": "RWL-0007-A",
+          "business_name": "Example Services",
+          "website": "https://example-services.example.com",
+          "country": "USA",
+          "email": ""
+        }
+      ],
+      "index": [],
+      "cacheRows": [],
+      "domainResults": {
+        "example-services.example.com": {
+          "emails": [
+            { "email": "info@example-services.example.com", "confidence": 99, "verification_status": "valid", "first_name": "", "last_name": "", "position": "" },
+            { "email": "sales@example-services.example.com", "confidence": 80, "verification_status": "valid", "first_name": "", "last_name": "", "position": "" },
+            { "email": "jane.doe@example-services.example.com", "confidence": 92, "verification_status": "valid", "first_name": "Jane", "last_name": "Doe", "position": "Operations Manager" },
+            { "email": "john.smith@example-services.example.com", "confidence": 98, "verification_status": "valid", "first_name": "John", "last_name": "Smith", "position": "General Manager" }
+          ],
+          "creditsUsed": 1
+        }
+      },
+      "ossResults": {},
+      "expected": {
+        "contact": {
+          "stats": { "total": 1, "enriched": 1, "skipped": 0, "failed": 0, "credits_consumed": 1, "cache_hits": 0 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0007-A",
+              "email": "john.smith@example-services.example.com",
+              "contact_name": "John Smith",
+              "contact_title": "General Manager",
+              "email_verified": "Y",
+              "email_source": "hunter",
+              "contact_source_provider": "hunter"
+            }
+          ],
+          "skipped": [],
+          "failed": [],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-f2b04156",
+              "enrichment_key": "example-services.example.com::hunter",
+              "lead_id": "RWL-0007-A",
+              "provider": "hunter",
+              "query_input": "example-services.example.com",
+              "result_email": "john.smith@example-services.example.com",
+              "result_contact_name": "John Smith",
+              "result_contact_title": "General Manager",
+              "result_verified": "TRUE",
+              "credits_consumed": "1",
+              "enriched_at": "2026-09-16T12:00:00.000Z",
+              "ttl_expires_at": "2026-11-15T12:00:00.000Z",
+              "cache_hit_count": "0",
+              "notes": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "TEST-ENRICH-008",
+      "name": "Cache hit serves fields without a provider call",
+      "note": "Non-expired log row for cachedco.example.com::hunter is served from cache; cache_hit_count increments 2 -> 3; no credit charged; pre-existing enrichment_id is preserved.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-008",
+      "provider": "hunter",
+      "leads": [
+        {
+          "lead_id": "RWL-0008-A",
+          "business_name": "Cached Co",
+          "website": "cachedco.example.com",
+          "country": "USA",
+          "email": ""
+        }
+      ],
+      "index": [],
+      "cacheRows": [
+        {
+          "enrichment_id": "ENRICH-00000008",
+          "enrichment_key": "cachedco.example.com::hunter",
+          "lead_id": "RWL-0008-A",
+          "provider": "hunter",
+          "query_input": "cachedco.example.com",
+          "result_email": "pat.king@cachedco.example.com",
+          "result_contact_name": "Pat King",
+          "result_contact_title": "CEO",
+          "result_verified": "TRUE",
+          "credits_consumed": "1",
+          "enriched_at": "2026-08-01T10:00:00.000Z",
+          "ttl_expires_at": "2026-10-31T10:00:00.000Z",
+          "cache_hit_count": "2",
+          "notes": ""
+        }
+      ],
+      "domainResults": {},
+      "ossResults": {},
+      "expected": {
+        "contact": {
+          "stats": { "total": 1, "enriched": 1, "skipped": 0, "failed": 0, "credits_consumed": 0, "cache_hits": 1 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0008-A",
+              "email": "pat.king@cachedco.example.com",
+              "contact_name": "Pat King",
+              "contact_title": "CEO",
+              "email_verified": "Y",
+              "email_source": "hunter",
+              "contact_source_provider": "hunter"
+            }
+          ],
+          "skipped": [],
+          "failed": [],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-00000008",
+              "enrichment_key": "cachedco.example.com::hunter",
+              "lead_id": "RWL-0008-A",
+              "provider": "hunter",
+              "query_input": "cachedco.example.com",
+              "result_email": "pat.king@cachedco.example.com",
+              "result_contact_name": "Pat King",
+              "result_contact_title": "CEO",
+              "result_verified": "TRUE",
+              "credits_consumed": "1",
+              "enriched_at": "2026-08-01T10:00:00.000Z",
+              "ttl_expires_at": "2026-10-31T10:00:00.000Z",
+              "cache_hit_count": "3",
+              "notes": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "TEST-ENRICH-009",
+      "name": "Expired cache row is replaced by a fresh provider lookup",
+      "note": "cachedco example expired at 2026-03-02; the engine re-queries Hunter, upserts the row (replace-by-key), resets cache_hit_count to 0, and charges the credit.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-009",
+      "provider": "hunter",
+      "leads": [
+        {
+          "lead_id": "RWL-0009-A",
+          "business_name": "Expired Co",
+          "website": "expiredco.example.com",
+          "country": "USA",
+          "email": ""
+        }
+      ],
+      "index": [],
+      "cacheRows": [
+        {
+          "enrichment_id": "ENRICH-00000009",
+          "enrichment_key": "expiredco.example.com::hunter",
+          "lead_id": "RWL-0009-A",
+          "provider": "hunter",
+          "query_input": "expiredco.example.com",
+          "result_email": "old@expiredco.example.com",
+          "result_contact_name": "Old Person",
+          "result_contact_title": "",
+          "result_verified": "TRUE",
+          "credits_consumed": "1",
+          "enriched_at": "2026-01-30T10:00:00.000Z",
+          "ttl_expires_at": "2026-03-02T10:00:00.000Z",
+          "cache_hit_count": "1",
+          "notes": ""
+        }
+      ],
+      "domainResults": {
+        "expiredco.example.com": {
+          "emails": [
+            { "email": "fresh@expiredco.example.com", "confidence": 88, "verification_status": "valid", "first_name": "Fresh", "last_name": "Start", "position": "COO" }
+          ],
+          "creditsUsed": 1
+        }
+      },
+      "ossResults": {},
+      "expected": {
+        "contact": {
+          "stats": { "total": 1, "enriched": 1, "skipped": 0, "failed": 0, "credits_consumed": 1, "cache_hits": 0 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0009-A",
+              "email": "fresh@expiredco.example.com",
+              "contact_name": "Fresh Start",
+              "contact_title": "COO",
+              "email_verified": "Y",
+              "email_source": "hunter",
+              "contact_source_provider": "hunter"
+            }
+          ],
+          "skipped": [],
+          "failed": [],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-49688e6e",
+              "enrichment_key": "expiredco.example.com::hunter",
+              "lead_id": "RWL-0009-A",
+              "provider": "hunter",
+              "query_input": "expiredco.example.com",
+              "result_email": "fresh@expiredco.example.com",
+              "result_contact_name": "Fresh Start",
+              "result_contact_title": "COO",
+              "result_verified": "TRUE",
+              "credits_consumed": "1",
+              "enriched_at": "2026-09-16T12:00:00.000Z",
+              "ttl_expires_at": "2026-11-15T12:00:00.000Z",
+              "cache_hit_count": "0",
+              "notes": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "TEST-ENRICH-010",
+      "name": "All-generic or sub-threshold emails keep the call but record no accepted email",
+      "note": "Domain returned only generic (info@ 99, contact@ 85) or low-confidence (lowscore@ 30) addresses; no accepted email is written, the lead stays NOT_READY-call, a no_accepted_email log row prevents re-billing, and credit is still charged.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-010",
+      "provider": "hunter",
+      "leads": [
+        {
+          "lead_id": "RWL-0010-A",
+          "business_name": "Generic Only",
+          "website": "genericonly.example.com",
+          "country": "USA",
+          "email": ""
+        }
+      ],
+      "index": [],
+      "cacheRows": [],
+      "domainResults": {
+        "genericonly.example.com": {
+          "emails": [
+            { "email": "info@genericonly.example.com", "confidence": 99, "verification_status": "valid", "first_name": "", "last_name": "", "position": "" },
+            { "email": "contact@genericonly.example.com", "confidence": 85, "verification_status": "valid", "first_name": "", "last_name": "", "position": "" },
+            { "email": "lowscore@genericonly.example.com", "confidence": 30, "verification_status": "valid", "first_name": "Low", "last_name": "Score", "position": "" }
+          ],
+          "creditsUsed": 1
+        }
+      },
+      "ossResults": {},
+      "expected": {
+        "contact": {
+          "stats": { "total": 1, "enriched": 1, "skipped": 0, "failed": 0, "credits_consumed": 1, "cache_hits": 0 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0010-A",
+              "email": "",
+              "contact_source_provider": "hunter"
+            }
+          ],
+          "skipped": [],
+          "failed": [],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-eb50f0e6",
+              "enrichment_key": "genericonly.example.com::hunter",
+              "lead_id": "RWL-0010-A",
+              "provider": "hunter",
+              "query_input": "genericonly.example.com",
+              "result_email": "",
+              "result_contact_name": "",
+              "result_contact_title": "",
+              "result_verified": "FALSE",
+              "credits_consumed": "1",
+              "enriched_at": "2026-09-16T12:00:00.000Z",
+              "ttl_expires_at": "2026-11-15T12:00:00.000Z",
+              "cache_hit_count": "0",
+              "notes": "no_accepted_email"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "TEST-ENRICH-011",
+      "name": "Eligibility skips do not consult the provider; fatal auth failure halts the batch",
+      "note": "A non-US (skip non_us), a no-website (skip no_domain), and an already-email'd (skip already_enriched) lead never call Hunter. A 401 for fatalexample.example.com is FATAL: it and every remaining lead fail with the fatal reason; no log rows and zero credits.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-011",
+      "provider": "hunter",
+      "leads": [
+        { "lead_id": "RWL-0011-A", "business_name": "Toronto Shop", "website": "toronto.example.com", "country": "Canada", "email": "" },
+        { "lead_id": "RWL-0011-B", "business_name": "No Site Co", "website": "", "country": "USA", "email": "" },
+        { "lead_id": "RWL-0011-C", "business_name": "Has Email Co", "website": "hasemail.example.com", "country": "USA", "email": "already@hasemail.example.com" },
+        { "lead_id": "RWL-0011-D", "business_name": "Fatal Co", "website": "fatalexample.example.com", "country": "USA", "email": "" },
+        { "lead_id": "RWL-0011-E", "business_name": "After Fatal Co", "website": "afterfatal.example.com", "country": "USA", "email": "" }
+      ],
+      "index": [],
+      "cacheRows": [],
+      "domainResults": {
+        "fatalexample.example.com": { "fatal": true, "reason": "hunter_auth_failed", "status": 401 }
+      },
+      "ossResults": {},
+      "expected": {
+        "contact": {
+          "stats": { "total": 5, "enriched": 0, "skipped": 3, "failed": 2, "credits_consumed": 0, "cache_hits": 0 },
+          "enriched": [],
+          "skipped": [
+            { "lead_id": "RWL-0011-A", "enrichment_skip_reason": "non_us" },
+            { "lead_id": "RWL-0011-B", "enrichment_skip_reason": "no_domain" },
+            { "lead_id": "RWL-0011-C", "enrichment_skip_reason": "already_enriched" }
+          ],
+          "failed": [
+            { "lead_id": "RWL-0011-D", "enrichment_failure_reason": "hunter_auth_failed" },
+            { "lead_id": "RWL-0011-E", "enrichment_failure_reason": "hunter_auth_failed" }
+          ],
+          "fatal": { "reason": "hunter_auth_failed", "status": 401 },
+          "log": []
+        }
+      }
+    },
+    {
+      "id": "TEST-ENRICH-012",
+      "name": "Hunter-empty domain is logged and the OSS fallback fills the contact",
+      "note": "Hunter returns zero emails: the contact engine logs no_emails_found and the lead keeps no email. The OSS engine (same lead) then fills founder@ossfill.example.com from the injected resolver at zero credit. Both engine expectations are asserted by their respective tests.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-012",
+      "provider": "hunter",
+      "leads": [
+        {
+          "lead_id": "RWL-0012-A",
+          "business_name": "OSS Fill",
+          "website": "ossfill.example.com",
+          "country": "USA",
+          "email": ""
+        }
+      ],
+      "index": [],
+      "cacheRows": [],
+      "domainResults": {
+        "ossfill.example.com": { "emails": [], "creditsUsed": 1 }
+      },
+      "ossResults": {
+        "ossfill.example.com": {
+          "emails": [
+            { "value": "founder@ossfill.example.com", "score": 80, "verified": true, "first_name": "Pat", "last_name": "Reyes", "position": "Founder" }
+          ],
+          "blocked": false
+        }
+      },
+      "expected": {
+        "contact": {
+          "stats": { "total": 1, "enriched": 1, "skipped": 0, "failed": 0, "credits_consumed": 1, "cache_hits": 0 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0012-A",
+              "email": "",
+              "contact_source_provider": "hunter"
+            }
+          ],
+          "skipped": [],
+          "failed": [],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-1785eca3",
+              "enrichment_key": "ossfill.example.com::hunter",
+              "lead_id": "RWL-0012-A",
+              "provider": "hunter",
+              "query_input": "ossfill.example.com",
+              "result_email": "",
+              "result_contact_name": "",
+              "result_contact_title": "",
+              "result_verified": "FALSE",
+              "credits_consumed": "1",
+              "enriched_at": "2026-09-16T12:00:00.000Z",
+              "ttl_expires_at": "2026-11-15T12:00:00.000Z",
+              "cache_hit_count": "0",
+              "notes": "no_emails_found"
+            }
+          ]
+        },
+        "oss": {
+          "stats": { "total": 1, "enriched": 1, "skipped": 0, "failed": 0, "credits_consumed": 0, "cache_hits": 0 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0012-A",
+              "email": "founder@ossfill.example.com",
+              "contact_name": "Pat Reyes",
+              "contact_title": "Founder",
+              "email_verified": "Y",
+              "email_source": "oss",
+              "contact_source_provider": "oss"
+            }
+          ],
+          "skipped": [],
+          "failed": [],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-e8a57b8e",
+              "enrichment_key": "ossfill.example.com::oss",
+              "lead_id": "RWL-0012-A",
+              "provider": "oss",
+              "query_input": "ossfill.example.com",
+              "result_email": "founder@ossfill.example.com",
+              "result_contact_name": "Pat Reyes",
+              "result_contact_title": "Founder",
+              "result_verified": "TRUE",
+              "credits_consumed": "",
+              "enriched_at": "2026-09-16T12:00:00.000Z",
+              "ttl_expires_at": "2026-11-15T12:00:00.000Z",
+              "cache_hit_count": "0",
+              "notes": ""
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "TEST-ENRICH-013",
+      "name": "OSS resolver empty-with-block surfaces a manual operator decision",
+      "note": "The injected resolver found no public email sources and explicitly blocked the domain. The lead is stamped contact_blocked='TRUE' with contact_source_provider='manual' and the operator note; the log row records the manual decision (provider manual) at zero credit.",
+      "now": "2026-09-16T12:00:00.000Z",
+      "runId": "RUN-013",
+      "provider": "hunter",
+      "leads": [
+        {
+          "lead_id": "RWL-0013-A",
+          "business_name": "Missco",
+          "website": "missco.example.com",
+          "country": "USA",
+          "email": ""
+        }
+      ],
+      "index": [],
+      "cacheRows": [],
+      "domainResults": {},
+      "ossResults": {
+        "missco.example.com": {
+          "emails": [],
+          "blocked": true,
+          "notes": "no public email sources; operator review required"
+        }
+      },
+      "expected": {
+        "oss": {
+          "stats": { "total": 1, "enriched": 1, "skipped": 0, "failed": 0, "credits_consumed": 0, "cache_hits": 0 },
+          "enriched": [
+            {
+              "lead_id": "RWL-0013-A",
+              "email": "",
+              "contact_source_provider": "manual",
+              "contact_blocked": "TRUE",
+              "notes": "no public email sources; operator review required",
+              "enrichment_fallback": "oss_no_results"
+            }
+          ],
+          "skipped": [],
+          "failed": [],
+          "log": [
+            {
+              "enrichment_id": "ENRICH-ecb22008",
+              "enrichment_key": "missco.example.com::oss",
+              "lead_id": "RWL-0013-A",
+              "provider": "manual",
+              "query_input": "missco.example.com",
+              "result_email": "",
+              "result_contact_name": "",
+              "result_contact_title": "",
+              "result_verified": "FALSE",
+              "credits_consumed": "",
+              "enriched_at": "2026-09-16T12:00:00.000Z",
+              "ttl_expires_at": "2026-11-15T12:00:00.000Z",
+              "cache_hit_count": "0",
+              "notes": "no public email sources; operator review required"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

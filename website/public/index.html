@@ -9,13 +9,13 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
   <meta property="og:title" content="V.I.A Automations — Lead Recovery for Home Services">
-  <meta property="og:description" content="Every web lead, answered in seconds. Design-partner pilot for Texas HVAC, plumbing, and remodel businesses.">
+  <meta property="og:description" content="Stop letting web leads go cold. Every inquiry gets a fast response, consistent follow-up, and a clear path toward booking. 30-day pilot for Texas HVAC, plumbing, and remodeling businesses.">
   <meta property="og:image" content="https://www.viaaiautomation.work.gd/og-image.png">
   <meta property="og:url" content="https://www.viaaiautomation.work.gd">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="V.I.A Automations — Lead Recovery for Home Services">
-  <meta name="twitter:description" content="Every web lead, answered in seconds.">
+  <meta name="twitter:description" content="Stop letting web leads go cold. Every inquiry gets a fast response, consistent follow-up, and a clear path toward booking.">
   <meta name="twitter:image" content="https://www.viaaiautomation.work.gd/og-image.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,8 +73,9 @@
 
     .hero { padding-top: 4.5rem; padding-bottom: 2rem; }
     .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 3rem; align-items: center; }
-    .hero h1 { margin-bottom: 1rem; max-width: 14ch; }
+    .hero h1 { margin-bottom: 1rem; max-width: 16ch; }
     .subhead { color: var(--muted); font-size: 1.125rem; max-width: 32rem; }
+    .audience { color: var(--purple); font-weight: 600; margin-top: 0.25rem; }
     .cta-row { display: flex; gap: 0.75rem; align-items: center; margin: 1.5rem 0 0.75rem; }
     .btn-primary {
       display: inline-flex;
@@ -116,30 +117,42 @@
       color: var(--purple);
       border-bottom: 1px solid var(--border);
     }
-    .mockup-body { padding: 1rem 1.25rem 0.25rem; }
-    .mockup .quote {
-      color: var(--muted);
-      font-style: italic;
-      margin: 0.25rem 0 0;
-    }
-    .mockup-checks {
-      list-style: none;
-      padding: 0.5rem 1.25rem;
-      margin: 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .mockup-checks li {
-      color: var(--success);
-      font-weight: 500;
-      font-size: 0.875rem;
-      padding: 0.25rem 0;
-    }
     .mockup-foot {
       padding: 0.75rem 1.25rem;
       font-size: 0.875rem;
       font-weight: 500;
       color: var(--purple);
+    }
+    .feed { list-style: none; padding: 0.25rem 1.25rem 0.5rem; }
+    .feed li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.5rem 0;
+      color: var(--text);
+      font-size: 0.875rem;
+    }
+    .feed .status {
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.5rem;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .feed .status-new { background: #EDE9FE; color: var(--purple); }
+    .feed .status-done { background: #D1FAE5; color: var(--success); }
+    .feed .status-handoff { background: #DDD6FE; color: var(--purple-dark); }
+    .feed time { color: var(--muted); font-size: 0.78rem; white-space: nowrap; }
+    .feed .desc { display: flex; flex-direction: column; }
+    .mockup .illustrative {
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-style: italic;
+      margin: 0;
+      padding: 0 1.25rem 0.9rem;
     }
 
     .trustbar {
@@ -248,26 +261,37 @@
     <div class="container hero-grid">
       <div class="hero-left">
         <span class="pill">3 pilot spots remaining</span>
-        <h1>Every web lead, answered in seconds.</h1>
-        <p class="subhead">For Texas HVAC, plumbing, and remodel businesses who want every web inquiry answered before it goes cold.</p>
+        <h1>Stop letting web leads go cold.</h1>
+        <p class="subhead">Every inquiry gets a fast response, consistent follow-up, and a clear path toward booking.</p>
+        <p class="audience">For Texas HVAC, plumbing, and remodeling businesses.</p>
         <div class="cta-row">
-          <a class="btn-primary" href="mailto:victor@viaaiautomation.work.gd?subject=Pilot%20inquiry">Ask about the pilot →</a>
+          <a class="btn-primary" href="mailto:victor@viaaiautomation.work.gd?subject=Pilot%20inquiry">Apply for the 30-day pilot →</a>
           <a class="btn-secondary" href="#how">See how it works</a>
         </div>
-        <p class="caption">⚡ Setup in 30 minutes · No cost during pilot</p>
+        <p class="caption">Free during pilot · We handle the setup · No software to learn</p>
       </div>
       <div class="hero-right">
         <div class="mockup">
-          <div class="mockup-head">🔔 New lead · 4:47 PM</div>
-          <div class="mockup-body">
-            <p><strong>Lead #4821</strong> submitted a form</p>
-            <p class="quote">&quot;Need a quote for AC repair&quot;</p>
-          </div>
-          <ul class="mockup-checks">
-            <li>✓ Reply sent in 12 seconds</li>
-            <li>✓ Follow-up scheduled</li>
+          <div class="mockup-head">Lead journey</div>
+          <ul class="feed">
+            <li>
+              <span class="status status-new">New inquiry</span>
+              <span class="desc"><strong>Lead #4821</strong> submitted a form <time>4:47 PM</time></span>
+            </li>
+            <li>
+              <span class="status status-done">Responded</span>
+              <span class="desc">Reply sent in seconds</span>
+            </li>
+            <li>
+              <span class="status status-done">Followed up</span>
+              <span class="desc">Reminder scheduled automatically</span>
+            </li>
+            <li>
+              <span class="status status-handoff">Booking handoff</span>
+              <span class="desc">Ready lead handed to your calendar</span>
+            </li>
           </ul>
-          <div class="mockup-foot">Status: Customer replied</div>
+          <p class="illustrative">Sample journey shown as an example.</p>
         </div>
       </div>
     </div>
@@ -355,7 +379,7 @@
   </section>
 
   <footer>
-    <p>V.I.A Automations Lead Recovery Engine<br>1801 Main St, Kansas City, MO 64108<br>
+    <p>V.I.A Automations Lead Recovery Engine<br>
     <a href="mailto:victor@viaaiautomation.work.gd?subject=Pilot%20inquiry">victor@viaaiautomation.work.gd</a><br>
     <a href="mailto:unsubscribe@viaaiautomation.work.gd">unsubscribe@viaaiautomation.work.gd</a></p>
   </footer>

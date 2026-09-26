@@ -1,0 +1,476 @@
+{
+  "_meta": {
+    "namespace": "TEST-RECON",
+    "artifact": "Run-Reconciliation-and-Reporting V1",
+    "note": "Read-only reconciliation fixtures. Every fixture id matches /^TEST-RECON-\\d+$/. Fixtures carry intent (partial rows); the loader expands them to the full Approved Outreach (21) and Outreach Log (20) column contracts."
+  },
+  "fixtures": [
+    {
+      "id": "TEST-RECON-001",
+      "name": "APPROVED_NO_OUTREACH",
+      "note": "Category A: approved but no outreach logged. INFO/ACTIONABLE, not an exception.",
+      "approved": [
+        {
+          "lead_id": "TEST-RECON-001",
+          "business_name": "Bluebird Bakery",
+          "approved_at": "2026-09-01T09:00:00.000Z",
+          "status": "not_ready"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "approved_with_outreach": 0,
+        "approved_no_outreach": 1,
+        "approval_duplicates": 0,
+        "coverage_rate": 0,
+        "outreach_total": 0,
+        "unique_leads_with_outreach": 0,
+        "multiple_outreach_leads": 0,
+        "orphan_outreach": 0,
+        "malformed_approvals": 0,
+        "malformed_outreach": 0,
+        "status_mismatches": 0,
+        "non_canonical_statuses": 0,
+        "healthy_records": 0,
+        "exception_count": 0
+      }
+    },
+    {
+      "id": "TEST-RECON-002",
+      "name": "APPROVED_WITH_OUTREACH",
+      "note": "Category B: approved and exactly one outreach record; approval status reflects activity. HEALTHY.",
+      "approved": [
+        {
+          "lead_id": "TEST-RECON-002",
+          "business_name": "Cedar Lane Landscaping",
+          "approved_at": "2026-09-01T10:00:00.000Z",
+          "status": "contacted"
+        }
+      ],
+      "outreach": [
+        {
+          "outreach_id": "OR-RECON-002-1",
+          "lead_id": "TEST-RECON-002",
+          "business_name": "Cedar Lane Landscaping",
+          "channel": "email",
+          "sent_at": "2026-09-03T13:00:00.000Z",
+          "reply_status": "no_reply",
+          "outcome": "no_response"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "approved_with_outreach": 1,
+        "approved_no_outreach": 0,
+        "approval_duplicates": 0,
+        "coverage_rate": 1,
+        "outreach_total": 1,
+        "unique_leads_with_outreach": 1,
+        "multiple_outreach_leads": 0,
+        "orphan_outreach": 0,
+        "malformed_approvals": 0,
+        "malformed_outreach": 0,
+        "status_mismatches": 0,
+        "non_canonical_statuses": 0,
+        "healthy_records": 1,
+        "exception_count": 0
+      }
+    },
+    {
+      "id": "TEST-RECON-003",
+      "name": "MULTIPLE_OUTREACH",
+      "note": "Category C: multiple outreach records for one approved lead. Count + timestamps surfaced, not auto-flagged as an error.",
+      "approved": [
+        {
+          "lead_id": "TEST-RECON-003",
+          "business_name": "Driftwood Dental",
+          "approved_at": "2026-09-01T11:00:00.000Z",
+          "status": "contacted"
+        }
+      ],
+      "outreach": [
+        {
+          "outreach_id": "OR-RECON-003-1",
+          "lead_id": "TEST-RECON-003",
+          "business_name": "Driftwood Dental",
+          "channel": "email",
+          "sent_at": "2026-09-04T10:00:00.000Z",
+          "reply_status": "no_reply",
+          "outcome": "no_response"
+        },
+        {
+          "outreach_id": "OR-RECON-003-2",
+          "lead_id": "TEST-RECON-003",
+          "business_name": "Driftwood Dental",
+          "channel": "call",
+          "sent_at": "2026-09-10T10:00:00.000Z",
+          "reply_status": "replied_weak",
+          "outcome": "interested"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "approved_with_outreach": 1,
+        "approved_no_outreach": 0,
+        "approval_duplicates": 0,
+        "coverage_rate": 1,
+        "outreach_total": 2,
+        "unique_leads_with_outreach": 1,
+        "multiple_outreach_leads": 1,
+        "orphan_outreach": 0,
+        "malformed_approvals": 0,
+        "malformed_outreach": 0,
+        "status_mismatches": 0,
+        "non_canonical_statuses": 0,
+        "healthy_records": 1,
+        "exception_count": 0
+      }
+    },
+    {
+      "id": "TEST-RECON-004",
+      "name": "OUTREACH_WITHOUT_APPROVAL",
+      "note": "Category D: Outreach Log records exist for a lead with no Approved Outreach row. Orphan: reported, never deleted.",
+      "approved": [],
+      "outreach": [
+        {
+          "outreach_id": "OR-RECON-004-1",
+          "lead_id": "TEST-RECON-004",
+          "business_name": "Meridian Movers",
+          "channel": "call",
+          "sent_at": "2026-09-05T08:30:00.000Z",
+          "reply_status": "no_reply",
+          "outcome": "no_response"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 0,
+        "approved_with_outreach": 0,
+        "approved_no_outreach": 0,
+        "approval_duplicates": 0,
+        "coverage_rate": null,
+        "outreach_total": 1,
+        "unique_leads_with_outreach": 1,
+        "multiple_outreach_leads": 0,
+        "orphan_outreach": 1,
+        "malformed_approvals": 0,
+        "malformed_outreach": 0,
+        "status_mismatches": 0,
+        "non_canonical_statuses": 0,
+        "healthy_records": 0,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RECON-005",
+      "name": "MALFORMED_APPROVAL",
+      "note": "Category F: Approved Outreach row missing approved_at. Reported, never repaired.",
+      "approved": [
+        {
+          "lead_id": "TEST-RECON-005",
+          "business_name": "Bramble & Co",
+          "approved_at": "",
+          "status": "not_ready"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "approved_with_outreach": 0,
+        "approved_no_outreach": 0,
+        "approval_duplicates": 0,
+        "coverage_rate": null,
+        "outreach_total": 0,
+        "unique_leads_with_outreach": 0,
+        "multiple_outreach_leads": 0,
+        "orphan_outreach": 0,
+        "malformed_approvals": 1,
+        "malformed_outreach": 0,
+        "status_mismatches": 0,
+        "non_canonical_statuses": 0,
+        "healthy_records": 0,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RECON-006",
+      "name": "MALFORMED_OUTREACH",
+      "note": "Category E: Outreach Log record missing sent_at. A malformed record can never imply confirmed activity, so no status mismatch is surfaced here — the row is surfaced as an exception and the lead stays APPROVED_NO_OUTREACH.",
+      "approved": [
+        {
+          "lead_id": "TEST-RECON-006",
+          "business_name": "Falcon Fire & Safety",
+          "approved_at": "2026-09-01T14:00:00.000Z",
+          "status": "not_ready"
+        }
+      ],
+      "outreach": [
+        {
+          "outreach_id": "OR-RECON-006-1",
+          "lead_id": "TEST-RECON-006",
+          "business_name": "Falcon Fire & Safety",
+          "channel": "email",
+          "sent_at": ""
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "approved_with_outreach": 0,
+        "approved_no_outreach": 1,
+        "approval_duplicates": 0,
+        "coverage_rate": 0,
+        "outreach_total": 1,
+        "unique_leads_with_outreach": 0,
+        "multiple_outreach_leads": 0,
+        "orphan_outreach": 0,
+        "malformed_approvals": 0,
+        "malformed_outreach": 1,
+        "status_mismatches": 0,
+        "non_canonical_statuses": 0,
+        "healthy_records": 0,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RECON-007",
+      "name": "STATUS_MISMATCH_PHANTOM",
+      "note": "Status mismatch: outreach_status implies contact but nothing is logged.",
+      "approved": [
+        {
+          "lead_id": "TEST-RECON-007",
+          "business_name": "Copper Hill Hardware",
+          "approved_at": "2026-09-01T15:00:00.000Z",
+          "status": "contacted"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "approved_with_outreach": 0,
+        "approved_no_outreach": 1,
+        "approval_duplicates": 0,
+        "coverage_rate": 0,
+        "outreach_total": 0,
+        "unique_leads_with_outreach": 0,
+        "multiple_outreach_leads": 0,
+        "orphan_outreach": 0,
+        "malformed_approvals": 0,
+        "malformed_outreach": 0,
+        "status_mismatches": 1,
+        "non_canonical_statuses": 0,
+        "healthy_records": 0,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RECON-008",
+      "name": "STATUS_MISMATCH_STALE",
+      "note": "Status mismatch: outreach is logged but outreach_status was never advanced from not_ready.",
+      "approved": [
+        {
+          "lead_id": "TEST-RECON-008",
+          "business_name": "Lakeview Wellness",
+          "approved_at": "2026-09-01T16:00:00.000Z",
+          "status": "not_ready"
+        }
+      ],
+      "outreach": [
+        {
+          "outreach_id": "OR-RECON-008-1",
+          "lead_id": "TEST-RECON-008",
+          "business_name": "Lakeview Wellness",
+          "channel": "email",
+          "sent_at": "2026-09-06T12:00:00.000Z",
+          "reply_status": "no_reply",
+          "outcome": "no_response"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "approved_with_outreach": 1,
+        "approved_no_outreach": 0,
+        "approval_duplicates": 0,
+        "coverage_rate": 1,
+        "outreach_total": 1,
+        "unique_leads_with_outreach": 1,
+        "multiple_outreach_leads": 0,
+        "orphan_outreach": 0,
+        "malformed_approvals": 0,
+        "malformed_outreach": 0,
+        "status_mismatches": 1,
+        "non_canonical_statuses": 0,
+        "healthy_records": 0,
+        "exception_count": 1
+      }
+    },
+    {
+      "id": "TEST-RECON-009",
+      "name": "EMPTY_SOURCES",
+      "note": "Both sources read successfully but contain no rows: completed run with zero totals. Coverage is not presented.",
+      "approved": [],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 0,
+        "approved_with_outreach": 0,
+        "approved_no_outreach": 0,
+        "approval_duplicates": 0,
+        "coverage_rate": null,
+        "outreach_total": 0,
+        "unique_leads_with_outreach": 0,
+        "multiple_outreach_leads": 0,
+        "orphan_outreach": 0,
+        "malformed_approvals": 0,
+        "malformed_outreach": 0,
+        "status_mismatches": 0,
+        "non_canonical_statuses": 0,
+        "healthy_records": 0,
+        "exception_count": 0
+      }
+    },
+    {
+      "id": "TEST-RECON-010",
+      "name": "MIXED_ALL",
+      "note": "Combines fixtures 001-008 into a single realistic reconciliation surface.",
+      "approved": [
+        {
+          "lead_id": "TEST-RECON-001",
+          "business_name": "Bluebird Bakery",
+          "approved_at": "2026-09-01T09:00:00.000Z",
+          "status": "not_ready"
+        },
+        {
+          "lead_id": "TEST-RECON-002",
+          "business_name": "Cedar Lane Landscaping",
+          "approved_at": "2026-09-01T10:00:00.000Z",
+          "status": "contacted"
+        },
+        {
+          "lead_id": "TEST-RECON-003",
+          "business_name": "Driftwood Dental",
+          "approved_at": "2026-09-01T11:00:00.000Z",
+          "status": "contacted"
+        },
+        {
+          "lead_id": "TEST-RECON-005",
+          "business_name": "Bramble & Co",
+          "approved_at": "",
+          "status": "not_ready"
+        },
+        {
+          "lead_id": "TEST-RECON-006",
+          "business_name": "Falcon Fire & Safety",
+          "approved_at": "2026-09-01T14:00:00.000Z",
+          "status": "not_ready"
+        },
+        {
+          "lead_id": "TEST-RECON-007",
+          "business_name": "Copper Hill Hardware",
+          "approved_at": "2026-09-01T15:00:00.000Z",
+          "status": "contacted"
+        },
+        {
+          "lead_id": "TEST-RECON-008",
+          "business_name": "Lakeview Wellness",
+          "approved_at": "2026-09-01T16:00:00.000Z",
+          "status": "not_ready"
+        }
+      ],
+      "outreach": [
+        {
+          "outreach_id": "OR-RECON-002-1",
+          "lead_id": "TEST-RECON-002",
+          "business_name": "Cedar Lane Landscaping",
+          "channel": "email",
+          "sent_at": "2026-09-03T13:00:00.000Z",
+          "reply_status": "no_reply",
+          "outcome": "no_response"
+        },
+        {
+          "outreach_id": "OR-RECON-003-1",
+          "lead_id": "TEST-RECON-003",
+          "business_name": "Driftwood Dental",
+          "channel": "email",
+          "sent_at": "2026-09-04T10:00:00.000Z",
+          "reply_status": "no_reply",
+          "outcome": "no_response"
+        },
+        {
+          "outreach_id": "OR-RECON-003-2",
+          "lead_id": "TEST-RECON-003",
+          "business_name": "Driftwood Dental",
+          "channel": "call",
+          "sent_at": "2026-09-10T10:00:00.000Z",
+          "reply_status": "replied_weak",
+          "outcome": "interested"
+        },
+        {
+          "outreach_id": "OR-RECON-004-1",
+          "lead_id": "TEST-RECON-004",
+          "business_name": "Meridian Movers",
+          "channel": "call",
+          "sent_at": "2026-09-05T08:30:00.000Z",
+          "reply_status": "no_reply",
+          "outcome": "no_response"
+        },
+        {
+          "outreach_id": "OR-RECON-006-1",
+          "lead_id": "TEST-RECON-006",
+          "business_name": "Falcon Fire & Safety",
+          "channel": "email",
+          "sent_at": ""
+        },
+        {
+          "outreach_id": "OR-RECON-008-1",
+          "lead_id": "TEST-RECON-008",
+          "business_name": "Lakeview Wellness",
+          "channel": "email",
+          "sent_at": "2026-09-06T12:00:00.000Z",
+          "reply_status": "no_reply",
+          "outcome": "no_response"
+        }
+      ],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 7,
+        "approved_with_outreach": 3,
+        "approved_no_outreach": 3,
+        "approval_duplicates": 0,
+        "coverage_rate": 0.5,
+        "outreach_total": 6,
+        "unique_leads_with_outreach": 4,
+        "multiple_outreach_leads": 1,
+        "orphan_outreach": 1,
+        "malformed_approvals": 1,
+        "malformed_outreach": 1,
+        "status_mismatches": 2,
+        "non_canonical_statuses": 0,
+        "healthy_records": 2,
+        "exception_count": 5,
+        "categories": {
+          "TEST-RECON-001": "APPROVED_NO_OUTREACH",
+          "TEST-RECON-002": "APPROVED_WITH_OUTREACH",
+          "TEST-RECON-003": "MULTIPLE_OUTREACH",
+          "TEST-RECON-006": "APPROVED_NO_OUTREACH",
+          "TEST-RECON-007": "APPROVED_NO_OUTREACH",
+          "TEST-RECON-008": "APPROVED_WITH_OUTREACH"
+        },
+        "exception_types": [
+          "MALFORMED_APPROVAL",
+          "MALFORMED_OUTREACH",
+          "OUTREACH_WITHOUT_APPROVAL",
+          "STATUS_MISMATCH",
+          "STATUS_MISMATCH"
+        ]
+      }
+    }
+  ]
+}
