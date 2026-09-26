@@ -4,54 +4,325 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>V.I.A Automations — Lead Recovery Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      color-scheme: light;
+      --navy: #0B1B2B;
+      --amber: #F59E0B;
+      --amber-hover: #D97706;
+      --surface: #FAF8F5;
+      --card: #FFFFFF;
+      --text: #1A1A1A;
+      --muted: #64748B;
+      --success: #059669;
+      --border: #E5E7EB;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { line-height: 1.6; }
     body {
-      font-family: Georgia, 'Times New Roman', serif;
-      color: #1a1a1a;
-      background: #ffffff;
-      max-width: 40rem;
-      margin: 0 auto;
-      padding: 2rem 1.25rem 3rem;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 400;
+      line-height: 1.65;
     }
-    h1, h2 { line-height: 1.25; margin: 1.5rem 0 0.5rem; }
-    h1 { font-size: 1.75rem; }
-    h2 { font-size: 1.25rem; }
-    p, ul { margin-bottom: 1rem; }
-    ul { padding-left: 1.25rem; }
-    a { color: #0a4d8c; }
-    footer {
-      margin-top: 2.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid #ddd;
+    h1, h2, h3 { color: var(--navy); }
+    h1 { font-size: 3rem; font-weight: 700; line-height: 1.15; }
+    h2 { font-size: 1.75rem; font-weight: 600; line-height: 1.25; margin-bottom: 1.25rem; }
+    h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.25rem; }
+    p { margin-bottom: 0.75rem; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 1.25rem; }
+    section { padding: 3.5rem 0; }
+
+    .pill {
+      display: inline-block;
+      padding: 0.3rem 0.9rem;
+      border-radius: 9999px;
+      background: #FEF3C7;
+      color: var(--navy);
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    .hero { padding-top: 4.5rem; padding-bottom: 2rem; }
+    .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 3rem; align-items: center; }
+    .hero h1 { margin-bottom: 1rem; max-width: 14ch; }
+    .subhead { color: var(--muted); font-size: 1.125rem; max-width: 32rem; }
+    .cta-row { display: flex; gap: 0.75rem; align-items: center; margin: 1.5rem 0 0.75rem; }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      background: var(--amber);
+      color: #fff;
+      font-weight: 600;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+    .btn-primary:hover { background: var(--amber-hover); }
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      color: var(--navy);
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      padding: 0.8rem 0.5rem;
+    }
+    .caption { color: var(--muted); font-size: 0.875rem; font-weight: 500; }
+
+    .mockup {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(11, 27, 43, 0.12);
+      max-width: 360px;
+      overflow: hidden;
+    }
+    .mockup-head {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1.25rem;
+      font-weight: 600;
       font-size: 0.9rem;
+      color: var(--navy);
+      border-bottom: 1px solid var(--border);
+    }
+    .mockup-body { padding: 1rem 1.25rem 0.25rem; }
+    .mockup .quote {
+      color: var(--muted);
+      font-style: italic;
+      margin: 0.25rem 0 0;
+    }
+    .mockup-checks {
+      list-style: none;
+      padding: 0.5rem 1.25rem;
+      margin: 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .mockup-checks li {
+      color: var(--success);
+      font-weight: 500;
+      font-size: 0.875rem;
+      padding: 0.25rem 0;
+    }
+    .mockup-foot {
+      padding: 0.75rem 1.25rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--navy);
+    }
+
+    .trustbar {
+      background: var(--navy);
+      color: #fff;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.5rem 1.25rem;
+    }
+
+    .cardgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+    .card .icon { font-size: 1.5rem; display: block; margin-bottom: 0.75rem; }
+    .card p { color: var(--muted); }
+
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--amber);
+      color: #fff;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.75rem;
+    }
+    .steps p { color: var(--muted); }
+
+    .pilot {
+      background: #FEF3C7;
+      border: 1px solid #FDE68A;
+      border-radius: 12px;
+      padding: 2.5rem;
+    }
+    .pilot .pill { margin-right: 0.5rem; }
+    .pilot h2 { margin-bottom: 0.5rem; }
+
+    details {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+    }
+    summary {
+      cursor: pointer;
+      padding: 1rem 1.25rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+    details p { padding: 0 1.25rem 1.25rem; color: var(--muted); }
+
+    .finalcta {
+      background: var(--navy);
+      color: #fff;
+      text-align: center;
+      padding: 4rem 1.25rem;
+    }
+    .finalcta h2 { color: #fff; }
+    .finalcta .btn-primary { margin-top: 1.5rem; padding: 1rem 2rem; font-size: 1.125rem; }
+
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.875rem;
+      text-align: center;
+      padding: 2rem 1.25rem;
+    }
+    footer a { color: var(--navy); }
+
+    @media (max-width: 768px) {
+      body { font-size: 0.85rem; }
+      h1 { font-size: 2.55rem; }
+      h2 { font-size: 1.5rem; }
+      h3 { font-size: 0.96rem; }
+      .hero { padding-top: 3rem; }
+      .hero-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .cta-row .btn-primary { width: 100%; justify-content: center; }
+      .cardgrid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; gap: 1.5rem; }
+      .trustbar { height: auto; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Home-services shops lose web-form leads to slow follow-up.</h1>
-    <p>A Friday afternoon inquiry sits until Monday — by then the customer has already called someone else. We help HVAC, plumbing, and remodel businesses recover those leads automatically.</p>
+  <header class="hero">
+    <div class="container hero-grid">
+      <div class="hero-left">
+        <span class="pill">3 pilot spots remaining</span>
+        <h1>Every web lead, answered in seconds.</h1>
+        <p class="subhead">For Texas HVAC, plumbing, and remodel businesses who want every web inquiry answered before it goes cold.</p>
+        <div class="cta-row">
+          <a class="btn-primary" href="mailto:victor@viaaiautomation.work.gd?subject=Pilot%20inquiry">Ask about the pilot →</a>
+          <a class="btn-secondary" href="#how">See how it works</a>
+        </div>
+        <p class="caption">⚡ Setup in 30 minutes · No cost during pilot</p>
+      </div>
+      <div class="hero-right">
+        <div class="mockup">
+          <div class="mockup-head">🔔 New lead · 4:47 PM</div>
+          <div class="mockup-body">
+            <p><strong>Sarah M.</strong> submitted a form</p>
+            <p class="quote">&quot;Need a quote for AC repair&quot;</p>
+          </div>
+          <ul class="mockup-checks">
+            <li>✓ Reply sent in 12 seconds</li>
+            <li>✓ Follow-up scheduled</li>
+          </ul>
+          <div class="mockup-foot">Status: Customer replied</div>
+        </div>
+      </div>
+    </div>
   </header>
 
-  <section>
-    <h2>What we do</h2>
-    <ul>
-      <li><strong>Instant response.</strong> Every new lead gets a reply in seconds, not days.</li>
-      <li><strong>Systematic follow-up.</strong> No inquiry is dropped or forgotten between the form and the estimate.</li>
-      <li><strong>Booking handoff.</strong> Ready leads are routed to your calendar, not left in an inbox.</li>
-      <li><strong>Full audit trail.</strong> Every conversation is logged, so you know what was said and when.</li>
-    </ul>
-  </section>
+  <div class="trustbar">SPF · DKIM · DMARC verified · Built in Texas · GDPR-compliant opt-out</div>
 
-  <section>
-    <h2>Design partner pilot</h2>
-    <p>We are running a 30-day pilot with three Texas home-services businesses. You bring an existing lead source; we connect it and handle response and follow-up. Weekly report during the pilot.</p>
-    <p><a href="mailto:victor@viaaiautomation.work.gd?subject=Pilot%20inquiry">Ask about the pilot</a></p>
+  <main class="container">
+    <section>
+      <h2>What we do</h2>
+      <div class="cardgrid">
+        <div class="card">
+          <span class="icon">⚡</span>
+          <h3>Recover leads that would have gone cold</h3>
+          <p>Every inquiry gets a reply in seconds.</p>
+        </div>
+        <div class="card">
+          <span class="icon">🔄</span>
+          <h3>Follow up automatically until they book</h3>
+          <p>No lead dropped, no lead forgotten.</p>
+        </div>
+        <div class="card">
+          <span class="icon">📅</span>
+          <h3>Route ready leads straight to your calendar</h3>
+          <p>Booking handoff, not inbox handoff.</p>
+        </div>
+        <div class="card">
+          <span class="icon">📋</span>
+          <h3>See every conversation, every time</h3>
+          <p>Full audit trail of every send and reply.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="how">
+      <h2>How it works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>Connect your lead source</h3>
+          <p>Point your existing form at our intake endpoint.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>We handle every response</h3>
+          <p>Instant acknowledgment, systematic follow-up.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>You get the booking</h3>
+          <p>Weekly report of every lead, reply, and outcome.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pilot">
+      <span class="pill">Design partner pilot</span>
+      <span class="pill">3 spots remaining</span>
+      <h2>Join the 30-day pilot</h2>
+      <p>We are running a 30-day pilot with three Texas home-services businesses. You bring an existing lead source; we connect it and handle response and follow-up. Weekly report during the pilot.</p>
+      <p><a class="btn-primary" href="mailto:victor@viaaiautomation.work.gd?subject=Pilot%20inquiry">Ask about the pilot →</a></p>
+    </section>
+
+    <section>
+      <h2>FAQ</h2>
+      <details>
+        <summary>How long does setup take?</summary>
+        <p>30 minutes. You connect your existing form; we handle everything else.</p>
+      </details>
+      <details>
+        <summary>What does it cost during the pilot?</summary>
+        <p>Nothing. We&apos;re onboarding three Texas businesses to gather real-world data. You get the system free for 30 days.</p>
+      </details>
+      <details>
+        <summary>How do I unsubscribe from the pilot emails?</summary>
+        <p>Reply &quot;stop&quot; to any email, or use the one-click unsubscribe link in the email header. Both remove you immediately.</p>
+      </details>
+    </section>
+  </main>
+
+  <section class="finalcta">
+    <h2>Ready to stop losing leads?</h2>
+    <p>Three spots. Thirty days. No cost.</p>
+    <a class="btn-primary" href="mailto:victor@viaaiautomation.work.gd?subject=Pilot%20inquiry">Ask about the pilot →</a>
   </section>
 
   <footer>
