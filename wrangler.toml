@@ -1,3 +1,0 @@
-name = "n8n-lead-recovery"
-pages_build_output_dir = "website/public"
-compatibility_date = "2024-01-01"   # keep whatever date was already there
