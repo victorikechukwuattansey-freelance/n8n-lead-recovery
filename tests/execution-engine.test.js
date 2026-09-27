@@ -122,7 +122,10 @@ test('module contract: vocabulary and schema symbols are stable', () => {
 });
 
 test('fixtures: namespaced fixtures with full column contracts and sane run modes', () => {
-  assert.equal(fixtures.length, 15);
+  assert.ok(
+    fixtures.length >= 25,
+    'execution corpus must not shrink below 25 (001-015 core + 020-029 edge cases); got ' + fixtures.length,
+  );
   for (const f of fixtures) {
     assert.match(f.id, EXECUTION_REGEX, f.id);
     assert.ok(['DRY_RUN', 'REAL'].includes(f.run.mode), `${f.id} mode`);
