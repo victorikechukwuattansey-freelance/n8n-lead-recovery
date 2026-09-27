@@ -251,6 +251,75 @@ test('channel semantics: unverified email is NOT a channel, a short phone is not
   assert.equal(longPhone.readiness_status, READINESS.READY);
 });
 
+test('readinessFor rejects malformed email addresses (FINDING-020)', () => {
+  const cases = [
+    'test [at] example.com',
+    'user@localhost',
+    '@example.com',
+    'user@',
+    'user@.com',
+    'user @example.com',
+    'no-at-sign',
+    '   ',
+  ];
+  for (const email of cases) {
+    const r = readinessFor({ lead_id: 'X', channel: 'email', email });
+    assert.equal(r.readiness_status, READINESS.NOT_READY, `expected NOT_READY for ${JSON.stringify(email)}`);
+    assert.equal(r.available_channel, CHANNEL.NONE, `expected channel none for ${JSON.stringify(email)}`);
+  }
+});
+
+test('readinessFor accepts well-formed email addresses', () => {
+  const cases = [
+    'user@example.com',
+    'first.last@sub.example.co.uk',
+    'user+tag@example.com',
+    'noreply@x.io',
+  ];
+  for (const email of cases) {
+    const r = readinessFor({ lead_id: 'X', channel: 'email', email });
+    assert.equal(r.readiness_status, READINESS.READY, `expected READY for ${email}`);
+    assert.equal(r.available_channel, CHANNEL.EMAIL, `expected channel email for ${email}`);
+  }
+});
+
+test('readinessFor distinguishes "no email address" from "address is malformed"', () => {
+  const missing = readinessFor({ lead_id: 'X', channel: 'email', email: '' });
+  assert.equal(missing.readiness_status, READINESS.NOT_READY);
+  assert.equal(missing.reason, 'channel email but no email address');
+
+  const blank = readinessFor({ lead_id: 'X', channel: 'email', email: '   ' });
+  assert.equal(blank.readiness_status, READINESS.NOT_READY);
+  assert.equal(blank.reason, 'channel email but no email address', 'whitespace-only reads as absent, not malformed');
+
+  const malformed = readinessFor({ lead_id: 'X', channel: 'email', email: 'test [at] example.com' });
+  assert.equal(malformed.readiness_status, READINESS.NOT_READY);
+  assert.equal(malformed.reason, 'channel email but address is malformed');
+});
+
+test('readinessFor applies the email check on the inference path too (FINDING-020)', () => {
+  const verifiedGood = readinessFor({ lead_id: 'X', channel: '', email: 'boss@x.example', email_verified: 'true' });
+  assert.equal(verifiedGood.readiness_status, READINESS.READY);
+  assert.equal(verifiedGood.available_channel, CHANNEL.EMAIL);
+  assert.equal(verifiedGood.reason, 'verified email available');
+
+  const verifiedBad = readinessFor({ lead_id: 'X', channel: '', email: 'test [at] example.com', email_verified: 'true' });
+  assert.equal(verifiedBad.readiness_status, READINESS.NOT_READY, 'verified but malformed must not reach READY');
+  assert.equal(verifiedBad.available_channel, CHANNEL.NONE);
+  assert.equal(verifiedBad.reason, 'verified email but address is malformed');
+
+  const verifiedBadWithPhone = readinessFor({
+    lead_id: 'X',
+    channel: '',
+    email: 'test [at] example.com',
+    email_verified: 'true',
+    phone: '5125550100',
+  });
+  assert.equal(verifiedBadWithPhone.readiness_status, READINESS.READY, 'a bad email must not block a usable phone');
+  assert.equal(verifiedBadWithPhone.available_channel, CHANNEL.CALL);
+  assert.equal(verifiedBadWithPhone.reason, 'phone available');
+});
+
 test('priority: higher score ranks first; score tie then approved_at then lead_id', () => {
   const rows = [
     { lead_id: 'TEST-QUEUE-200', business_name: 'Low', score: '60', approved_at: '2026-01-01T00:00:00.000Z' },

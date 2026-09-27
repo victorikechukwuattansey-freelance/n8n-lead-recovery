@@ -3,8 +3,9 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { APPROVED_COLUMNS, rowToObject } = require('../src/schema');
+const { APPROVED_COLUMNS, rowToObject, isWellFormedEmail } = require('../src/schema');
 const { OUTREACH_COLUMNS } = require('../src/reconcile');
+const { CHANNEL, READINESS, readinessFor } = require('../src/queue');
 const { loadExecutionFixtures, EXECUTION_REGEX } = require('../src/execution-fixtures');
 const { MockProvider, providerFor, NOT_CONFIGURED_PROVIDER } = require('../src/provider');
 const {
@@ -423,6 +424,89 @@ test('validatePayload: email needs email+variant; call needs phone', () => {
   const call = { available_channel: 'call' };
   assert.equal(validatePayload(Object.assign({}, call, { phone: '5125550100' })).ok, true);
   assert.equal(validatePayload(Object.assign({}, call, { phone: '' })).ok, false);
+});
+
+test('validatePayload: malformed email addresses are rejected (FINDING-020)', () => {
+  const result = validatePayload({
+    available_channel: CHANNEL.EMAIL,
+    email: 'test [at] example.com',
+    message_variant: 'cold-outreach-v1',
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.reason, REASON.INVALID_PAYLOAD);
+  assert.equal(result.detail, 'email channel requires a well-formed address');
+});
+
+test('validatePayload: well-formed email addresses are accepted', () => {
+  for (const email of ['user@example.com', 'first.last@sub.example.co.uk', 'user+tag@example.com', 'noreply@x.io']) {
+    const result = validatePayload({ available_channel: CHANNEL.EMAIL, email, message_variant: 'cold-outreach-v1' });
+    assert.equal(result.ok, true, `expected ok for ${email}`);
+  }
+});
+
+test('validatePayload: a well-formed address still requires message_variant, with a specific detail', () => {
+  const missing = validatePayload({ available_channel: CHANNEL.EMAIL, email: 'user@example.com', message_variant: '' });
+  assert.equal(missing.ok, false);
+  assert.equal(missing.reason, REASON.INVALID_PAYLOAD);
+  assert.equal(missing.detail, 'email channel requires a non-empty message_variant');
+
+  const absent = validatePayload({ available_channel: CHANNEL.EMAIL, email: 'user@example.com' });
+  assert.equal(absent.ok, false, 'an absent message_variant is still rejected');
+  assert.equal(absent.detail, 'email channel requires a non-empty message_variant');
+
+  const noEmail = validatePayload({ available_channel: CHANNEL.EMAIL, email: '', message_variant: 'x' });
+  assert.equal(noEmail.ok, false, 'the old non-emptiness check is subsumed by the format check');
+  assert.equal(noEmail.detail, 'email channel requires a well-formed address');
+});
+
+test('isWellFormedEmail: pragmatic shape check, trims and coerces (FINDING-020)', () => {
+  for (const v of ['user@example.com', 'first.last@sub.example.co.uk', 'user+tag@example.com', 'noreply@x.io', '  user@example.com  ']) {
+    assert.equal(isWellFormedEmail(v), true, `expected accept for ${JSON.stringify(v)}`);
+  }
+  for (const v of ['test [at] example.com', 'user@localhost', '@example.com', 'user@', 'user@.com', 'user @example.com', 'no-at-sign', '   ', '', null, undefined]) {
+    assert.equal(isWellFormedEmail(v), false, `expected reject for ${JSON.stringify(v)}`);
+  }
+});
+
+test('a malformed email never reaches the payload builder or a log row (FINDING-020)', () => {
+  const f = fixtureById('TEST-EXEC-020');
+  const source = f.approvedRows[0];
+  const queueItem = {
+    lead_id: source.lead_id,
+    business_name: source.business_name,
+    channel: 'email',
+    email: source.email,
+    message_variant: f.message_variants['TEST-EXEC-020'],
+  };
+  const readiness = readinessFor(queueItem);
+  assert.equal(readiness.readiness_status, READINESS.NOT_READY, 'the queue layer must reject before execution');
+  assert.equal(readiness.reason, 'channel email but address is malformed');
+
+  const forced = Object.assign({}, queueItem, { available_channel: CHANNEL.EMAIL, readiness_status: READINESS.READY });
+  assert.equal(validatePayload(forced).ok, false, 'the execution layer rejects even if readiness were bypassed');
+  // buildPayload is deliberately unguarded: it stages to/from verbatim. validatePayload is
+  // the single execution-layer gate, which is why the check there is load-bearing, not redundant.
+  assert.equal(
+    buildPayload(forced).to,
+    source.email,
+    'buildPayload forwards the address unchanged; only validatePayload stops it',
+  );
+});
+
+test('020 MALFORMED_EMAIL_REJECTED: a malformed address is NOT_READY and writes no log row', async () => {
+  const f = fixtureById('TEST-EXEC-020');
+  const { report, logRows } = await runRows(f);
+  assertExpected(report, f.expected);
+  assert.equal(report.ready_candidates, 0, 'no READY candidate remains');
+  assert.equal(report.executed_skipped, 1, 'the engine still emits one SKIPPED card for the queue entry');
+  assert.equal(report.log_rows_written, 0);
+  assert.equal(report.provider_calls, 0);
+  assertResult(report, f.expected.results[0]);
+  assertLogLeadIds(report, f.expected.log_row_lead_ids);
+  assert.equal(logRows.length, 0);
+  const card = report.results.find((r) => r.lead_id === 'TEST-EXEC-020');
+  assert.equal(card.payload, null, 'no payload is built for a NOT_READY lead');
+  assert.equal(card.provider_call, null);
 });
 
 test('mergeQueueWithApproved defaults email items to cold-outreach-v1 when no explicit variant', () => {

@@ -122,6 +122,22 @@ function isControlName(name) {
   return CONTROL_FIELD_NAMES.includes(name);
 }
 
+/*
+ * Email shape check (FINDING-020). Deliberately a pragmatic production
+ * heuristic, NOT an RFC 5322 implementation: it requires a non-empty local
+ * part, an '@', and a dotted domain, and rejects embedded whitespace. It
+ * therefore rejects some technically-valid RFC 5322 addresses (quoted local
+ * parts, IP-literal domains, address literals) which do not occur in real
+ * home-services lead data, in exchange for being auditable at a glance and
+ * free of catastrophic backtracking. Mirrors the shape documented by the
+ * major transactional mailers. Syntax only: no MX lookup, no SMTP probe.
+ */
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isWellFormedEmail(value) {
+  return EMAIL_RE.test(normalize(value));
+}
+
 module.exports = {
   VERIFIED_COLUMNS,
   APPROVED_COLUMNS,
@@ -138,4 +154,6 @@ module.exports = {
   normalize,
   isHeaderRow,
   isControlName,
+  EMAIL_RE,
+  isWellFormedEmail,
 };

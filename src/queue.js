@@ -1,6 +1,6 @@
 'use strict';
 
-const { APPROVED_COLUMNS, normalize } = require('./schema');
+const { APPROVED_COLUMNS, normalize, isWellFormedEmail } = require('./schema');
 const { OUTREACH_COLUMNS } = require('./reconcile');
 
 /*
@@ -147,10 +147,13 @@ function readinessFor(record) {
   }
   const requested = normalize(record.channel);
   if (requested === 'email') {
-    if (normalize(record.email) !== '') {
+    if (isWellFormedEmail(record.email)) {
       return { available_channel: CHANNEL.EMAIL, readiness_status: READINESS.READY, reason: 'channel email with address' };
     }
-    return { available_channel: CHANNEL.NONE, readiness_status: READINESS.NOT_READY, reason: 'channel email but no email address' };
+    const reason = normalize(record.email) === ''
+      ? 'channel email but no email address'
+      : 'channel email but address is malformed';
+    return { available_channel: CHANNEL.NONE, readiness_status: READINESS.NOT_READY, reason };
   }
   if (requested === 'call') {
     if (isUsablePhone(record)) {
@@ -159,7 +162,12 @@ function readinessFor(record) {
     return { available_channel: CHANNEL.NONE, readiness_status: READINESS.NOT_READY, reason: 'channel call but phone not usable' };
   }
   if (isVerifiedEmail(record)) {
-    return { available_channel: CHANNEL.EMAIL, readiness_status: READINESS.READY, reason: 'verified email available' };
+    if (isWellFormedEmail(record.email)) {
+      return { available_channel: CHANNEL.EMAIL, readiness_status: READINESS.READY, reason: 'verified email available' };
+    }
+    if (!isUsablePhone(record)) {
+      return { available_channel: CHANNEL.NONE, readiness_status: READINESS.NOT_READY, reason: 'verified email but address is malformed' };
+    }
   }
   if (isUsablePhone(record)) {
     return { available_channel: CHANNEL.CALL, readiness_status: READINESS.READY, reason: 'phone available' };

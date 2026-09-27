@@ -732,8 +732,8 @@
     },
     {
       "id": "TEST-EXEC-020",
-      "name": "MALFORMED_EMAIL_ACCEPTED",
-      "note": "FINDING: a structurally invalid but non-empty address ('test [at] example.com') is treated as READY and staged verbatim as payload.to/payload.email. Neither readinessFor (queue) nor validatePayload (execution) performs any format validation, and the Resend adapter forwards payload.to unchanged, so in REAL mode this shape commits an Outreach Log row claiming EXECUTION_SUCCEEDED for an undeliverable address. The expected block below records the ACTUAL current behavior so the gap is reproducible, not the industry-ideal contract (reject as INVALID_PAYLOAD, or accept-with-warning); a fix requires its own reviewed commit.",
+      "name": "MALFORMED_EMAIL_REJECTED",
+      "note": "MALFORMED_EMAIL_REJECTED: a structurally invalid but non-empty address ('test [at] example.com') is now NOT_READY at the queue layer and never reaches the payload builder, so no payload.to/payload.email is staged and no Outreach Log row can claim EXECUTION_SUCCEEDED for an undeliverable address. readinessFor applies isWellFormedEmail (EMAIL_RE) on the explicit email channel; validatePayload applies the same check as defense-in-depth for any path that reaches the execution boundary with a malformed address. The result card is still present and still counts as executed_skipped=1: the engine emits a SKIPPED card for every queue item, so the fix is visible in ready_candidates (1 -> 0) and in the card's reason (DRY_RUN -> NOT_READY) rather than in a disappearing card.",
       "run": {
         "mode": "DRY_RUN",
         "provider": "NOT_CONFIGURED"
@@ -757,7 +757,7 @@
         "status": "COMPLETED",
         "approved_total": 1,
         "queue_total": 1,
-        "ready_candidates": 1,
+        "ready_candidates": 0,
         "executed_attempted": 0,
         "executed_skipped": 1,
         "executed_rejected": 0,
@@ -767,9 +767,9 @@
           {
             "lead_id": "TEST-EXEC-020",
             "status": "EXECUTION_SKIPPED",
-            "reason": "DRY_RUN",
-            "channel": "email",
-            "outreach_id": "EX-TEST-EXEC-020-email"
+            "reason": "NOT_READY",
+            "channel": "none",
+            "outreach_id": "EX-TEST-EXEC-020-none"
           }
         ],
         "log_row_lead_ids": []

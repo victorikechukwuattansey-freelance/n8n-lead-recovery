@@ -1,6 +1,6 @@
 'use strict';
 
-const { APPROVED_COLUMNS, normalize } = require('./schema');
+const { APPROVED_COLUMNS, normalize, isWellFormedEmail } = require('./schema');
 const { OUTREACH_COLUMNS } = require('./reconcile');
 const { buildQueueFromSheets, READINESS, CHANNEL, SUPPORTED_CHANNELS } = require('./queue');
 const { NOT_CONFIGURED_PROVIDER } = require('./provider');
@@ -196,11 +196,18 @@ function mergeQueueWithApproved(queue, approvedRows, messageVariants) {
  */
 function validatePayload(item) {
   if (item.available_channel === CHANNEL.EMAIL) {
-    if (!item.email || !item.message_variant) {
+    if (!isWellFormedEmail(item.email)) {
       return {
         ok: false,
         reason: REASON.INVALID_PAYLOAD,
-        detail: 'email channel requires a non-empty email and an explicit message_variant',
+        detail: 'email channel requires a well-formed address',
+      };
+    }
+    if (!item.message_variant) {
+      return {
+        ok: false,
+        reason: REASON.INVALID_PAYLOAD,
+        detail: 'email channel requires a non-empty message_variant',
       };
     }
   } else if (item.available_channel === CHANNEL.CALL) {
