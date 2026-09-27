@@ -729,6 +729,466 @@
         ],
         "log_row_lead_ids": []
       }
+    },
+    {
+      "id": "TEST-EXEC-020",
+      "name": "MALFORMED_EMAIL_ACCEPTED",
+      "note": "FINDING: a structurally invalid but non-empty address ('test [at] example.com') is treated as READY and staged verbatim as payload.to/payload.email. Neither readinessFor (queue) nor validatePayload (execution) performs any format validation, and the Resend adapter forwards payload.to unchanged, so in REAL mode this shape commits an Outreach Log row claiming EXECUTION_SUCCEEDED for an undeliverable address. The expected block below records the ACTUAL current behavior so the gap is reproducible, not the industry-ideal contract (reject as INVALID_PAYLOAD, or accept-with-warning); a fix requires its own reviewed commit.",
+      "run": {
+        "mode": "DRY_RUN",
+        "provider": "NOT_CONFIGURED"
+      },
+      "message_variants": {
+        "TEST-EXEC-020": "cold-outreach-v1"
+      },
+      "approved": [
+        {
+          "lead_id": "TEST-EXEC-020",
+          "business_name": "Edge Case HVAC",
+          "email": "test [at] example.com",
+          "channel": "email",
+          "status": "not_ready",
+          "score": "85",
+          "approved_at": "2026-09-15T12:00:00.000Z"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_candidates": 1,
+        "executed_attempted": 0,
+        "executed_skipped": 1,
+        "executed_rejected": 0,
+        "log_rows_written": 0,
+        "provider_calls": 0,
+        "results": [
+          {
+            "lead_id": "TEST-EXEC-020",
+            "status": "EXECUTION_SKIPPED",
+            "reason": "DRY_RUN",
+            "channel": "email",
+            "outreach_id": "EX-TEST-EXEC-020-email"
+          }
+        ],
+        "log_row_lead_ids": []
+      }
+    },
+    {
+      "id": "TEST-EXEC-021",
+      "name": "WHITESPACE_ONLY_EMAIL",
+      "note": "Whitespace-only email is rejected cleanly and early: normalize() trims '   ' to '' inside readinessFor, so the lead is NOT_READY on channel 'none' and is skipped before any payload is built. The rejection happens at the queue layer rather than as INVALID_PAYLOAD, and no provider-visible address is ever staged.",
+      "run": {
+        "mode": "DRY_RUN",
+        "provider": "NOT_CONFIGURED"
+      },
+      "message_variants": {
+        "TEST-EXEC-021": "cold-outreach-v1"
+      },
+      "approved": [
+        {
+          "lead_id": "TEST-EXEC-021",
+          "business_name": "Blank Contact Co",
+          "email": "   ",
+          "channel": "email",
+          "status": "not_ready",
+          "score": "82",
+          "approved_at": "2026-09-15T12:05:00.000Z"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_candidates": 0,
+        "executed_attempted": 0,
+        "executed_skipped": 1,
+        "executed_rejected": 0,
+        "log_rows_written": 0,
+        "provider_calls": 0,
+        "results": [
+          {
+            "lead_id": "TEST-EXEC-021",
+            "status": "EXECUTION_SKIPPED",
+            "reason": "NOT_READY",
+            "channel": "none",
+            "outreach_id": "EX-TEST-EXEC-021-none"
+          }
+        ],
+        "log_row_lead_ids": []
+      }
+    },
+    {
+      "id": "TEST-EXEC-022",
+      "name": "PHONE_WITH_NO_DIGITS",
+      "note": "A phone field containing no digits ('call us!') fails isUsablePhone (MIN_PHONE_DIGITS = 7, countDigits = 0) at the queue layer: NOT_READY on channel 'none', skipped before payload construction. A non-empty but non-dialable string is never mistaken for a usable phone.",
+      "run": {
+        "mode": "DRY_RUN",
+        "provider": "NOT_CONFIGURED"
+      },
+      "message_variants": {},
+      "approved": [
+        {
+          "lead_id": "TEST-EXEC-022",
+          "business_name": "No Digits Co",
+          "phone": "call us!",
+          "channel": "call",
+          "status": "not_ready",
+          "score": "61",
+          "approved_at": "2026-09-15T12:10:00.000Z"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_candidates": 0,
+        "executed_attempted": 0,
+        "executed_skipped": 1,
+        "executed_rejected": 0,
+        "log_rows_written": 0,
+        "provider_calls": 0,
+        "results": [
+          {
+            "lead_id": "TEST-EXEC-022",
+            "status": "EXECUTION_SKIPPED",
+            "reason": "NOT_READY",
+            "channel": "none",
+            "outreach_id": "EX-TEST-EXEC-022-none"
+          }
+        ],
+        "log_row_lead_ids": []
+      }
+    },
+    {
+      "id": "TEST-EXEC-023",
+      "name": "LONG_BUSINESS_NAME",
+      "note": "A 250-character business_name flows through readiness, payload construction and the message-body renderer intact: 250 chars in, 271-char subject, 950-char text, 1088-char html. No truncation, no throw, no length guard at any layer, and far below the Sheets 50,000-char cell limit. Noted only that a 271-char subject line is long for an inbox; nothing breaks.",
+      "run": {
+        "mode": "DRY_RUN",
+        "provider": "NOT_CONFIGURED"
+      },
+      "message_variants": {
+        "TEST-EXEC-023": "cold-outreach-v1"
+      },
+      "approved": [
+        {
+          "lead_id": "TEST-EXEC-023",
+          "business_name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          "email": "long@longname.example",
+          "channel": "email",
+          "status": "not_ready",
+          "score": "78",
+          "approved_at": "2026-09-15T12:15:00.000Z"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_candidates": 1,
+        "executed_attempted": 0,
+        "executed_skipped": 1,
+        "executed_rejected": 0,
+        "log_rows_written": 0,
+        "provider_calls": 0,
+        "results": [
+          {
+            "lead_id": "TEST-EXEC-023",
+            "status": "EXECUTION_SKIPPED",
+            "reason": "DRY_RUN",
+            "channel": "email",
+            "outreach_id": "EX-TEST-EXEC-023-email"
+          }
+        ],
+        "log_row_lead_ids": []
+      }
+    },
+    {
+      "id": "TEST-EXEC-024",
+      "name": "UNICODE_BUSINESS_NAME",
+      "note": "Non-ASCII business_name (accented Latin plus an em dash and an ampersand) survives byte-for-byte into business_name, payload subject and rendered body: 'Café Rodríguez HVAC — Plomería & Aire' (37 chars, 58-char subject). No mojibake, no transliteration, no encoding damage at any layer; message-body substitutes raw by design.",
+      "run": {
+        "mode": "DRY_RUN",
+        "provider": "NOT_CONFIGURED"
+      },
+      "message_variants": {
+        "TEST-EXEC-024": "cold-outreach-v1"
+      },
+      "approved": [
+        {
+          "lead_id": "TEST-EXEC-024",
+          "business_name": "Café Rodríguez HVAC — Plomería & Aire",
+          "email": "hola@cafe.example",
+          "channel": "email",
+          "status": "not_ready",
+          "score": "79",
+          "approved_at": "2026-09-15T12:20:00.000Z"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_candidates": 1,
+        "executed_attempted": 0,
+        "executed_skipped": 1,
+        "executed_rejected": 0,
+        "log_rows_written": 0,
+        "provider_calls": 0,
+        "results": [
+          {
+            "lead_id": "TEST-EXEC-024",
+            "status": "EXECUTION_SKIPPED",
+            "reason": "DRY_RUN",
+            "channel": "email",
+            "outreach_id": "EX-TEST-EXEC-024-email"
+          }
+        ],
+        "log_row_lead_ids": []
+      }
+    },
+    {
+      "id": "TEST-EXEC-025",
+      "name": "NEWLINES_IN_NOTES",
+      "note": "Newlines in the Approved notes field cannot reach any written output: buildLogRow hard-codes notes to '' and every other log-row column is projected from scalar queue/approved values, so no CR/LF can enter the Outreach Log (the CSV-splitting concern does not apply to the JSON Sheets write). Verified out of band with a REAL + mock-success probe: log_row.notes === '' and no log-row column contained CR/LF. Kept in DRY_RUN because the expected block can only assert report metrics, result cards and log-row lead ids, never log-row cell values.",
+      "run": {
+        "mode": "DRY_RUN",
+        "provider": "NOT_CONFIGURED"
+      },
+      "message_variants": {
+        "TEST-EXEC-025": "cold-outreach-v1"
+      },
+      "approved": [
+        {
+          "lead_id": "TEST-EXEC-025",
+          "business_name": "Multiline Notes Co",
+          "email": "notes@nl.example",
+          "channel": "email",
+          "status": "not_ready",
+          "score": "76",
+          "notes": "First line\nSecond line\r\nThird line",
+          "approved_at": "2026-09-15T12:25:00.000Z"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_candidates": 1,
+        "executed_attempted": 0,
+        "executed_skipped": 1,
+        "executed_rejected": 0,
+        "log_rows_written": 0,
+        "provider_calls": 0,
+        "results": [
+          {
+            "lead_id": "TEST-EXEC-025",
+            "status": "EXECUTION_SKIPPED",
+            "reason": "DRY_RUN",
+            "channel": "email",
+            "outreach_id": "EX-TEST-EXEC-025-email"
+          }
+        ],
+        "log_row_lead_ids": []
+      }
+    },
+    {
+      "id": "TEST-EXEC-026",
+      "name": "DUPLICATE_LEAD_ID_IN_BATCH",
+      "note": "Two Approved rows sharing lead_id TEST-EXEC-026 collapse to one queue record (first occurrence canonical: 'First Copy') and therefore exactly one result card, so the execution layer preserves the queue's dedup and cannot emit a second attempt. approved_total counts source rows (2) while queue_total counts deduplicated records (1). Observability note, not a defect: the dropped duplicate is reported by the queue artifact as duplicate_approval_ids = 1, but the execution report has no field for it and its exceptions array stays empty.",
+      "run": {
+        "mode": "DRY_RUN",
+        "provider": "NOT_CONFIGURED"
+      },
+      "message_variants": {
+        "TEST-EXEC-026": "cold-outreach-v1"
+      },
+      "approved": [
+        {
+          "lead_id": "TEST-EXEC-026",
+          "business_name": "First Copy",
+          "email": "first@dup.example",
+          "channel": "email",
+          "status": "not_ready",
+          "score": "75",
+          "approved_at": "2026-09-15T12:30:00.000Z"
+        },
+        {
+          "lead_id": "TEST-EXEC-026",
+          "business_name": "Second Copy",
+          "email": "second@dup.example",
+          "channel": "email",
+          "status": "not_ready",
+          "score": "75",
+          "approved_at": "2026-09-15T12:30:00.000Z"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 2,
+        "queue_total": 1,
+        "ready_candidates": 1,
+        "executed_attempted": 0,
+        "executed_skipped": 1,
+        "executed_rejected": 0,
+        "duplicate_suppressed": 0,
+        "log_rows_written": 0,
+        "provider_calls": 0,
+        "results": [
+          {
+            "lead_id": "TEST-EXEC-026",
+            "status": "EXECUTION_SKIPPED",
+            "reason": "DRY_RUN",
+            "channel": "email",
+            "outreach_id": "EX-TEST-EXEC-026-email",
+            "business_name": "First Copy"
+          }
+        ],
+        "log_row_lead_ids": []
+      }
+    },
+    {
+      "id": "TEST-EXEC-027",
+      "name": "EMPTY_BATCH_DRY_RUN",
+      "note": "Empty Approved and empty Outreach in DRY_RUN complete cleanly: status COMPLETED with every metric zero, empty results, empty log rows, no exceptions. No shape assertion trips and no false healthy or partial state is fabricated. Complements TEST-EXEC-005, which covers the same empty shape in REAL mode.",
+      "run": {
+        "mode": "DRY_RUN",
+        "provider": "NOT_CONFIGURED"
+      },
+      "message_variants": {},
+      "approved": [],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 0,
+        "queue_total": 0,
+        "ready_candidates": 0,
+        "executed_attempted": 0,
+        "executed_succeeded": 0,
+        "executed_failed": 0,
+        "executed_skipped": 0,
+        "executed_rejected": 0,
+        "duplicate_suppressed": 0,
+        "log_rows_written": 0,
+        "provider_calls": 0,
+        "results": [],
+        "log_row_lead_ids": []
+      }
+    },
+    {
+      "id": "TEST-EXEC-028",
+      "name": "REAL_NOT_CONFIGURED_BOTH_CHANNELS",
+      "note": "REAL mode against the NOT_CONFIGURED fail-closed sentinel refuses honestly for every READY candidate on both channels: two EXECUTION_FAILED / PROVIDER_NOT_CONFIGURED cards, provider_calls 2, log_rows_written 0, provider_configured false, no row staged or claimed. Extends TEST-EXEC-010 (a single email lead) to a multi-lead run and to the call channel, and is the offline fixture-form reproduction of the live smoke-test refusal. DRY_RUN was not used here because the refusal path only exists in REAL mode.",
+      "run": {
+        "mode": "REAL",
+        "provider": "NOT_CONFIGURED"
+      },
+      "message_variants": {
+        "TEST-EXEC-028": "cold-outreach-v1"
+      },
+      "approved": [
+        {
+          "lead_id": "TEST-EXEC-028",
+          "business_name": "Unconfigured Email Co",
+          "email": "noadapter@nc.example",
+          "channel": "email",
+          "status": "not_ready",
+          "score": "73",
+          "approved_at": "2026-09-15T12:35:00.000Z"
+        },
+        {
+          "lead_id": "TEST-EXEC-0281",
+          "business_name": "Unconfigured Call Co",
+          "phone": "(512) 555-0177",
+          "channel": "call",
+          "status": "not_ready",
+          "score": "71",
+          "approved_at": "2026-09-15T12:36:00.000Z"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 2,
+        "queue_total": 2,
+        "ready_candidates": 2,
+        "executed_attempted": 2,
+        "executed_succeeded": 0,
+        "executed_failed": 2,
+        "executed_skipped": 0,
+        "executed_rejected": 0,
+        "log_rows_written": 0,
+        "provider_calls": 2,
+        "results": [
+          {
+            "lead_id": "TEST-EXEC-028",
+            "status": "EXECUTION_FAILED",
+            "reason": "PROVIDER_NOT_CONFIGURED",
+            "channel": "email",
+            "outreach_id": "EX-TEST-EXEC-028-email"
+          },
+          {
+            "lead_id": "TEST-EXEC-0281",
+            "status": "EXECUTION_FAILED",
+            "reason": "PROVIDER_NOT_CONFIGURED",
+            "channel": "call",
+            "outreach_id": "EX-TEST-EXEC-0281-call"
+          }
+        ],
+        "log_row_lead_ids": []
+      }
+    },
+    {
+      "id": "TEST-EXEC-029",
+      "name": "CALL_CHANNEL_PHONE_ONLY",
+      "note": "A call-channel lead with a punctuated phone and no email gates correctly: READY on the call channel (10 digits >= MIN_PHONE_DIGITS), a phone-only payload carrying no email/subject/body keys, a DRY_RUN skip and zero provider calls. Documented design gap, not a defect: no real call adapter exists, and both real adapters refuse rather than guess (ResendAdapter returns REJECTED_CHANNEL for any non-email channel; NOT_CONFIGURED returns PROVIDER_NOT_CONFIGURED), so no call can be placed from this repository. Recorded faithfully instead of the anticipated REJECTED_CHANNEL or NOT_READY. The phone is passed through verbatim ('(512) 555-0100'); E.164 normalization belongs to the future call adapter, not the execution layer.",
+      "run": {
+        "mode": "DRY_RUN",
+        "provider": "NOT_CONFIGURED"
+      },
+      "message_variants": {},
+      "approved": [
+        {
+          "lead_id": "TEST-EXEC-029",
+          "business_name": "Deferred Call Adapter Co",
+          "phone": "(512) 555-0100",
+          "email": "",
+          "channel": "call",
+          "status": "not_ready",
+          "score": "64",
+          "approved_at": "2026-09-15T12:40:00.000Z"
+        }
+      ],
+      "outreach": [],
+      "expected": {
+        "status": "COMPLETED",
+        "approved_total": 1,
+        "queue_total": 1,
+        "ready_candidates": 1,
+        "executed_attempted": 0,
+        "executed_skipped": 1,
+        "executed_rejected": 0,
+        "log_rows_written": 0,
+        "provider_calls": 0,
+        "results": [
+          {
+            "lead_id": "TEST-EXEC-029",
+            "status": "EXECUTION_SKIPPED",
+            "reason": "DRY_RUN",
+            "channel": "call",
+            "outreach_id": "EX-TEST-EXEC-029-call"
+          }
+        ],
+        "log_row_lead_ids": []
+      }
     }
   ]
 }
